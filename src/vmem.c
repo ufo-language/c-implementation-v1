@@ -9,9 +9,9 @@
 
 static FILE* pageFile = 0;
 
-byte pageMap[N_PAGES];
-Word pageTable[N_PAGES][PAGE_SIZE];
-bool isDirty[N_PAGES];
+byte vmemPageMap[N_PAGES];
+Word vmemPageTable[N_PAGES][PAGE_SIZE];
+bool vmemIsDirty[N_PAGES];
 
 /* Returns the total number of words provided by the virtual memory
    system. */
@@ -27,9 +27,9 @@ FILE* vmemStart() {
   pageFile = blockFileInit(PAGE_FILE_NAME, PAGE_SIZE * sizeof(Word), N_KEYS * N_PAGES);
   /* clear the page arrays in memory */
   for (int pageN=0; pageN<N_PAGES; pageN++) {
-    pageMap[pageN] = 0;
-    isDirty[pageN] = false;
-    memset(pageTable[pageN], 0, PAGE_SIZE * sizeof(Word));
+    vmemPageMap[pageN] = 0;
+    vmemIsDirty[pageN] = false;
+    memset(vmemPageTable[pageN], 0, PAGE_SIZE * sizeof(Word));
   }
   return pageFile;
 }
@@ -44,17 +44,17 @@ void vmemStop() {
    pageIndex = low bits of pageNum
 */
 void pageFileRead(uint pageNum, byte pageKey, uint pageIndex) {
-  byte* page = (byte*)pageTable[pageIndex];
+  byte* page = (byte*)vmemPageTable[pageIndex];
   assert(pageFile != 0);
   blockFileRead(page, PAGE_SIZE * sizeof(uint), pageNum, pageFile);
   assert(pageFile != 0);
-  pageMap[pageIndex] = pageKey;
+  vmemPageMap[pageIndex] = pageKey;
 }
 
 /* Writes a page to the page file. */
 void pageFileWrite(uint pageIndex) {
-  uint pageFileIndex = pageMap[pageIndex] * N_PAGES + pageIndex;
-  byte* page = (byte*)pageTable[pageIndex];
+  uint pageFileIndex = vmemPageMap[pageIndex] * N_PAGES + pageIndex;
+  byte* page = (byte*)vmemPageTable[pageIndex];
   blockFileWrite(page, PAGE_SIZE * sizeof(Word), pageFileIndex, pageFile);
 }
 
@@ -64,12 +64,12 @@ void pageFileWrite(uint pageIndex) {
 Word* pageGet(uint pageNum) {
   byte pageKey = pageNum / N_PAGES;
   uint pageIndex = pageNum % N_PAGES;
-  if (pageMap[pageIndex] != pageKey) {
+  if (vmemPageMap[pageIndex] != pageKey) {
     /* page fault */
     pageFileWrite(pageIndex);
     pageFileRead(pageNum, pageKey, pageIndex);
   }
-  return pageTable[pageIndex];
+  return vmemPageTable[pageIndex];
 }
 
 /* Gets a word from memory. The address must fall within the ramge of
