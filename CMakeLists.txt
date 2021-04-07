@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(plx VERSION 0.1.0 LANGUAGES C)
+project(ufo VERSION 0.1.0 LANGUAGES C)
 
 configure_file(src/config.h.in src/config.h)
 
