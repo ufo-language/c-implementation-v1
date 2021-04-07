@@ -1,0 +1,404 @@
+#include <assert.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+#include "d_array.h"
+#include "d_binding.h"
+#include "d_bool.h"
+#include "d_closure.h"
+#include "d_exn.h"
+#include "d_hash.h"
+#include "d_int.h"
+#include "d_nothing.h"
+#include "d_list.h"
+#include "d_queue.h"
+#include "d_real.h"
+#include "d_set.h"
+#include "d_string.h"
+#include "d_symbol.h"
+#include "delegate.h"
+#include "e_abstr.h"
+#include "e_app.h"
+#include "e_ident.h"
+#include "e_if.h"
+#include "e_let.h"
+#include "e_letin.h"
+#include "e_seq.h"
+#include "e_throw.h"
+#include "gc.h"
+#include "globals.h"
+#include "object.h"
+#include "vmem.h"
+
+bool objBoolValue(Object obj) {
+  ObjType objType = objGetType(obj);
+  switch (objType) {
+    case D_Array:
+      return arrayCount(obj) > 0;
+    case D_Bool:
+      return boolGet(obj);
+    case D_Hash:
+      return hashCount(obj) > 0;
+    case D_Int:
+      return intGet(obj) != 0;
+    case D_Nothing:
+      return false;
+    case D_List:
+      return obj.a != EMPTY_LIST.a;
+    case D_Queue:
+      return queueCount(obj) > 0;
+    case D_Real:
+      return realGet(obj) != 0;
+    case D_Set:
+      return setCount(obj) != 0;
+    case D_String:
+      return stringCount(obj) > 0;
+    default:
+      /* E_Ident, E_If, etc. */
+      return true;
+  }
+}
+
+void objDisp(Object obj, FILE* stream) {
+  switch (objGetType(obj)) {
+    case D_String:
+      stringDisp(obj, stream);
+      break;
+    default:
+      objShow(obj, stream);
+  }
+}
+
+bool objEqual(Object obj1, Object obj2) {
+  if (obj1.a == obj2.a) {
+    return true;
+  }
+  ObjType obj1Type = objGetType(obj1);
+  ObjType obj2Type = objGetType(obj2);
+  if (obj1Type != obj2Type) {
+    return false;
+  }
+  switch (obj1Type) {
+    case D_Array:
+      return arrayEqual(obj1, obj2);
+    case D_Binding:
+      return bindingEqual(obj1, obj2);
+    case D_Bool:
+      return boolEqual(obj1, obj2);
+    case D_Exn:
+      return exnEqual(obj1, obj2);
+    case D_Hash:
+      return hashEqual(obj1, obj2);
+    case D_Int:
+      return intEqual(obj1, obj2);
+    case D_List:
+      return listEqual(obj1, obj2);
+    case D_Queue:
+      return queueEqual(obj1, obj2);
+    case D_Real:
+      return realEqual(obj1, obj2);
+    case D_Set:
+      return setEqual(obj1, obj2);
+    case D_String:
+      return stringEqual(obj1, obj2);
+    case D_Symbol:
+      return symbolEqual(obj1, obj2);
+    case E_Ident:
+      return identEqual(obj1, obj2);
+    default:
+      printf("objEqual not implemented for type %s\n", ObjTypeNames[objGetType(obj1)]);
+      printf("  returning default false\n");
+  }
+  return false;
+}
+
+Object objEval(Object obj, Thread* thd) {
+  switch (objGetType(obj)) {
+    case D_Array:
+      return arrayEval(obj, thd);
+    case D_Binding:
+      return bindingEval(obj, thd);
+    case D_Exn:
+      return exnEval(obj, thd);
+    case D_Hash:
+      return hashEval(obj, thd);
+    case D_List:
+      return listEval(obj, thd);
+    case D_Queue:
+      return queueEval(obj, thd);
+    case D_Set:
+      return setEval(obj, thd);
+    case E_Abstr:
+      return abstrEval(obj, thd);
+    case E_App:
+      return appEval(obj, thd);
+    case E_Ident:
+      return identEval(obj, thd);
+    case E_If:
+      return ifEval(obj, thd);
+    case E_Let:
+      return letEval(obj, thd);
+    case E_LetIn:
+      return letInEval(obj, thd);
+    case E_Seq:
+      return seqEval(obj, thd);
+    case E_Throw:
+      return throwEval(obj, thd);
+    default:
+      /* return the object unevaluated */
+      return obj;
+  }
+}
+
+void objFreeVars(Object obj, Object freeVarSet) {
+  switch (objGetType(obj)) {
+    case D_Array:
+      arrayFreeVars(obj, freeVarSet);
+      break;
+    case D_Binding:
+      bindingFreeVars(obj, freeVarSet);
+      break;
+    case D_Hash:
+      hashFreeVars(obj, freeVarSet);
+      break;
+    case D_List:
+      listFreeVars(obj, freeVarSet);
+      break;
+    case D_Queue:
+      queueFreeVars(obj, freeVarSet);
+      break;
+    case D_Set:
+      setFreeVars(obj, freeVarSet);
+      break;
+    case E_Abstr:
+      abstrFreeVars(obj, freeVarSet);
+      break;
+    case E_App:
+      appFreeVars(obj, freeVarSet);
+      break;
+    case E_Ident:
+      setAddElem(freeVarSet, obj);
+      break;
+    case E_If:
+      ifFreeVars(obj, freeVarSet);
+      break;
+    case E_Let:
+      letFreeVars(obj, freeVarSet);
+      break;
+    case E_LetIn:
+      letInFreeVars(obj, freeVarSet);
+      break;
+    case E_Seq:
+      seqFreeVars(obj, freeVarSet);
+      break;
+    case E_Throw:
+      throwFreeVars(obj, freeVarSet);
+      break;
+    default:
+      ;
+  }
+}
+
+Word objHashCode(Object obj) {
+  switch (objGetType(obj)) {
+    //case D_Nothing:
+    //  nothingHash(stream);
+    //  break;
+    //case D_Array:
+    //  arrayHash(obj, stream);
+    //  break;
+    //case D_Binding:
+    //  bindingHash(obj, stream);
+    //  break;
+    //case D_Bool:
+    //  boolHash(obj, stream);
+    //  break;
+    //case D_Exn:
+    //  exnHash(obj, stream);
+    //  break;
+    case D_Int:
+      return intHash(obj);
+    //case D_List:
+    //  listHash(obj, stream);
+    //  break;
+    //case D_Real:
+    //  realHash(obj, stream);
+    //  break;
+    case D_String:
+      return stringHash(obj);
+    case D_Symbol:
+      return symbolHash(obj);
+    case E_Ident:
+      return identHash(obj);
+    default:
+      fprintf(stderr, "WARNING: object type %s not handled in objHashCode\n",
+        ObjTypeNames[objGetType(obj)]);
+  }
+  return obj.a;
+}
+
+/*void objMark_generic(Object obj, Word from, Word to) {
+  for (Word n=from; n<=to; n++) {
+    Object obj1 = {objGetData(obj, n)};
+    gcMark(obj1);
+  }
+}*/
+
+void objMark(Object obj) {
+  if (gcIsMarked(obj)) {
+    return;
+  }
+  gcSetObjMarkedFlag(obj);
+  switch (objGetType(obj)) {
+    case D_Array:
+      arrayMark(obj);
+      break;
+    case D_Binding:
+      bindingMark(obj);
+      break;
+    case D_Closure:
+      closureMark(obj);
+      break;
+    case D_Exn:
+      exnMark(obj);
+      break;
+    case D_Hash:
+      hashMark(obj);
+      break;
+    case D_List:
+      listMark(obj);
+      break;
+    case D_Queue:
+      queueMark(obj);
+      break;
+    case D_Set:
+      setMark(obj);
+      break;
+    case E_Abstr:
+      abstrMark(obj);
+      break;
+    case E_App:
+      appMark(obj);
+      break;
+    case E_If:
+      ifMark(obj);
+      break;
+    case E_Let:
+      letMark(obj);
+      break;
+    case E_LetIn:
+      letInMark(obj);
+      break;
+    case E_Seq:
+      seqMark(obj);
+      break;
+    case E_Throw:
+      throwMark(obj);
+      break;
+    default:
+      ;  /* do nothing */
+  }
+}
+
+Object objMatch(Object obj, Object other, Object bindingList) {
+  ObjType objType1 = objGetType(obj);
+  if (objType1 == E_Ident) {
+    return identMatch(obj, other, bindingList);
+  }
+  ObjType objType2 = objGetType(other);
+  if (objType2 == E_Ident) {
+    return identMatch(other, obj, bindingList);
+  }
+  if (objType1 != objType2) {
+    return nullObj;
+  }
+  switch (objType1) {
+    case D_Array:
+      return arrayMatch(obj, other, bindingList);
+    case D_Binding:
+      return bindingMatch(obj, other, bindingList);
+    case D_List:
+      return listMatch(obj, other, bindingList);
+    default:
+      return (obj.a == other.a) ? bindingList : nullObj;
+  }
+}
+
+Word _getSize(RawBlock blk);
+RawBlock objToRawBlock(Object obj);
+
+void objShow(Object obj, FILE* stream) {
+  switch (objGetType(obj)) {
+    case D_Nothing:
+      nothingShow(stream);
+      break;
+    case D_Array:
+      arrayShow(obj, stream);
+      break;
+    case D_Binding:
+      bindingShow(obj, stream);
+      break;
+    case D_Bool:
+      boolShow(obj, stream);
+      break;
+    case D_Closure:
+      closureShow(obj, stream);
+      break;
+    case D_Exn:
+      exnShow(obj, stream);
+      break;
+    case D_Hash:
+      hashShow(obj, stream);
+      break;
+    case D_Int:
+      intShow(obj, stream);
+      break;
+    case D_List:
+      listShow(obj, stream);
+      break;
+    case D_Queue:
+      queueShow(obj, stream);
+      break;
+    case D_Real:
+      realShow(obj, stream);
+      break;
+    case D_Set:
+      setShow(obj, stream);
+      break;
+    case D_String:
+      stringShow(obj, stream);
+      break;
+    case D_Symbol:
+      symbolShow(obj, stream);
+      break;
+    case E_Abstr:
+      abstrShow(obj, stream);
+      break;
+    case E_App:
+      appShow(obj, stream);
+      break;
+    case E_Ident:
+      identShow(obj, stream);
+      break;
+    case E_If:
+      ifShow(obj, stream);
+      break;
+    case E_Let:
+      letShow(obj, stream);
+      break;
+    case E_LetIn:
+      letInShow(obj, stream);
+      break;
+    case E_Seq:
+      seqShow(obj, stream);
+      break;
+    case E_Throw:
+      throwShow(obj, stream);
+      break;
+    case D_Null:
+      fprintf(stream, "NULL-OBJECT");
+      break;
+    default:
+      fprintf(stream, "SHOW_UNHANDLED_OBJECT_%s@%d", ObjTypeNames[objGetType(obj)], obj.a);
+  }
+}
