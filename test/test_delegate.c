@@ -46,9 +46,6 @@ void test_delegate1() {
   Object i100 = intNew(100);
   Object i200 = intNew(200);
   Object ary1 = arrayNew(2);
-  printf("%s i100 = %d\n", __func__, i100.a);
-  printf("%s i200 = %d\n", __func__, i200.a);
-  printf("%s ary1 = %d\n", __func__, ary1.a);
   arraySet(ary1, 0, i100);
   arraySet(ary1, 1, i200);
 
@@ -63,11 +60,10 @@ void test_delegate1() {
   EXPECT_F(_isMarked(objToRawBlock(i200)));
   EXPECT_F(_isMarked(objToRawBlock(ary1)));
 
-#if 0
-  objMark_generic(ary1, 1, 2);
+  //objMark_generic(ary1, 1, 2);
+  objMark_generic(ary1, ARY_ELEMS_OFS, arrayCount(ary1));
 
   EXPECT_T(_isMarked(objToRawBlock(i100)));
   EXPECT_T(_isMarked(objToRawBlock(i200)));
   EXPECT_T(_isMarked(objToRawBlock(ary1)));
-#endif
 }

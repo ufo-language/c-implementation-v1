@@ -19,7 +19,6 @@ Object arrayEval(Object array, Thread* thd);
 void arrayFill(Object array, Object elem);
 void arrayFreeVars(Object array, Object freeVarSet);
 Object arrayGet(Object array, Word index);
-void arrayMark(Object array);
 Object arrayMatch(Object obj, Object other, Object bindingList);
 void arraySet(Object array, Word index, Object obj);
 void arrayShow(Object array, FILE* stream);

@@ -237,12 +237,14 @@ Word objHashCode(Object obj) {
   return obj.a;
 }
 
-/*void objMark_generic(Object obj, Word from, Word to) {
-  for (Word n=from; n<=to; n++) {
+void objMark_generic(Object obj, Word start, Word count) {
+  gcSetObjMarkedFlag(obj);
+  Word to = start + count;
+  for (Word n=start; n<to; n++) {
     Object obj1 = {objGetData(obj, n)};
-    gcMark(obj1);
+    gcSetObjMarkedFlag(obj1);
   }
-}*/
+}
 
 void objMark(Object obj) {
   if (gcIsMarked(obj)) {
@@ -251,7 +253,7 @@ void objMark(Object obj) {
   gcSetObjMarkedFlag(obj);
   switch (objGetType(obj)) {
     case D_Array:
-      arrayMark(obj);
+      objMark_generic(obj, ARY_ELEMS_OFS, arrayCount(obj));
       break;
     case D_Binding:
       bindingMark(obj);

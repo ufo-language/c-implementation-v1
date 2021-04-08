@@ -50,7 +50,7 @@ static int (*tests[])() = {
   test_app,
   test_abstr,
   test_gc,
-  //test_delegate,
+  test_delegate,
   0
 };
 

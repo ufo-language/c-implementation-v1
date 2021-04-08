@@ -78,14 +78,6 @@ Object arrayGet(Object array, Word index) {
   return nullObj;
 }
 
-void arrayMark(Object array) {
-  Word nElems = arrayCount(array);
-  for (int n=0; n<nElems; n++) {
-    Object obj = arrayGet(array, n);
-    objMark(obj);
-  }
-}
-
 Object arrayMatch(Object array, Object other, Object bindingList) {
   Word nElems1 = arrayCount(array);
   Word nElems2 = arrayCount(other);
