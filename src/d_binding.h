@@ -18,7 +18,6 @@ Object bindingEval(Object binding, Thread* thd);
 void bindingFreeVars(Object binding, Object freeVarSet);
 Object bindingGetLhs(Object binding);
 Object bindingGetRhs(Object binding);
-void bindingMark(Object binding);
 Object bindingMatch(Object binding, Object other, Object bindingList);
 void bindingSetRhs(Object binding, Object rhs);
 void bindingShow(Object binding, FILE* stream);

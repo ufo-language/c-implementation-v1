@@ -256,7 +256,7 @@ void objMark(Object obj) {
       objMark_generic(obj, ARY_ELEMS_OFS, arrayCount(obj));
       break;
     case D_Binding:
-      bindingMark(obj);
+      objMark_generic(obj, BND_LHS_OFS, 2);
       break;
     case D_Closure:
       closureMark(obj);

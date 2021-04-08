@@ -46,11 +46,6 @@ Object bindingGetRhs(Object binding) {
   return obj;
 }
 
-void bindingMark(Object binding) {
-  objMark(bindingGetLhs(binding));
-  objMark(bindingGetRhs(binding));
-}
-
 Object bindingMatch(Object binding, Object other, Object bindingList) {
   Object lhs1 = bindingGetLhs(binding);
   Object lhs2 = bindingGetLhs(other);
