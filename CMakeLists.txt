@@ -1,3 +1,7 @@
+# to build:
+# $ cmake . (one time only)
+# $ cmake --build .
+
 cmake_minimum_required(VERSION 3.10)
 
 project(ufo VERSION 0.1.0 LANGUAGES C)
