@@ -13,11 +13,11 @@
 #define CLO_NEXT_OFS 2
 
 #define CLO_LEXENV_OFS 3
+#define CLO_SIZE 4
 
 Object closureNew(Object abstr, Object lexEnv);
 
 Object closureApply(Object closure, Object argList, Thread* thd);
-void closureMark(Object closure);
 void closureShow(Object closure, FILE* stream);
 
 #endif

@@ -14,7 +14,6 @@ Object exnNew(Object payload);
 bool exnEqual(Object exn, Object other);
 Object exnEval(Object exn, Thread* thd);
 Object exnGetPayload(Object exn);
-void exnMark(Object exn);
 void exnShow(Object exn, FILE* stream);
 
 #endif

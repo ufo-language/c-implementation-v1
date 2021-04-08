@@ -16,7 +16,6 @@ bool setEqual(Object set, Object other);
 Object setEval(Object set, Thread* thd);
 void setFreeVars(Object set, Object freeVarSet);
 bool setHas(Object set, Object elem);
-void setMark(Object set);
 bool setRemoveElem(Object set, Object elem);
 void setRemoveSet(Object set, Object otherSet);
 void setShow(Object set, FILE* stream);

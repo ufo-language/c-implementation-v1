@@ -16,7 +16,6 @@ bool queueEqual(Object q, Object other);
 Object queueEval(Object q, Thread* thd);
 void queueFreeVars(Object q, Object freeVarSet);
 Object queueDeq(Object q);
-void queueMark(Object q);
 void queueShow(Object q, FILE* stream);
 
 #endif

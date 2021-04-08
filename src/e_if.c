@@ -48,16 +48,6 @@ void ifFreeVars(Object ifThen, Object freeVarSet) {
 }
 
 /*------------------------------------------------------------------*/
-void ifMark(Object ifThen) {
-  Object cond = {objGetData(ifThen, 0)};
-  Object conseq = {objGetData(ifThen, 1)};
-  Object alt = {objGetData(ifThen, 2)};
-  objMark(cond);
-  objMark(conseq);
-  objMark(alt);
-}
-
-/*------------------------------------------------------------------*/
 Object ifNew(Object cond, Object conseq, Object alt) {
   Object ifThen = objAlloc(E_If, 3);
   objSetData(ifThen, 0, cond.a);

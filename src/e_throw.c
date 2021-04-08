@@ -19,12 +19,6 @@ void throwFreeVars(Object thrw, Object freeVarSet) {
 }
 
 /*------------------------------------------------------------------*/
-void throwMark(Object thrw) {
-  Object payload = {objGetData(thrw, THR_PAYLOAD_OFS)};
-  objMark(payload);
-}
-
-/*------------------------------------------------------------------*/
 Object throwNew(Object expr) {
   Object thrw = objAlloc(E_Throw, 1);
   objSetData(thrw, THR_PAYLOAD_OFS, expr.a);

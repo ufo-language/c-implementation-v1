@@ -35,18 +35,6 @@ Object closureApply(Object closure, Object argList, Thread* thd) {
   return nullObj;
 }
 
-void closureMark(Object closure) {
-  while (closure.a != nullObj.a) {
-    Object params = {objGetData(closure, CLO_PARAMS_OFS)};
-    Object body = {objGetData(closure, CLO_BODY_OFS)};
-    Object lexEnv = {objGetData(closure, CLO_LEXENV_OFS)};
-    objMark(params);
-    objMark(body);
-    objMark(lexEnv);
-    closure.a = objGetData(closure, CLO_NEXT_OFS);
-  }
-}
-
 Object closureNew(Object abstr, Object env) {
   Object firstRule = nullObj;
   Object prevRule = nullObj;
@@ -60,8 +48,8 @@ Object closureNew(Object abstr, Object env) {
     if (prevRule.a != nullObj.a) {
       objSetData(prevRule, CLO_NEXT_OFS, rule.a);
     }
-    objSetData(rule, CLO_PARAMS_OFS, objGetData(abstr, CLO_PARAMS_OFS));
-    objSetData(rule, CLO_BODY_OFS, objGetData(abstr, CLO_BODY_OFS));
+    objSetData(rule, CLO_PARAMS_OFS, objGetData(abstr, ABSTR_PARAMS_OFS));
+    objSetData(rule, CLO_BODY_OFS, objGetData(abstr, ABSTR_BODY_OFS));
     Object lexEnv = _close(rule, env);
     objSetData(rule, CLO_LEXENV_OFS, lexEnv.a);
     prevRule = rule;

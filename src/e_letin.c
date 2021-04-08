@@ -50,14 +50,6 @@ void letInFreeVars(Object letIn, Object freeVarSet) {
 }
 
 /*------------------------------------------------------------------*/
-void letInMark(Object letIn) {
-  Object bindings = {objGetData(letIn, LETIN_BINDINGS_OFS)};
-  Object body = {objGetData(letIn, LETIN_BODY_OFS)};
-  objMark(bindings);
-  objMark(body);
-}
-
-/*------------------------------------------------------------------*/
 Object letInNew(Object bindings, Object body) {
   Object letIn = objAlloc(E_LetIn, 2);
   objSetData(letIn, LETIN_BINDINGS_OFS, bindings.a);

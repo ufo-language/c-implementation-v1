@@ -28,12 +28,6 @@ void seqFreeVars(Object seq, Object freeVarSet) {
 }
 
 /*------------------------------------------------------------------*/
-void seqMark(Object seq) {
-  Object list = {objGetData(seq, SEQ_EXPRS_OFS)};
-  objMark(list);
-}
-
-/*------------------------------------------------------------------*/
 Object seqNew(Object lst) {
   Object seq = objAlloc(E_Seq, 1);
   objSetData(seq, SEQ_EXPRS_OFS, lst.a);

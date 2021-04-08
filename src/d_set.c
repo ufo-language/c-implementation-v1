@@ -110,12 +110,6 @@ bool setLocate(Object set, Object elem, Word* bucketNum) {
 }
 
 /*------------------------------------------------------------------*/
-void setMark(Object set) {
-  Object buckets = {objGetData(set, 2)};
-  objMark(buckets);
-}
-
-/*------------------------------------------------------------------*/
 Object setNew() {
   Word nBuckets = 8;
   Word loadingFactorCapacity = (nBuckets >> 1) + (nBuckets >> 2);

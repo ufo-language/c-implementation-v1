@@ -238,11 +238,12 @@ Word objHashCode(Object obj) {
 }
 
 void objMark_generic(Object obj, Word start, Word count) {
-  gcSetObjMarkedFlag(obj);
+  //gcSetObjMarkedFlag(obj);
   Word to = start + count;
   for (Word n=start; n<to; n++) {
     Object obj1 = {objGetData(obj, n)};
-    gcSetObjMarkedFlag(obj1);
+    //gcSetObjMarkedFlag(obj1);
+    objMark(obj1);
   }
 }
 
@@ -259,46 +260,51 @@ void objMark(Object obj) {
       objMark_generic(obj, BND_LHS_OFS, 2);
       break;
     case D_Closure:
-      closureMark(obj);
+      objMark_generic(obj, CLO_PARAMS_OFS, CLO_SIZE);
       break;
     case D_Exn: {
-      //exnMark(obj);
         Object payload = {objGetData(obj, EXN_PAYLOAD_OFS)};
         objMark(payload);
       }
       break;
-    case D_Hash:
-      hashMark(obj);
+    case D_Hash: {
+        Object buckets = {objGetData(obj, HASH_BUCKETS_OFS)};
+        objMark(buckets);
+      }
       break;
     case D_List:
-      listMark(obj);
+      objMark_generic(obj, LST_FIRST_OFS, 2);
       break;
-    case D_Queue:
-      queueMark(obj);
+    case D_Queue: {
+        Object head = {objGetData(obj, Q_HEAD_OFS)};
+        objMark(head);
+      }
       break;
-    case D_Set:
-      setMark(obj);
+    case D_Set: {
+        Object buckets = {objGetData(obj, SET_BUCKETS_OFS)};
+        objMark(buckets);
+      }
       break;
     case E_Abstr:
-      abstrMark(obj);
+      objMark_generic(obj, ABSTR_PARAMS_OFS, ABSTR_SIZE);
       break;
     case E_App:
-      appMark(obj);
+      objMark_generic(obj, APP_ABSTR_OFS, APP_SIZE);
       break;
     case E_If:
-      ifMark(obj);
+      objMark_generic(obj, IF_COND_OFS, IF_SIZE);
       break;
     case E_Let:
-      letMark(obj);
+      objMark_generic(obj, LET_BINDINGS_OFS, 1);
       break;
     case E_LetIn:
-      letInMark(obj);
+      objMark_generic(obj, LETIN_BINDINGS_OFS, LETIN_SIZE);
       break;
     case E_Seq:
-      seqMark(obj);
+      objMark_generic(obj, SEQ_EXPRS_OFS, 1);
       break;
     case E_Throw:
-      throwMark(obj);
+      objMark_generic(obj, THR_PAYLOAD_OFS, 1);
       break;
     default:
       ;  /* do nothing */

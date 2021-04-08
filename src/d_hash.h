@@ -15,7 +15,6 @@ bool hashEqual(Object hash, Object other);
 Object hashEval(Object hash, Thread* thd);
 void hashFreeVars(Object hash, Object freeVarSet);
 Object hashGet(Object hash, Object key);
-void hashMark(Object hash);
 void hashPut(Object hash, Object key, Object val);
 void hashShow(Object hash, FILE* stream);
 

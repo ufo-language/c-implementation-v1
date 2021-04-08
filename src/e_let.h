@@ -10,7 +10,6 @@ Object letNew(Object bindings);
 
 Object letEval(Object let, Thread* thd);
 void letFreeVars(Object let, Object freeVarSet);
-void letMark(Object let);
 void letShow(Object let, FILE* stream);
 
 #endif

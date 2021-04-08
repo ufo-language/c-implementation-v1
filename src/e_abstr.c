@@ -65,16 +65,6 @@ void abstrSetNext(Object abstr, Object nextRule) {
   objSetData(abstr, ABSTR_NEXT_OFS, nextRule.a);
 }
 
-void abstrMark(Object abstr) {
-  Object params = {objGetData(abstr, ABSTR_PARAMS_OFS)};
-  Object body = {objGetData(abstr, ABSTR_BODY_OFS)};
-  Object nextRule = {objGetData(abstr, ABSTR_NEXT_OFS)};
-  objMark(params);
-  objMark(body);
-  if (nextRule.a != nullObj.a)
-    objMark(nextRule);
-}
-
 void abstrShow(Object abstr, FILE* stream) {
   abstrShow_aux(abstr, "fun", stream);
 }

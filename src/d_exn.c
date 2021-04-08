@@ -23,10 +23,6 @@ Object exnEval(Object exn, Thread* thd) {
   return exnNew(payloadVal);
 }
 
-void exnMark(Object exn) {
-  objMark(exnGetPayload(exn));
-}
-
 Object exnGetPayload(Object exn) {
   Object payload = {objGetData(exn, 0)};
   return payload;

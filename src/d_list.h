@@ -24,7 +24,6 @@ bool listIsEmpty(Object list);
 /* This expects the list to be a list of bindings */
 Object listLocate(Object list, Object key);
 
-void listMark(Object list);
 Object listMatch(Object list, Object other, Object bindingList);
 Object listReverse(Object list);
 void listSetFirst(Object list, Object obj);

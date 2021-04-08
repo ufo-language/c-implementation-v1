@@ -10,7 +10,6 @@ Object seqNew(Object lst);
 
 Object seqEval(Object seq, Thread* thd);
 void seqFreeVars(Object seq, Object freeVarSet);
-void seqMark(Object seq);
 void seqShow(Object seq, FILE* stream);
 
 #endif

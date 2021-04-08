@@ -96,14 +96,6 @@ Object listLocate(Object list, Object key) {
   return nullObj;
 }
 
-void listMark(Object list) {
-  if (listIsEmpty(list)) {
-    return;
-  }
-  objMark(listGetFirst(list));
-  objMark(listGetRest(list));
-}
-
 Object listMatch(Object list, Object other, Object bindingList) {
   if (listIsEmpty(list)) {
     return listIsEmpty(other) ? bindingList : nullObj;

@@ -8,9 +8,9 @@
 #include "globals.h"
 #include "object.h"
 
-static void _resize(Object hash);
-
 Object hashLocate(Object hash, Object key, Word* bucketNum);
+
+static void _resize(Object hash);
 
 /*------------------------------------------------------------------*/
 Word hashCount(Object hash) {
@@ -134,12 +134,6 @@ Object hashLocate(Object hash, Object key, Word* bucketNum) {
 }
 
 /*------------------------------------------------------------------*/
-void hashMark(Object hash) {
-  Object buckets = {objGetData(hash, 2)};
-  objMark(buckets);
-}
-
-/*------------------------------------------------------------------*/
 Object hashNew() {
   Word nBuckets = 8;
   Word loadingFactorCapacity = (nBuckets >> 1) + (nBuckets >> 2);
@@ -209,6 +203,7 @@ static void _resize(Object hash) {
   arrayFill(bucketsNew, EMPTY_LIST);
   /* update hash properties */
   objSetData(hash, HASH_NBINDINGS_OFS, 0);
+  /* a loading factor of 0.75 triggers a resize */
   Word loadingFactorCapacityNew = (nBucketsNew >> 1) + (nBucketsNew >> 2);
   objSetData(hash, HASH_LOADINGFACTOR_OFS, loadingFactorCapacityNew);
   objSetData(hash, HASH_BUCKETS_OFS, bucketsNew.a);
