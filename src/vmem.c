@@ -9,8 +9,13 @@
 
 static FILE* pageFile = 0;
 
+/* This is a map from in-memory page (the array index) to on-disk page
+   (the array value). */
 byte vmemPageMap[N_PAGES];
+
+/* These are the actual in-memory pages. */
 Word vmemPageTable[N_PAGES][PAGE_SIZE];
+
 bool vmemIsDirty[N_PAGES];
 
 /* Returns the total number of words provided by the virtual memory
@@ -61,21 +66,25 @@ void pageFileWrite(uint pageIndex) {
 /* Returns an in-memory page. If the actual requested page is not in
    memory, a page fault occurs and the page is loaded from the on-disk
    page file.*/
-Word* pageGet(uint pageNum) {
+uint pageGet(uint pageNum) {
   byte pageKey = pageNum / N_PAGES;
   uint pageIndex = pageNum % N_PAGES;
   if (vmemPageMap[pageIndex] != pageKey) {
     /* page fault */
-    pageFileWrite(pageIndex);
+    if (vmemIsDirty[pageIndex]) {
+      pageFileWrite(pageIndex);
+    }
     pageFileRead(pageNum, pageKey, pageIndex);
+    vmemIsDirty[pageIndex] = false;
   }
-  return vmemPageTable[pageIndex];
+  return pageIndex;
 }
 
 /* Gets a word from memory. The address must fall within the ramge of
    all of virtual memory.*/
 Word vmemGet(Address addr) {
-  Word* page = pageGet(addr / PAGE_SIZE);
+  uint pageIndex = pageGet(addr / PAGE_SIZE);
+  Word* page = vmemPageTable[pageIndex];
   Word w = page[addr % PAGE_SIZE];
   return w;
 }
@@ -86,16 +95,20 @@ void vmemSet(Address addr, Word value) {
   if (addr == 0) {
     fprintf(stderr, "vmemSet ERROR: attempt to write to address 0, value = %d\n", value);
   }
-  Word* page = pageGet(addr / PAGE_SIZE);
+  uint pageIndex = pageGet(addr / PAGE_SIZE);
+  vmemIsDirty[pageIndex] = true;
+  Word* page = vmemPageTable[pageIndex];
   page[addr % PAGE_SIZE] = value;
 }
 
 void vmemInc(Address addr) {
-  Word* page = pageGet(addr / PAGE_SIZE);
+  uint pageIndex = pageGet(addr / PAGE_SIZE);
+  Word* page = vmemPageTable[pageIndex];
   page[addr % PAGE_SIZE]++;
 }
 
 void vmemDec(Address addr) {
-  Word* page = pageGet(addr / PAGE_SIZE);
+  uint pageIndex = pageGet(addr / PAGE_SIZE);
+  Word* page = vmemPageTable[pageIndex];
   page[addr % PAGE_SIZE]--;
 }
