@@ -4,13 +4,16 @@
 
 #include "../src/d_array.h"
 #include "../src/d_binding.h"
+#include "../src/d_exn.h"
 #include "../src/d_int.h"
 #include "../src/delegate.h"
 #include "../src/globals.h"
 #include "../src/mem.h"
 
-static void test_objMarkDelegateOnArray();
-static void test_objMarkDelegateOnBinding();
+static void test_objMarkOnArray();
+static void test_objMarkOnBinding();
+static void test_objMarkOnClosure();
+static void test_objMarkOnExn();
 
 bool _isMarked(RawBlock blk);
 RawBlock objToRawBlock(Object obj);
@@ -18,8 +21,10 @@ RawBlock objToRawBlock(Object obj);
 /* List the unit tests to run here ---------------------------------*/
 
 static TestEntry testEntries[] = {
-  {"test_objMarkDelegateOnArray", test_objMarkDelegateOnArray},
-  {"test_objMarkDelegateOnBinding", test_objMarkDelegateOnBinding},
+  {"test_objMarkOnArray", test_objMarkOnArray},
+  {"test_objMarkOnBinding", test_objMarkOnBinding},
+  {"test_objMarkOnClosure", test_objMarkOnClosure},
+  {"test_objMarkOnExn", test_objMarkOnExn},
   {0, 0}
 };
 
@@ -44,7 +49,7 @@ void test_delegate() {
 
 void objMark_generic(Object obj, Word from, Word to);
 
-void test_objMarkDelegateOnArray() {
+void test_objMarkOnArray() {
   Object i100 = intNew(100);
   Object i200 = intNew(200);
   Object ary = arrayNew(2);
@@ -62,7 +67,7 @@ void test_objMarkDelegateOnArray() {
   EXPECT_T(_isMarked(objToRawBlock(ary)));
 }
 
-void test_objMarkDelegateOnBinding() {
+void test_objMarkOnBinding() {
   Object i100 = intNew(100);
   Object i200 = intNew(200);
   Object bnd = bindingNew(i100, i200);
@@ -76,4 +81,45 @@ void test_objMarkDelegateOnBinding() {
   EXPECT_T(_isMarked(objToRawBlock(i100)));
   EXPECT_T(_isMarked(objToRawBlock(i200)));
   EXPECT_T(_isMarked(objToRawBlock(bnd)));
+}
+
+void test_objMarkOnClosure() {
+  Object i100 = intNew(100);
+  Object i200 = intNew(200);
+  Object i300 = intNew(300);
+  Object exn = exnNew(i200);
+
+  EXPECT_F(_isMarked(objToRawBlock(i100)));
+  EXPECT_F(_isMarked(objToRawBlock(i200)));
+  EXPECT_F(_isMarked(objToRawBlock(i300)));
+  EXPECT_F(_isMarked(objToRawBlock(exn)));
+
+  /* exceptions don't use objMark_generic, but test exception marking anyway */
+  objMark(exn);
+
+  EXPECT_F(_isMarked(objToRawBlock(i100)));
+  EXPECT_T(_isMarked(objToRawBlock(i200)));
+  EXPECT_F(_isMarked(objToRawBlock(i300)));
+  EXPECT_T(_isMarked(objToRawBlock(exn)));
+}
+
+void test_objMarkOnExn() {
+  /* allocate some adjacent objects */
+  Object i100 = intNew(100);
+  Object i200 = intNew(200);
+  Object i300 = intNew(300);
+  Object exn = exnNew(i200);
+
+  EXPECT_F(_isMarked(objToRawBlock(i100)));
+  EXPECT_F(_isMarked(objToRawBlock(i200)));
+  EXPECT_F(_isMarked(objToRawBlock(i300)));
+  EXPECT_F(_isMarked(objToRawBlock(exn)));
+
+  /* exceptions don't use objMark_generic, but test exception marking anyway */
+  objMark(exn);
+
+  EXPECT_F(_isMarked(objToRawBlock(i100)));
+  EXPECT_T(_isMarked(objToRawBlock(i200)));
+  EXPECT_F(_isMarked(objToRawBlock(i300)));
+  EXPECT_T(_isMarked(objToRawBlock(exn)));
 }

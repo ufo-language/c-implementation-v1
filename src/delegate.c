@@ -261,8 +261,11 @@ void objMark(Object obj) {
     case D_Closure:
       closureMark(obj);
       break;
-    case D_Exn:
-      exnMark(obj);
+    case D_Exn: {
+      //exnMark(obj);
+        Object payload = {objGetData(obj, EXN_PAYLOAD_OFS)};
+        objMark(payload);
+      }
       break;
     case D_Hash:
       hashMark(obj);

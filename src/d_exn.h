@@ -7,6 +7,8 @@
 #include "object.h"
 #include "thread.h"
 
+#define EXN_PAYLOAD_OFS 0
+
 Object exnNew(Object payload);
 
 bool exnEqual(Object exn, Object other);
