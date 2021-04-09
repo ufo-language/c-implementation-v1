@@ -96,7 +96,7 @@ void test_memAlloc() {
   EXPECT_EQ(expectedMaxMem, memGetNFreeWords());
   Word size1 = 16;
   Block blk1 = memAlloc(size1);
-  EXPECT_EQ(size1, memSizeOf(blk1));
+  EXPECT_EQ(size1, _getSize(memBlockToRawBlock(blk1)));
   RawBlock rawBlk1 = memBlockToRawBlock(blk1);
   EXPECT_EQ(0, memGetStatus(rawBlk1));
   expectedMaxMem -= size1 + MEMBLK_OVERHEAD;
@@ -105,7 +105,7 @@ void test_memAlloc() {
   Word size2 = 16;
   Block blk2 = memAlloc(size2);
   EXPECT_NE(blk1.a, blk2.a);
-  EXPECT_EQ(size2, memSizeOf(blk2));
+  EXPECT_EQ(size2, _getSize(memBlockToRawBlock(blk2)));
   RawBlock rawBlk2 = memBlockToRawBlock(blk2);
   EXPECT_EQ(0, memGetStatus(rawBlk2));
   expectedMaxMem -= size2 + MEMBLK_OVERHEAD;
@@ -138,12 +138,12 @@ void test_memFree2() {
   RawBlock rawBlk1 = memBlockToRawBlock(blk1);
   EXPECT_EQ(0, memGetStatus(rawBlk1));
 
-  Word blk1RawSize = memSizeOf(blk1) + MEMBLK_OVERHEAD;
+  Word blk1RawSize = _getSize(memBlockToRawBlock(blk1)) + MEMBLK_OVERHEAD;
   EXPECT_EQ(freeMem1 - blk1RawSize, memGetNFreeWords());
 
   Word size2 = 24;
   Block blk2 = memAlloc(size2);
-  Word blk2RawSize = memSizeOf(blk2) + MEMBLK_OVERHEAD;
+  Word blk2RawSize = _getSize(memBlockToRawBlock(blk2)) + MEMBLK_OVERHEAD;
 
   EXPECT_EQ(freeMem1 - blk1RawSize - blk2RawSize, memGetNFreeWords());
 

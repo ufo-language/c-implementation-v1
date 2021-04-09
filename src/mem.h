@@ -48,8 +48,6 @@ RawBlock memAddrToRawBlock(Address addr);
 Block memAlloc(Word nWords);
 void memFree(Block blk);
 
-Word memSizeOf(Block blk); // used only by test_mem
-
 /* non-user functions */
 void memStart();
 void memStop();

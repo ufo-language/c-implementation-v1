@@ -175,11 +175,6 @@ void memFreeRaw(RawBlock blk) {
 }
 
 /*------------------------------------------------------------------*/
-Word memSizeOf(Block blk) {
-  return vmemGet(memBlockToRawBlock(blk).a + MEMBLK_SIZE_OFFSET);
-}
-
-/*------------------------------------------------------------------*/
 void memShowBlock(RawBlock blk) {
   printf("@=%d, Sz=%d, P=%d, N=%d, Status=%d, nextAdj=%d\n",
     blk.a,
@@ -275,6 +270,7 @@ Word _getSize(RawBlock blk) {
 void _setSize(RawBlock blk, Word size) {
   vmemSet(blk.a + MEMBLK_SIZE_OFFSET, size);
   /* TODO instead of calling memSetStatus, inline the call to memSetStatus here */
+  /* TODO or make memSetStatus a macro? */
   memSetStatus(blk, size);
 }
 
