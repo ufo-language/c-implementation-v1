@@ -64,4 +64,7 @@ void memSetNext(RawBlock addr, RawBlock next);
 Word memGetStatus(RawBlock blk);
 void memSetStatus(RawBlock blk, Word status);
 
+/* used by d_array */
+Word memGetSize(RawBlock blk);
+
 #endif
