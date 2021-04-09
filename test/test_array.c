@@ -85,11 +85,6 @@ void test_arrayCount() {
   EXPECT_EQ(1, arrayCount(ary1));
   Object ary2 = arrayNew(2);
   EXPECT_EQ(2, arrayCount(ary2));
-
-  for (Word n=0; n<=200; n+=5) {
-    Object ary = arrayNew(n);
-    EXPECT_EQ(n, arrayCount(ary));
-  }
 }
 
 void test_arrayEqual() {
@@ -104,7 +99,7 @@ void test_arrayEqual() {
   EXPECT_F(arrayEqual(ary1a, ary0a));
   
   Object i100a = intNew(100);
-  EXPECT_F(objEqual(ary1a, i100a));
+  EXPECT_F(arrayEqual(ary1a, i100a));
   arraySet(ary1a, 0, i100a);
   EXPECT_F(arrayEqual(ary1a, ary1b));
   EXPECT_F(arrayEqual(ary1b, ary1a));

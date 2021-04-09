@@ -7,7 +7,8 @@
 #include "object.h"
 #include "thread.h"
 
-#define ARY_ELEMS_OFS 0
+#define ARY_NELEMS_OFS 0
+#define ARY_ELEMS_OFS 1
 
 Object arrayNew(Word size);
 

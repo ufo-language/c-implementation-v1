@@ -19,7 +19,9 @@ Object arrayNew(Word nElems) {
 }
 
 Word arrayCount(Object array) {
-  return objGetData(array, ARY_NELEMS_OFS);
+  //return objGetData(array, ARY_NELEMS_OFS);
+  RawBlock rawBlk = objToRawBlock(array);
+  
 }
 
 bool arrayEqual(Object array, Object other) {
