@@ -18,12 +18,14 @@ Word vmemPageTable[N_PAGES][PAGE_SIZE];
 
 bool vmemIsDirty[N_PAGES];
 
+/*------------------------------------------------------------------*/
 /* Returns the total number of words provided by the virtual memory
    system. */
 long vmemGetNWords() {
   return PAGE_SIZE * N_PAGES * N_KEYS;
 }
 
+/*------------------------------------------------------------------*/
 FILE* vmemStart() {
   if (pageFile) {
     fclose(pageFile);
@@ -39,10 +41,12 @@ FILE* vmemStart() {
   return pageFile;
 }
 
+/*------------------------------------------------------------------*/
 void vmemStop() {
   fclose(pageFile);
 }
 
+/*------------------------------------------------------------------*/
 /* Reads a page from the page file.
    pageNum = index of page/block in file
    pageKey = high bits of pageNum
@@ -56,6 +60,7 @@ void pageFileRead(uint pageNum, byte pageKey, uint pageIndex) {
   vmemPageMap[pageIndex] = pageKey;
 }
 
+/*------------------------------------------------------------------*/
 /* Writes a page to the page file. */
 void pageFileWrite(uint pageIndex) {
   uint pageFileIndex = vmemPageMap[pageIndex] * N_PAGES + pageIndex;
@@ -63,6 +68,7 @@ void pageFileWrite(uint pageIndex) {
   blockFileWrite(page, PAGE_SIZE * sizeof(Word), pageFileIndex, pageFile);
 }
 
+/*------------------------------------------------------------------*/
 /* Returns an in-memory page. If the actual requested page is not in
    memory, a page fault occurs and the page is loaded from the on-disk
    page file.*/
@@ -80,6 +86,7 @@ uint pageGet(uint pageNum) {
   return pageIndex;
 }
 
+/*------------------------------------------------------------------*/
 /* Gets a word from memory. The address must fall within the ramge of
    all of virtual memory.*/
 Word vmemGet(Address addr) {
@@ -89,9 +96,11 @@ Word vmemGet(Address addr) {
   return w;
 }
 
+/*------------------------------------------------------------------*/
 /* Sets the value of a word in memory. The address must fall within
    the range of all of virtual memory. */
 void vmemSet(Address addr, Word value) {
+  /* TODO remove this `if` after debugging? */
   if (addr == 0) {
     fprintf(stderr, "vmemSet ERROR: attempt to write to address 0, value = %d\n", value);
   }
@@ -101,12 +110,14 @@ void vmemSet(Address addr, Word value) {
   page[addr % PAGE_SIZE] = value;
 }
 
+/*------------------------------------------------------------------*/
 void vmemInc(Address addr) {
   uint pageIndex = pageGet(addr / PAGE_SIZE);
   Word* page = vmemPageTable[pageIndex];
   page[addr % PAGE_SIZE]++;
 }
 
+/*------------------------------------------------------------------*/
 void vmemDec(Address addr) {
   uint pageIndex = pageGet(addr / PAGE_SIZE);
   Word* page = vmemPageTable[pageIndex];

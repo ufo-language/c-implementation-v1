@@ -30,6 +30,7 @@
 #include "object.h"
 #include "vmem.h"
 
+/*------------------------------------------------------------------*/
 bool objBoolValue(Object obj) {
   ObjType objType = objGetType(obj);
   switch (objType) {
@@ -59,6 +60,7 @@ bool objBoolValue(Object obj) {
   }
 }
 
+/*------------------------------------------------------------------*/
 void objDisp(Object obj, FILE* stream) {
   switch (objGetType(obj)) {
     case D_String:
@@ -69,6 +71,7 @@ void objDisp(Object obj, FILE* stream) {
   }
 }
 
+/*------------------------------------------------------------------*/
 bool objEqual(Object obj1, Object obj2) {
   if (obj1.a == obj2.a) {
     return true;
@@ -112,6 +115,7 @@ bool objEqual(Object obj1, Object obj2) {
   return false;
 }
 
+/*------------------------------------------------------------------*/
 Object objEval(Object obj, Thread* thd) {
   switch (objGetType(obj)) {
     case D_Array:
@@ -150,6 +154,7 @@ Object objEval(Object obj, Thread* thd) {
   }
 }
 
+/*------------------------------------------------------------------*/
 void objFreeVars(Object obj, Object freeVarSet) {
   switch (objGetType(obj)) {
     case D_Array:
@@ -199,6 +204,7 @@ void objFreeVars(Object obj, Object freeVarSet) {
   }
 }
 
+/*------------------------------------------------------------------*/
 Word objHashCode(Object obj) {
   switch (objGetType(obj)) {
     /*case D_Nothing:
@@ -237,6 +243,7 @@ Word objHashCode(Object obj) {
   return obj.a;
 }
 
+/*------------------------------------------------------------------*/
 void objMark_generic(Object obj, Word start, Word count) {
   Word to = start + count;
   for (Word n=start; n<to; n++) {
@@ -245,6 +252,7 @@ void objMark_generic(Object obj, Word start, Word count) {
   }
 }
 
+/*------------------------------------------------------------------*/
 void objMark(Object obj) {
   if (gcIsMarked(obj)) {
     return;
@@ -309,6 +317,7 @@ void objMark(Object obj) {
   }
 }
 
+/*------------------------------------------------------------------*/
 Object objMatch(Object obj, Object other, Object bindingList) {
   ObjType objType1 = objGetType(obj);
   if (objType1 == E_Ident) {
@@ -336,6 +345,7 @@ Object objMatch(Object obj, Object other, Object bindingList) {
 Word _getSize(RawBlock blk);
 RawBlock objToRawBlock(Object obj);
 
+/*------------------------------------------------------------------*/
 void objShow(Object obj, FILE* stream) {
   switch (objGetType(obj)) {
     case D_Nothing:

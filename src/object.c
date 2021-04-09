@@ -56,9 +56,6 @@ void objSetType(Object obj, ObjType type);
 
 /* Object functions ------------------------------------------------*/
 
-/* an object's size overhead is 1: one word for the object's type */
-#define OBJ_OVERHEAD 1
-
 Object objRawBlockToObj(RawBlock rawBlk) {
   Block blk = memRawBlockToBlock(rawBlk);
   Object obj = {blk.a};

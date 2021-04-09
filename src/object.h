@@ -42,6 +42,9 @@ typedef struct {
 
 extern Object nullObj;
 
+/* an object's size overhead is 1: one word for the object's type */
+#define OBJ_OVERHEAD 1
+
 /* function prototypes ---------------------------------------------*/
 
 /* pointer conversions */
