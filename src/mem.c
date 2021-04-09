@@ -1,8 +1,8 @@
-#include <assert.h>
+#include <assert.h>  // TODO remove after debugging
 #include <stdio.h>
 
 #include "mem.h"
-#include "stacktrace.h"
+#include "stacktrace.h"  // TODO remove after debugging
 #include "vmem.h"
 
 /* TODO these three variables should be static */
@@ -198,7 +198,7 @@ void memDump() {
   printf("  |  blocks     %d\n", _memNFreeBlocks);
   printf("  |  free words %d\n", _memNFreeWords);
   RawBlock blk = _memFreeRoot;
-  while (blk.a && n < 15) { // shows a maximum of 15 blocks
+  while (blk.a && n < 15) { /* shows a maximum of 15 blocks */
     printf("  | %d. ", n++);
     memShowBlock(blk);
     blk = memGetNext(blk);

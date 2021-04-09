@@ -201,29 +201,29 @@ void objFreeVars(Object obj, Object freeVarSet) {
 
 Word objHashCode(Object obj) {
   switch (objGetType(obj)) {
-    //case D_Nothing:
-    //  nothingHash(stream);
-    //  break;
-    //case D_Array:
-    //  arrayHash(obj, stream);
-    //  break;
-    //case D_Binding:
-    //  bindingHash(obj, stream);
-    //  break;
-    //case D_Bool:
-    //  boolHash(obj, stream);
-    //  break;
-    //case D_Exn:
-    //  exnHash(obj, stream);
-    //  break;
+    /*case D_Nothing:
+      nothingHash(stream);
+      break;*/
+    /*case D_Array:
+      arrayHash(obj, stream);
+      break;*/
+    /*case D_Binding:
+      bindingHash(obj, stream);
+      break;*/
+    /*case D_Bool:
+      boolHash(obj, stream);
+      break;*/
+    /*case D_Exn:
+      exnHash(obj, stream);
+      break;*/
     case D_Int:
       return intHash(obj);
-    //case D_List:
-    //  listHash(obj, stream);
-    //  break;
-    //case D_Real:
-    //  realHash(obj, stream);
-    //  break;
+    /*case D_List:
+      listHash(obj, stream);
+      break;*/
+    /*case D_Real:
+      realHash(obj, stream);
+      break;*/
     case D_String:
       return stringHash(obj);
     case D_Symbol:
@@ -238,11 +238,9 @@ Word objHashCode(Object obj) {
 }
 
 void objMark_generic(Object obj, Word start, Word count) {
-  //gcSetObjMarkedFlag(obj);
   Word to = start + count;
   for (Word n=start; n<to; n++) {
     Object obj1 = {objGetData(obj, n)};
-    //gcSetObjMarkedFlag(obj1);
     objMark(obj1);
   }
 }
