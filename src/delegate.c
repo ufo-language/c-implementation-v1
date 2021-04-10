@@ -207,6 +207,7 @@ void objFreeVars(Object obj, Object freeVarSet) {
 /*------------------------------------------------------------------*/
 Word objHashCode(Object obj) {
   switch (objGetType(obj)) {
+    /* TODO finish these cases */
     /*case D_Nothing:
       nothingHash(stream);
       break;*/
