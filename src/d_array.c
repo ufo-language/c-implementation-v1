@@ -9,6 +9,7 @@
 #include "object.h"
 #include "thread.h"
 
+/*------------------------------------------------------------------*/
 Object arrayNew(Word nElems) {
   Object array = objAlloc(D_Array, nElems + 1);
   objSetData(array, ARY_NELEMS_OFS, nElems);
@@ -18,10 +19,12 @@ Object arrayNew(Word nElems) {
   return array;
 }
 
+/*------------------------------------------------------------------*/
 Word arrayCount(Object array) {
   return objGetData(array, ARY_NELEMS_OFS);
 }
 
+/*------------------------------------------------------------------*/
 bool arrayEqual(Object array, Object other) {
   Word len1 = arrayCount(array);
   Word len2 = arrayCount(other);
@@ -38,6 +41,7 @@ bool arrayEqual(Object array, Object other) {
   return true;
 }
 
+/*------------------------------------------------------------------*/
 Object arrayEval(Object array, Thread* thd) {
   Word nElems = arrayCount(array);
   Object newArray = arrayNew(nElems);
@@ -49,6 +53,7 @@ Object arrayEval(Object array, Thread* thd) {
   return newArray;
 }
 
+/*------------------------------------------------------------------*/
 void arrayFill(Object array, Object elem) {
   Word count = arrayCount(array);
   for (Word n=0; n<count; n++) {
@@ -56,6 +61,7 @@ void arrayFill(Object array, Object elem) {
   }
 }
 
+/*------------------------------------------------------------------*/
 void arrayFreeVars(Object array, Object freeVarSet) {
   Word nElems = arrayCount(array);
   for (Word n=0; n<nElems; n++) {
@@ -64,6 +70,7 @@ void arrayFreeVars(Object array, Object freeVarSet) {
   }
 }
 
+/*------------------------------------------------------------------*/
 Object arrayGet(Object array, Word index) {
   Word nElems = arrayCount(array);
   if (index < nElems) {
@@ -78,6 +85,7 @@ Object arrayGet(Object array, Word index) {
   return nullObj;
 }
 
+/*------------------------------------------------------------------*/
 Object arrayMatch(Object array, Object other, Object bindingList) {
   Word nElems1 = arrayCount(array);
   Word nElems2 = arrayCount(other);
@@ -95,6 +103,7 @@ Object arrayMatch(Object array, Object other, Object bindingList) {
   return bindingList;
 }
 
+/*------------------------------------------------------------------*/
 void arraySet(Object array, Word index, Object obj) {
   Word nElems = arrayCount(array);
   if (index < nElems) {
@@ -108,6 +117,7 @@ void arraySet(Object array, Word index, Object obj) {
   fprintf(stderr, "  index requested: %d\n", index);
 }
 
+/*------------------------------------------------------------------*/
 void arrayShow(Object array, FILE* stream) {
   fputc('{', stream);
   Word size = arrayCount(array);
