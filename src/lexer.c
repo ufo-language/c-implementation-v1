@@ -31,12 +31,16 @@ char cDisp(char c) {
 
 Transition* findTransition(Transition** syntax, StateName stateName, char c) {
   Transition* state = syntax[stateName];
-  /*printf("State: %s\n", S_NAMES[stateName]);*/
+#if 0
+  printf("State: %s\n", S_NAMES[stateName]);
+#endif
   for (int n=0;; n++) {
     Transition* transition = &state[n];
     char from = transition->from;
     char to = transition->to;
-    /*printf("  comparing %c (%d) to %c - %c\n", cDisp(c), c, cDisp(from), cDisp(to));*/
+#if 0
+    printf("  comparing %c (%d) to %c - %c\n", cDisp(c), c, cDisp(from), cDisp(to));
+#endif
     if (from == C_ANY) {
       return transition;
     }
@@ -46,10 +50,9 @@ Transition* findTransition(Transition** syntax, StateName stateName, char c) {
   }
 }
 
-void lexInit(LexerState* lexerState, Transition** syntax, /*char* inputString*/ Object inputString) {
+void lexInit(LexerState* lexerState, Transition** syntax, Object inputString) {
   lexerState->syntax = syntax;
   lexerState->inputString = inputString;
-  /*lexerState->inputLen = strlen(inputString);*/
   lexerState->inputLen = stringCount(inputString);
   lexerState->pos = 0;
   lexerState->line = 1;
@@ -74,7 +77,6 @@ bool lexToken(LexerState* lexerState, Token* token) {
   int lexemeIndex = 0;
   bool contin = true;
   while (contin && (lexerState->pos <= lexerState->inputLen)) {
-    //char c = lexerState->inputString[lexerState->pos];
     Object inputString = lexerState->inputString;
     char c = stringGetChar(inputString, (Word)lexerState->pos);
     Transition* transition = findTransition(lexerState->syntax, stateName, c);
@@ -125,6 +127,9 @@ bool lexToken(LexerState* lexerState, Token* token) {
       if (tokenType == T_WORD) {
         if (isIn(token->lexeme, RESERVED_WORDS)) {
           tokenType = T_RESERVED;
+        }
+        else if(isIn(token->lexeme, BOOL_WORDS)) {
+          tokenType = T_BOOL;
         }
         else {
           tokenType = T_IDENT;

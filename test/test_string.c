@@ -9,12 +9,14 @@
 
 void test_stringNew();
 void test_stringEqual();
+void test_stringBounds();
 
 /* List the unit tests to run here ---------------------------------*/
 
 static TestEntry testEntries[] = {
   {"test_stringNew", test_stringNew},
   {"test_stringEqual", test_stringEqual},
+  {"test_stringBounds", test_stringBounds},
   {0, 0}
 };
 
@@ -66,4 +68,14 @@ void test_stringEqual() {
   EXPECT_F(stringEqual(str1, str3));
   EXPECT_F(stringEqual(str2, str3));
   EXPECT_F(stringEqual(str3, str1));
+}
+
+void test_stringBounds() {
+  char* s = "Abcd";
+  Object str = stringNew(s);
+  int nChars = strlen(s);
+  for (int n=0; n<nChars; n++) {
+    EXPECT_EQ(s[n], stringGetChar(str, n));
+  }
+  EXPECT_EQ(0, stringGetChar(str, nChars));
 }

@@ -3,12 +3,14 @@
 #include "test.h"
 
 #include "../src/d_array.h"
+#include "../src/d_bool.h"
 #include "../src/d_int.h"
 #include "../src/d_queue.h"
 #include "../src/d_real.h"
 #include "../src/d_string.h"
 #include "../src/d_symbol.h"
 #include "../src/delegate.h"
+#include "../src/e_ident.h"
 #include "../src/globals.h"
 #include "../src/lexer.h"
 #include "../src/lexer_obj.h"
@@ -17,6 +19,13 @@
 static void test_lexInt1();
 static void test_lexInt2();
 static void test_lexReal();
+static void test_lexIdent();
+static void test_lexReserved();
+static void test_lexString();
+static void test_lexOper();
+static void test_lexSpecial();
+static void test_lexBool();
+static void test_lexMultiple();
 
 /* List the unit tests to run here ---------------------------------*/
 
@@ -24,6 +33,13 @@ static TestEntry testEntries[] = {
   {"test_lexInt1", test_lexInt1},
   {"test_lexInt2", test_lexInt2},
   {"test_lexReal", test_lexReal},
+  {"test_lexIdent", test_lexIdent},
+  {"test_lexReserved", test_lexReserved},
+  {"test_lexString", test_lexString},
+  {"test_lexOper", test_lexOper},
+  {"test_lexSpecial", test_lexSpecial},
+  {"test_lexBool", test_lexBool},
+  {"test_lexMultiple", test_lexMultiple},
   {0, 0}
 };
 
@@ -52,13 +68,13 @@ void test_lexInt1() {
   Object tokenQ = lex(inputStr);
   ASSERT_EQ(2, queueCount(tokenQ));
   Object intTok = queueDeq(tokenQ);
-  Object intTokSym = symbolNew("Int");
+  Object intTokSym = symbolNew(T_NAMES[T_INT]);
   Object intTokVal = intNew(123);
   ASSERT_NE(nullObj.a, intTok.a);
   EXPECT_T(objEqual(intTokSym, arrayGet(intTok, 0)));
   EXPECT_T(objEqual(intTokVal, arrayGet(intTok, 1)));
   Object eoiTok = queueDeq(tokenQ);
-  Object eoiTokSym = symbolNew("EOI");
+  Object eoiTokSym = symbolNew(T_NAMES[T_EOI]);
   ASSERT_NE(nullObj.a, eoiTok.a);
   EXPECT_T(objEqual(eoiTokSym, arrayGet(eoiTok, 0)));
 }
@@ -70,7 +86,7 @@ void test_lexInt2() {
   ASSERT_EQ(3, queueCount(tokenQ));
 
   Object intTok1 = queueDeq(tokenQ);
-  Object intTokSym = symbolNew("Int");
+  Object intTokSym = symbolNew(T_NAMES[T_INT]);
   Object intTokVal1 = intNew(123);
   ASSERT_NE(nullObj.a, intTok1.a);
   EXPECT_T(objEqual(intTokSym, arrayGet(intTok1, 0)));
@@ -83,7 +99,7 @@ void test_lexInt2() {
   EXPECT_T(objEqual(intTokVal2, arrayGet(intTok2, 1)));
 
   Object eoiTok = queueDeq(tokenQ);
-  Object eoiTokSym = symbolNew("EOI");
+  Object eoiTokSym = symbolNew(T_NAMES[T_EOI]);
   ASSERT_NE(nullObj.a, eoiTok.a);
   EXPECT_T(objEqual(eoiTokSym, arrayGet(eoiTok, 0)));
 }
@@ -92,17 +108,186 @@ void test_lexReal() {
   char* input = "123.456";
   Object inputStr = stringNew(input);
   Object tokenQ = lex(inputStr);
-  printf("test_lexReal tokens = "); objShow(tokenQ, stdout); printf("\n");
   ASSERT_EQ(2, queueCount(tokenQ));
   Object realTok = queueDeq(tokenQ);
-  Object realTokSym = symbolNew("Real");
+  Object realTokSym = symbolNew(T_NAMES[T_REAL]);
   Object realTokVal = realNew(123.456);
   ASSERT_NE(nullObj.a, realTok.a);
   EXPECT_T(objEqual(realTokSym, arrayGet(realTok, 0)));
   EXPECT_T(objEqual(realTokVal, arrayGet(realTok, 1)));
   Object eoiTok = queueDeq(tokenQ);
-  Object eoiTokSym = symbolNew("EOI");
+  Object eoiTokSym = symbolNew(T_NAMES[T_EOI]);
   ASSERT_NE(nullObj.a, eoiTok.a);
   EXPECT_T(objEqual(eoiTokSym, arrayGet(eoiTok, 0)));
 }
 
+void test_lexIdent() {
+  char* input = "abc";
+  Object inputStr = stringNew(input);
+  Object tokenQ = lex(inputStr);
+  ASSERT_EQ(2, queueCount(tokenQ));
+  Object identTok = queueDeq(tokenQ);
+  Object identTokSym = symbolNew(T_NAMES[T_IDENT]);
+  Object identTokVal = identNew(input);
+  ASSERT_NE(nullObj.a, identTok.a);
+  EXPECT_T(objEqual(identTokSym, arrayGet(identTok, 0)));
+  EXPECT_T(objEqual(identTokVal, arrayGet(identTok, 1)));
+  Object eoiTok = queueDeq(tokenQ);
+  Object eoiTokSym = symbolNew(T_NAMES[T_EOI]);
+  ASSERT_NE(nullObj.a, eoiTok.a);
+  EXPECT_T(objEqual(eoiTokSym, arrayGet(eoiTok, 0)));
+}
+
+void test_lexReserved() {
+  char* input = "end";
+  Object inputStr = stringNew(input);
+  Object tokenQ = lex(inputStr);
+  ASSERT_EQ(2, queueCount(tokenQ));
+  Object reservedTok = queueDeq(tokenQ);
+  Object reservedTokSym = symbolNew(T_NAMES[T_RESERVED]);
+  Object reservedTokVal = stringNew(input);
+  ASSERT_NE(nullObj.a, reservedTok.a);
+  EXPECT_T(objEqual(reservedTokSym, arrayGet(reservedTok, 0)));
+  EXPECT_T(objEqual(reservedTokVal, arrayGet(reservedTok, 1)));
+  Object eoiTok = queueDeq(tokenQ);
+  Object eoiTokSym = symbolNew(T_NAMES[T_EOI]);
+  ASSERT_NE(nullObj.a, eoiTok.a);
+  EXPECT_T(objEqual(eoiTokSym, arrayGet(eoiTok, 0)));
+}
+
+void test_lexString() {
+  char* input = "\"hello, world!\"";
+  char* tokenValue = "hello, world!";
+  Object inputStr = stringNew(input);
+  Object tokenQ = lex(inputStr);
+  ASSERT_EQ(2, queueCount(tokenQ));
+  Object stringTok = queueDeq(tokenQ);
+  Object stringTokSym = symbolNew(T_NAMES[T_STRING]);
+  Object stringTokVal = stringNew(tokenValue);
+  ASSERT_NE(nullObj.a, stringTok.a);
+  EXPECT_T(objEqual(stringTokSym, arrayGet(stringTok, 0)));
+  EXPECT_T(objEqual(stringTokVal, arrayGet(stringTok, 1)));
+  Object eoiTok = queueDeq(tokenQ);
+  Object eoiTokSym = symbolNew(T_NAMES[T_EOI]);
+  ASSERT_NE(nullObj.a, eoiTok.a);
+  EXPECT_T(objEqual(eoiTokSym, arrayGet(eoiTok, 0)));
+}
+
+void test_lexOper() {
+  char* input = "++";
+  Object inputStr = stringNew(input);
+  Object tokenQ = lex(inputStr);
+  ASSERT_EQ(2, queueCount(tokenQ));
+  Object operTok = queueDeq(tokenQ);
+  Object operTokSym = symbolNew(T_NAMES[T_OPER]);
+  Object operTokVal = identNew(input);
+  ASSERT_NE(nullObj.a, operTok.a);
+  EXPECT_T(objEqual(operTokSym, arrayGet(operTok, 0)));
+  EXPECT_T(objEqual(operTokVal, arrayGet(operTok, 1)));
+  Object eoiTok = queueDeq(tokenQ);
+  Object eoiTokSym = symbolNew(T_NAMES[T_EOI]);
+  ASSERT_NE(nullObj.a, eoiTok.a);
+  EXPECT_T(objEqual(eoiTokSym, arrayGet(eoiTok, 0)));
+}
+
+void test_lexSpecial() {
+  char* input = "(";
+  Object inputStr = stringNew(input);
+  Object tokenQ = lex(inputStr);
+  ASSERT_EQ(2, queueCount(tokenQ));
+  Object specialTok = queueDeq(tokenQ);
+  Object specialTokSym = symbolNew(T_NAMES[T_SPECIAL]);
+  Object specialTokVal = stringNew(input);
+  ASSERT_NE(nullObj.a, specialTok.a);
+  EXPECT_T(objEqual(specialTokSym, arrayGet(specialTok, 0)));
+  EXPECT_T(objEqual(specialTokVal, arrayGet(specialTok, 1)));
+  Object eoiTok = queueDeq(tokenQ);
+  Object eoiTokSym = symbolNew(T_NAMES[T_EOI]);
+  ASSERT_NE(nullObj.a, eoiTok.a);
+  EXPECT_T(objEqual(eoiTokSym, arrayGet(eoiTok, 0)));
+}
+
+void test_lexBool() {
+  char* input = "true";
+  Object inputStr = stringNew(input);
+  Object tokenQ = lex(inputStr);
+  ASSERT_EQ(2, queueCount(tokenQ));
+  Object boolTok = queueDeq(tokenQ);
+  Object boolTokSym = symbolNew(T_NAMES[T_BOOL]);
+  Object boolTokVal = boolNew(true);
+  ASSERT_NE(nullObj.a, boolTok.a);
+  EXPECT_T(objEqual(boolTokSym, arrayGet(boolTok, 0)));
+  EXPECT_T(objEqual(boolTokVal, arrayGet(boolTok, 1)));
+  Object eoiTok = queueDeq(tokenQ);
+  Object eoiTokSym = symbolNew(T_NAMES[T_EOI]);
+  ASSERT_NE(nullObj.a, eoiTok.a);
+  EXPECT_T(objEqual(eoiTokSym, arrayGet(eoiTok, 0)));
+}
+
+void test_lexMultiple() {
+  char* input = "123 45.6 abc end false \"Hello\" ; ++";
+  Object inputStr = stringNew(input);
+  Object tokenQ = lex(inputStr);
+  ASSERT_EQ(9, queueCount(tokenQ));
+
+  Object tok = queueDeq(tokenQ);
+  Object tokSym = symbolNew(T_NAMES[T_INT]);
+  Object tokVal = intNew(123);
+  ASSERT_NE(nullObj.a, tok.a);
+  EXPECT_T(objEqual(tokSym, arrayGet(tok, 0)));
+  EXPECT_T(objEqual(tokVal, arrayGet(tok, 1)));
+
+  tok = queueDeq(tokenQ);
+  tokSym = symbolNew(T_NAMES[T_REAL]);
+  tokVal = realNew(45.6);
+  ASSERT_NE(nullObj.a, tok.a);
+  EXPECT_T(objEqual(tokSym, arrayGet(tok, 0)));
+  EXPECT_T(objEqual(tokVal, arrayGet(tok, 1)));
+
+  tok = queueDeq(tokenQ);
+  tokSym = symbolNew(T_NAMES[T_IDENT]);
+  tokVal = identNew("abc");
+  ASSERT_NE(nullObj.a, tok.a);
+  EXPECT_T(objEqual(tokSym, arrayGet(tok, 0)));
+  EXPECT_T(objEqual(tokVal, arrayGet(tok, 1)));
+
+  tok = queueDeq(tokenQ);
+  tokSym = symbolNew(T_NAMES[T_RESERVED]);
+  tokVal = stringNew("end");
+  ASSERT_NE(nullObj.a, tok.a);
+  EXPECT_T(objEqual(tokSym, arrayGet(tok, 0)));
+  EXPECT_T(objEqual(tokVal, arrayGet(tok, 1)));
+
+  tok = queueDeq(tokenQ);
+  tokSym = symbolNew(T_NAMES[T_BOOL]);
+  tokVal = boolNew(false);
+  ASSERT_NE(nullObj.a, tok.a);
+  EXPECT_T(objEqual(tokSym, arrayGet(tok, 0)));
+  EXPECT_T(objEqual(tokVal, arrayGet(tok, 1)));
+
+  tok = queueDeq(tokenQ);
+  tokSym = symbolNew(T_NAMES[T_STRING]);
+  tokVal = stringNew("Hello");
+  ASSERT_NE(nullObj.a, tok.a);
+  EXPECT_T(objEqual(tokSym, arrayGet(tok, 0)));
+  EXPECT_T(objEqual(tokVal, arrayGet(tok, 1)));
+
+  tok = queueDeq(tokenQ);
+  tokSym = symbolNew(T_NAMES[T_SPECIAL]);
+  tokVal = stringNew(";");
+  ASSERT_NE(nullObj.a, tok.a);
+  EXPECT_T(objEqual(tokSym, arrayGet(tok, 0)));
+  EXPECT_T(objEqual(tokVal, arrayGet(tok, 1)));
+
+  tok = queueDeq(tokenQ);
+  tokSym = symbolNew(T_NAMES[T_OPER]);
+  tokVal = identNew("++");
+  ASSERT_NE(nullObj.a, tok.a);
+  EXPECT_T(objEqual(tokSym, arrayGet(tok, 0)));
+  EXPECT_T(objEqual(tokVal, arrayGet(tok, 1)));
+
+  tok = queueDeq(tokenQ);
+  tokSym = symbolNew(T_NAMES[T_EOI]);
+  ASSERT_NE(nullObj.a, tok.a);
+  EXPECT_T(objEqual(tokSym, arrayGet(tok, 0)));
+}

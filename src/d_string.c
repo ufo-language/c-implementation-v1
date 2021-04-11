@@ -42,7 +42,8 @@ Object stringNew(char* str) {
   Word nWords = (len + 1) / sizeof(Word);
   Object string = objAlloc(D_String, nWords);
   objSetData(string, 0, len);
-  for (int n=0; n<len; n++) {
+  /* going <= len includes the null terminator */
+  for (int n=0; n<=len; n++) {
     stringSetChar(string, n, str[n]);
   }
   return string;

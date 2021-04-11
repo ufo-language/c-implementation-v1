@@ -7,8 +7,9 @@
 
 #define LEXEME_SIZE 16
 
-/* The reserved words are defined in syntax.h */
+/* The reserved and bool words are defined in syntax.h */
 extern char* RESERVED_WORDS[];
+extern char* BOOL_WORDS[];
 
 /* These State, Action, and Token arrays are defined in lexer.c */
 extern char* S_NAMES[];
