@@ -25,6 +25,7 @@ void getLine(char* buffer, int len) {
 
 /* test the lexer */
 void testLexer() {
+#if 0
   memStart();
   globalsSetup();
   printf("> ");
@@ -47,6 +48,8 @@ void testLexer() {
       break;
     }
   }
+
+#endif
 }
 
 #if 1
@@ -62,7 +65,7 @@ int main(int argc, char** argv) {
     if(!strcmp(argv[1], "lex")) {
       memStart();
       globalsSetup();
-      lex(0);
+      //lex(0);
       return 0;
     }
   }

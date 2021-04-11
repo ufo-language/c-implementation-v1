@@ -2,8 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "d_string.h"
+#include "delegate.h"
 #include "lexer.h"
 #include "mem.h"
+#include "object.h"
 #include "syntax.h"
 
 /* There must be a 1:1 correspondence between this and the StateName enum */
@@ -26,32 +29,6 @@ char cDisp(char c) {
   return c < 32 ? '~' : c;
 }
 
-Address lex(Address string) {
-  return string;  /* just to avoid compiler warning */
-/*
-  printf("> ");
-  char line[128];
-  getLine(line, 128);
-  printf("line = '%s'\n", line);
-  LexerState lexerState;
-  lexInit(&lexerState, syntax, line);
-  Token token;
-  while (true) {
-    bool res = lexToken(&lexerState, &token);
-    if (lexerState.error) {
-      printf("lexer error\n");
-      break;
-    }
-    printf("\n");
-    printf("type = %s\n", T_NAMES[token.type]);
-    printf("lexeme = '%s'\n", token.lexeme);
-    if (!res) {
-      break;
-    }
-  }
-*/
-}
-
 Transition* findTransition(Transition** syntax, StateName stateName, char c) {
   Transition* state = syntax[stateName];
   /*printf("State: %s\n", S_NAMES[stateName]);*/
@@ -69,10 +46,11 @@ Transition* findTransition(Transition** syntax, StateName stateName, char c) {
   }
 }
 
-void lexInit(LexerState* lexerState, Transition** syntax, char* inputString) {
+void lexInit(LexerState* lexerState, Transition** syntax, /*char* inputString*/ Object inputString) {
   lexerState->syntax = syntax;
   lexerState->inputString = inputString;
-  lexerState->inputLen = strlen(inputString);
+  /*lexerState->inputLen = strlen(inputString);*/
+  lexerState->inputLen = stringCount(inputString);
   lexerState->pos = 0;
   lexerState->line = 1;
   lexerState->col = 0;
@@ -96,7 +74,9 @@ bool lexToken(LexerState* lexerState, Token* token) {
   int lexemeIndex = 0;
   bool contin = true;
   while (contin && (lexerState->pos <= lexerState->inputLen)) {
-    char c = lexerState->inputString[lexerState->pos];
+    //char c = lexerState->inputString[lexerState->pos];
+    Object inputString = lexerState->inputString;
+    char c = stringGetChar(inputString, (Word)lexerState->pos);
     Transition* transition = findTransition(lexerState->syntax, stateName, c);
     stateName = transition->nextState;
     Action action = transition->action;
@@ -114,7 +94,7 @@ bool lexToken(LexerState* lexerState, Token* token) {
         /* TODO write a lexError function and refactor these three error cases */
         lexerState->error = true;
         printf("lexer error on '%c':%d\n", c, cDisp(c));
-        printf("%s\n", lexerState->inputString);
+        objShow(lexerState->inputString, stdout); printf("\n");
         for (int n=0; n<lexerState->pos-1; n++) {
           printf(" ");
         }
@@ -123,7 +103,7 @@ bool lexToken(LexerState* lexerState, Token* token) {
       case A_ERR_REAL:
         lexerState->error = true;
         printf("lexer error: digits expected after decimal point\n");
-        printf("%s\n", lexerState->inputString);
+        objShow(lexerState->inputString, stdout); printf("\n");
         for (int n=0; n<lexerState->pos-1; n++) {
           printf(" ");
         }
@@ -132,7 +112,7 @@ bool lexToken(LexerState* lexerState, Token* token) {
       case A_ERR_STRING:
         lexerState->error = true;
         printf("lexer error: unterminated string\n");
-        printf("%s\n", lexerState->inputString);
+        objShow(lexerState->inputString, stdout); printf("\n");
         for (int n=0; n<lexerState->pos; n++) {
           printf(" ");
         }

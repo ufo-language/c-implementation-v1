@@ -6,6 +6,9 @@
 #include "defines.h"
 #include "object.h"
 
+#define BOOL_TRUE_STRING "true"
+#define BOOL_FALSE_STRING "false"
+
 Object boolNew(bool b);
 
 bool boolEqual(Object bln, Object other);

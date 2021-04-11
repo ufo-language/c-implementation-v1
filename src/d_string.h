@@ -8,13 +8,13 @@
 
 Object stringNew(char* str);
 
+Word stringCount(Object string);
 void stringDisp(Object string, FILE* stream);
 bool stringEqual(Object string, Object other);
 Word stringHash(Object string);
 Word stringHash_aux(Object string);
 char stringGetChar(Object string, Word offset);
 void stringSetChar(Object string, Word offset, char c);
-Word stringCount(Object string);
 void stringShow(Object string, FILE* stream);
 
 #endif

@@ -7,6 +7,12 @@
 #include "object.h"
 
 /*------------------------------------------------------------------*/
+Object queueAsList(Object q) {
+  Object list = {objGetData(q, Q_HEAD_OFS)};
+  return list;
+}
+
+/*------------------------------------------------------------------*/
 Word queueCount(Object q) {
   return objGetData(q, Q_NELEMS_OFS);
 }

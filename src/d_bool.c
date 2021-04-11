@@ -18,5 +18,5 @@ bool boolGet(Object bln) {
 }
 
 void boolShow(Object bln, FILE* stream) {
-  fputs(boolGet(bln) ? "true" : "false", stream);
+  fputs(boolGet(bln) ? BOOL_TRUE_STRING : BOOL_FALSE_STRING, stream);
 }

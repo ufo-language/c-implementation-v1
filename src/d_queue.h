@@ -10,6 +10,8 @@
 
 Object queueNew();
 
+Object queueAsList(Object q);
+Word queueCount(Object q);
 void queueEnq(Object q, Object elem);
 Word queueCount(Object q);
 bool queueEqual(Object q, Object other);

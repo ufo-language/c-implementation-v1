@@ -2,7 +2,8 @@
 #define LEXER_H
 
 #include "defines.h"
-#include "mem.h"
+//#include "mem.h"
+#include "object.h"
 
 #define LEXEME_SIZE 16
 
@@ -47,7 +48,8 @@ typedef struct {
 
 typedef struct {
   Transition** syntax;
-  char* inputString;
+  //char* inputString;
+  Object inputString;
   int inputLen;
   int pos;
   int line;
@@ -55,12 +57,10 @@ typedef struct {
   bool error;
 } LexerState;
 
-/* Takes a string and returns a list of tokens. */
-Address lex(Address string);
-
 Transition* findTransition(Transition** syntax, StateName stateName, char c);
 bool isIn(char* str, char* strAry[]);
-void lexInit(LexerState* lexerState, Transition** syntax, char* inputString);
+//void lexInit(LexerState* lexerState, Transition** syntax, char* inputString);
+void lexInit(LexerState* lexerState, Transition** syntax, Object inputString);
 bool lexToken(LexerState* lexerState, Token* token);
 
 #endif

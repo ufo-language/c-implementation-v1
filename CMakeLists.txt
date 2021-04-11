@@ -46,6 +46,7 @@ set(LIB_SRC_FILES
   src/globals.c
   src/hash.c
   src/lexer.c
+  src/lexer_obj.c
   src/main.c
   src/mem.c
   src/object.c
@@ -72,6 +73,7 @@ set(TEST_SRC_FILES
   test/test_if.c
   test/test_let.c
   test/test_letin.c
+  test/test_lexer.c
   test/test_list.c
   test/test_mem.c
   test/test_object.c

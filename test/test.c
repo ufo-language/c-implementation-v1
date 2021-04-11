@@ -16,6 +16,7 @@ int test_hash();
 int test_if();
 int test_let();
 int test_letIn();
+int test_lexer();
 int test_list();
 int test_mem();
 int test_object();
@@ -28,6 +29,7 @@ int test_throw();
 int test_vmem();
 
 static int (*tests[])() = {
+/*
   test_blockFile,
   test_vmem,
   test_mem,
@@ -42,15 +44,16 @@ static int (*tests[])() = {
   test_thread,
   test_hash,
   test_let,
-  test_letIn,
-  test_array,
+  test_letIn,*/
+  test_lexer,
+/*  test_array,
   test_binding,
   test_list,
   test_closure,
   test_app,
   test_abstr,
   test_gc,
-  test_delegate,
+  test_delegate,*/
   0
 };
 

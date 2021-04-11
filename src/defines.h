@@ -2,8 +2,11 @@
 #define DEFINES_H
 
 typedef unsigned char byte;
-/*typedef unsigned int uint;*/
-typedef unsigned short uint;
+#if 1
+typedef unsigned short int uint;
+#else
+typedef unsigned uint;
+#endif
 
 typedef char bool;
 #define false 0
