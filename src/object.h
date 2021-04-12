@@ -63,6 +63,7 @@ Object objAlloc_unsafe(ObjType type, Word nWords);
 void objFree(Object obj);
 
 ObjType objGetType(Object obj);
+void objSetType(Object obj, ObjType objType);
 
 Word objGetData(Object obj, Word offset);
 void objSetData(Object obj, Word offset, Word value);

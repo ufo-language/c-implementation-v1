@@ -218,7 +218,7 @@ void test_hashGet() {
 void test_hashEqual() {
   Object hash1 = hashNew();
   Object hash2 = hashNew();
-  EXPECT_T(objEqual(hash1, hash2));
+  EXPECT_T(objEquals(hash1, hash2));
 
   Object x = identNew("x");
   Object y = identNew("y");
@@ -235,13 +235,13 @@ void test_hashEqual() {
   hashPut(hash2, y, i200);
   hashPut(hash2, z, i300);
 
-  EXPECT_T(objEqual(hash1, hash2));
-  EXPECT_T(objEqual(hash2, hash1));
+  EXPECT_T(objEquals(hash1, hash2));
+  EXPECT_T(objEquals(hash2, hash1));
 
   hashPut(hash1, x, i200);
 
-  EXPECT_F(objEqual(hash1, hash2));
-  EXPECT_F(objEqual(hash2, hash1));
+  EXPECT_F(objEquals(hash1, hash2));
+  EXPECT_F(objEquals(hash2, hash1));
 }
 
 static void test_hashEval() {

@@ -17,7 +17,21 @@ Word symbolHash(Object symbol) {
   return stringHash_aux(symbol) ^ hashPrimes(objGetType(symbol));
 }
 
+bool symbolHasName(Object symbol, char* name) {
+  Word nChars = stringCount(symbol);
+  int n = 0;
+  while (name && n < nChars) {
+    if (stringGetChar(symbol, n) != *name) {
+      return false;
+    }
+    n++;
+    name++;
+  }
+  return n == nChars;
+}
+
 Object symbolNew(char* str) {
+  /* a symbol is a string with a different ObjType */
   Object symbol = stringNew(str);
   objSetType(symbol, D_Symbol);
   return symbol;

@@ -133,9 +133,9 @@ void test_arrayMatch() {
   Object bindingList2 = objMatch(ary2a, ary2b, bindingList);
   EXPECT_NE(bindingList.a, bindingList2.a);
   Object res = listLocate(bindingList2, x);
-  EXPECT_T(objEqual(bindingNew(x, i200), res));
+  EXPECT_T(objEquals(bindingNew(x, i200), res));
   res = listLocate(bindingList2, y);
-  EXPECT_T(objEqual(bindingNew(y, i100), res));
+  EXPECT_T(objEquals(bindingNew(y, i100), res));
 
   Object ary3 = arrayNew(3);
   Object ary4 = arrayNew(4);

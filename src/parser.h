@@ -4,6 +4,6 @@
 #include "lexer.h"
 #include "object.h"
 
-Address parse(char* inputString, Transition** syntax);
+Object parse(Object tokens, Transition** syntax);
 
 #endif

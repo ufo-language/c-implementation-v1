@@ -76,11 +76,11 @@ void test_bindingEqual() {
   Object bndx1 = bindingNew(x, i100);
 
   Object bndx2 = bindingNew(x, i100);
-  EXPECT_T(objEqual(bndx1, bndx2));
+  EXPECT_T(objEquals(bndx1, bndx2));
 
   Object i200 = intNew(200);
   bindingSetRhs(bndx2, i200);
-  EXPECT_F(objEqual(bndx1, bndx2));
+  EXPECT_F(objEquals(bndx1, bndx2));
 
   Object y = identNew("x");
   Object bndy1 = bindingNew(y, i200);
@@ -121,7 +121,7 @@ void test_bindingMatch() {
   Object bindingList1 = objMatch(bnd1, bnd2, bindingList);
 
   Object res = listLocate(bindingList1, x);
-  EXPECT_T(objEqual(bindingNew(x, i100), res));
+  EXPECT_T(objEquals(bindingNew(x, i100), res));
   res = listLocate(bindingList1, y);
-  EXPECT_T(objEqual(bindingNew(y, i200), res));
+  EXPECT_T(objEquals(bindingNew(y, i200), res));
 }

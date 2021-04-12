@@ -115,7 +115,7 @@ void test_setHas() {
 void test_setEqual() {
   Object set1 = setNew();
   Object set2 = setNew();
-  EXPECT_T(objEqual(set1, set2));
+  EXPECT_T(objEquals(set1, set2));
 
   Object x = identNew("x");
   Object y = identNew("y");
@@ -128,11 +128,11 @@ void test_setEqual() {
   setAddElem(set2, x);
   setAddElem(set2, y);
 
-  EXPECT_F(objEqual(set1, set2));
+  EXPECT_F(objEquals(set1, set2));
 
   setAddElem(set2, z);
 
-  EXPECT_T(objEqual(set2, set1));
+  EXPECT_T(objEquals(set2, set1));
 }
 
 static void test_setEval() {

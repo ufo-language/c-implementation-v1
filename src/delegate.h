@@ -7,7 +7,7 @@
 
 bool objBoolValue(Object obj);
 void objDisp(Object obj, FILE* stream);
-bool objEqual(Object obj1, Object obj2);
+bool objEquals(Object obj1, Object obj2);
 Object objEval(Object obj, Thread* thd);
 void objFreeVars(Object obj, Object freeVarSet);
 Word objHashCode(Object obj);

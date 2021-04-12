@@ -2,143 +2,115 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "d_array.h"
+#include "d_list.h"
+#include "d_symbol.h"
+#include "delegate.h"
 #include "globals.h"
 #include "lexer.h"
 #include "parser.h"
 
-void foo() {
-  // putting a function here to keep the linker from warning that this file is empty
-}
-
-#if 0
-
 #define DEBUG 1
 
-typedef Object* (*Parser)(LexerState* lexState);
+typedef Object (*Parser)(Object tokens);
 
-Object* p_spot(LexerState* lexState, TokenType tt, Token* token);
-Object* p_int(LexerState* lexState);
-Object* p_real(LexerState* lexState);
-Object* p_number(LexerState* lexState);
-Object* p_string(LexerState* lexState);
-Object* p_object(LexerState* lexState);
+Object p_spot(Object tokenList, TokenType tokenType, Object value);
+Object p_int(Object tokens);
+Object p_real(Object tokens);
+Object p_number(Object tokens);
+Object p_string(Object tokens);
+Object p_object(Object tokens);
 
 /* parser entry function */
-Object* parse(char* inputString, Transition** syntax) {
+#if 0
+Object parse(char* inputString, Transition** syntax) {
   LexerState lexState;
   lexInit(&lexState, syntax, inputString);
-  Object* obj = p_object(&lexState);
+  Object obj = p_object(&lexState);
   if (lexState.error && obj != NULL) {
     obj->type = O_UNKNOWN;
   }
   return obj;
 }
+#endif
 
 /* primitive 'spot' parser =========================================*/
 
-Object* p_spot(LexerState* lexState, TokenType tt, Token* token) {
-  /* save lexer state values in case the next token doesn't match */
-  int pos = lexState->pos;
-  int line = lexState->line;
-  int col = lexState->col;
-  /* try the next token */
-  bool res = lexToken(lexState, token);
-  if (res && token->type == tt) {
-    Object* obj = malloc(sizeof(Object));
-    obj->type = O_UNKNOWN;
-    obj->s = token->lexeme;
-    return obj;
+Object p_spot(Object tokenList, TokenType tokenType, Object value) {
+  Object token = listGetFirst(tokenList);
+  Object tokenSym = arrayGet(token, 0);
+  if (!symbolHasName(tokenSym, T_NAMES[tokenType])) {
+    return nullObj;
   }
-  /* no match, so restore the lexer state so that the lexer will
-     return the same token again */
-  lexState->pos = pos;
-  lexState->line = line;
-  lexState->col = col;
-  return NULL;
+  if (value.a != nullObj.a) {
+    if (!objEquals(arrayGet(token, 1), value)) {
+      return nullObj;
+    }
+  }
+  return tokenList;
 }
 
 /* parser combinators ==============================================*/
 
-Object* p_maybe(LexerState* lexState, Parser* parser) {
-  Object* obj = (*parser)(lexState);
-  if (!obj) {
-    obj = NOTHING;
-  }
-  return obj;
+Object p_maybe(Object tokens, Parser* parser) {
+  Object res = (*parser)(tokens);
+  return (res.a == nullObj.a) ? listNew(NOTHING, tokens) : res;
 }
 
-Object* p_oneOf(LexerState* lexState, Parser* parsers) {
+Object p_oneOf(Object tokens, Parser* parsers) {
   while (*parsers) {
-    Object* obj = (*parsers)(lexState);
-    if (lexState->error) {
-      break;
-    }
-    if (obj) {
-      return obj;
+    Object res = (*parsers)(tokens);
+    if (res.a != nullObj.a) {
+      return res;
     }
     parsers++;
   }
-  return NULL;
+  return nullObj;
 }
 
-Object* p_some(LexerState* lexState, Parser* parser, int min) {
-  Object* objs = EMPTY_LIST;
+Object p_some(Object tokens, Parser* parser, int min) {
+  Object objs = EMPTY_LIST;
   while (true) {
-    Object* obj = (*parser)(lexState);
-    if (!obj)
+    Object res = (*parser)(tokens);
+    if (res.a == nullObj.a) {
       break;
+    }
+    Object obj = listGetFirst(res);
     objs = listNew(obj, objs);
     min--;
+    tokens = listGetRest(tokens);
   }
   if (min <= 0) {
-    return objs;
+    return listNew(objs, tokens);
   }
-  /* FREE THE OBJECTS */
-  return NULL;
+  return nullObj;
 }
 
 /* Object parsers ==================================================*/
 
-Object* p_int(LexerState* lexState) {
-  Token token;
-  Object* obj = p_spot(lexState, T_INT, &token);
-  if (obj) {
-    obj->type = O_INT;
-    obj->i = atoi(token.lexeme);
-  }
-  return obj;
+Object p_int(Object tokens) {
+  Object res = p_spot(tokens, T_INT, nullObj);
+  return res;
 }
 
-Object* p_real(LexerState* lexState) {
-  Token token;
-  Object* obj = p_spot(lexState, T_REAL, &token);
-  if (obj) {
-    obj->type = O_REAL;
-    obj->f = atof(token.lexeme);
-  }
-  return obj;
+Object p_real(Object tokens) {
+  Object res = p_spot(tokens, T_REAL, nullObj);
+  return res;
 }
 
-Object* p_number(LexerState* lexState) {
+Object p_number(Object tokens) {
   Parser parsers[] = {&p_int, &p_real, NULL};
-  Object* obj = p_oneOf(lexState, parsers);
-  return obj;
+  Object res = p_oneOf(tokens, parsers);
+  return res;
 }
 
-Object* p_string(LexerState* lexState) {
-  Token token;
-  Object* obj = p_spot(lexState, T_STRING, &token);
-  if (obj) {
-    obj->type = O_STRING;
-    obj->s = malloc(strlen(token.lexeme) + 1);
-    strcpy(obj->s, token.lexeme);
-  }
-  return obj;
+Object p_string(Object tokens) {
+  Object res = p_spot(tokens, T_STRING, nullObj);
+  return res;
 }
 
-Object* p_object(LexerState* lexState) {
+Object p_object(Object tokens) {
   Parser parsers[] = {&p_int, &p_real, &p_string, NULL};
-  Object* obj = p_oneOf(lexState, parsers);
-  return obj;
+  Object res = p_oneOf(tokens, parsers);
+  return res;
 }
-#endif

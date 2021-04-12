@@ -101,7 +101,7 @@ bool setLocate(Object set, Object elem, Word* bucketNum) {
   *bucketNum = hashCode % nBuckets;
   Object bucket = arrayGet(buckets, *bucketNum);
   while (!listIsEmpty(bucket)) {
-    if (objEqual(elem, listGetFirst(bucket))) {
+    if (objEquals(elem, listGetFirst(bucket))) {
       return true;
     }
     bucket = listGetRest(bucket);
@@ -131,7 +131,7 @@ bool setRemoveElem(Object set, Object elem) {
     Object newBucket = EMPTY_LIST;
     while (!listIsEmpty(bucket)) {
       Object elem1 = listGetFirst(bucket);
-      if (!objEqual(elem, elem1)) {
+      if (!objEquals(elem, elem1)) {
         newBucket = listNew(elem1, newBucket);
       }
       bucket = listGetRest(bucket);

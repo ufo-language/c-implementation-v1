@@ -120,9 +120,9 @@ void test_listMatch() {
   Object bindingList1 = objMatch(lst1, lst2, bindingList);
 
   Object res = listLocate(bindingList1, x);
-  EXPECT_T(objEqual(bindingNew(x, i100), res));
+  EXPECT_T(objEquals(bindingNew(x, i100), res));
   res = listLocate(bindingList1, y);
-  EXPECT_T(objEqual(bindingNew(y, i200), res));
+  EXPECT_T(objEquals(bindingNew(y, i200), res));
 }
 
 void test_listSet() {

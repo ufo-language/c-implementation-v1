@@ -38,12 +38,12 @@ bool listEqual(Object list, Object other) {
   }
   Object first1 = listGetFirst(list);
   Object first2 = listGetFirst(other);
-  if (!objEqual(first1, first2)) {
+  if (!objEquals(first1, first2)) {
     return false;
   }
   Object rest1 = listGetRest(list);
   Object rest2 = listGetRest(other);
-  return objEqual(rest1, rest2);
+  return objEquals(rest1, rest2);
 }
 
 Object listEval(Object list, Thread* thd) {
@@ -83,7 +83,7 @@ Object listLocate(Object list, Object key) {
   while (!listIsEmpty(list)) {
     Object binding = listGetFirst(list);
     if (D_Binding == objGetType(binding)) {
-      if (objEqual(key, bindingGetLhs(binding))) {
+      if (objEquals(key, bindingGetLhs(binding))) {
         return binding;
       }
     }

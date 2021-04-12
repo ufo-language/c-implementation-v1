@@ -12,17 +12,17 @@
 bool ifEqual(Object ifThen, Object other) {
   Object cond1 = {objGetData(ifThen, IF_COND_OFS)};
   Object cond2 = {objGetData(other, IF_COND_OFS)};
-  if (!objEqual(cond1, cond2)) {
+  if (!objEquals(cond1, cond2)) {
     return false;
   }
   Object conseq1 = {objGetData(ifThen, IF_CONSEQ_OFS)};
   Object conseq2 = {objGetData(other, IF_CONSEQ_OFS)};
-  if (!objEqual(conseq1, conseq2)) {
+  if (!objEquals(conseq1, conseq2)) {
     return false;
   }
   Object alt1 = {objGetData(ifThen, IF_ALT_OFS)};
   Object alt2 = {objGetData(other, IF_ALT_OFS)};
-  return objEqual(alt1, alt2);
+  return objEquals(alt1, alt2);
 }
 
 /*------------------------------------------------------------------*/

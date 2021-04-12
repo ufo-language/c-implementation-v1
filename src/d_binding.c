@@ -17,12 +17,12 @@ Object bindingNew(Object lhs, Object rhs) {
 bool bindingEqual(Object binding, Object other) {
   Object lhs1 = bindingGetLhs(binding);
   Object lhs2 = bindingGetLhs(other);
-  if (!objEqual(lhs1, lhs2)) {
+  if (!objEquals(lhs1, lhs2)) {
     return false;
   }
   Object rhs1 = bindingGetRhs(binding);
   Object rhs2 = bindingGetRhs(other);
-  return objEqual(rhs1, rhs2);
+  return objEquals(rhs1, rhs2);
 }
 
 Object bindingEval(Object binding, Thread* thd) {

@@ -6,6 +6,7 @@
 
 bool symbolEqual(Object symbol, Object obj);
 Word symbolHash(Object symbol);
+bool symbolHasName(Object symbol, char* name);
 Object symbolNew(char* name);
 void symbolShow(Object symbol, FILE* stream);
 

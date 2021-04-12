@@ -106,8 +106,8 @@ void test_evalArray() {
   arraySet(ary1, 0, x);
   arraySet(ary1, 1, y);
   Object res1 = eval(ary1, thd);
-  EXPECT_T(objEqual(i100, arrayGet(res1, 0)));
-  EXPECT_T(objEqual(i200, arrayGet(res1, 1)));
+  EXPECT_T(objEquals(i100, arrayGet(res1, 0)));
+  EXPECT_T(objEquals(i200, arrayGet(res1, 1)));
   threadDelete(thd);
 }
 
@@ -124,7 +124,7 @@ void test_evalList() {
   /* build the list */
   Object list1 = listNew(x, y);
   Object res1 = eval(list1, thd);
-  EXPECT_T(objEqual(i100, listGetFirst(res1)));
-  EXPECT_T(objEqual(i200, listGetRest(res1)));
+  EXPECT_T(objEquals(i100, listGetFirst(res1)));
+  EXPECT_T(objEquals(i200, listGetRest(res1)));
   threadDelete(thd);
 }

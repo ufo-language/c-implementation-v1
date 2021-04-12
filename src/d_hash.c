@@ -51,7 +51,7 @@ bool hashEqual(Object hash, Object other) {
       Object binding = listGetFirst(bucket);
       Object key = bindingGetLhs(binding);
       Object val = bindingGetRhs(binding);
-      if (!objEqual(val, hashGet(other, key))) {
+      if (!objEquals(val, hashGet(other, key))) {
         return false;
       }
       bucket = listGetRest(bucket);
@@ -125,7 +125,7 @@ Object hashLocate(Object hash, Object key, Word* bucketNum) {
   Object bucket = arrayGet(buckets, *bucketNum);
   while (!listIsEmpty(bucket)) {
     Object binding = listGetFirst(bucket);
-    if (objEqual(key, bindingGetLhs(binding))) {
+    if (objEquals(key, bindingGetLhs(binding))) {
       return binding;
     }
     bucket = listGetRest(bucket);

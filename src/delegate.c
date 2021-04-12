@@ -72,7 +72,7 @@ void objDisp(Object obj, FILE* stream) {
 }
 
 /*------------------------------------------------------------------*/
-bool objEqual(Object obj1, Object obj2) {
+bool objEquals(Object obj1, Object obj2) {
   if (obj1.a == obj2.a) {
     return true;
   }

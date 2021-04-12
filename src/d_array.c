@@ -34,7 +34,7 @@ bool arrayEqual(Object array, Object other) {
   for (Word n=0; n<len1; n++) {
     Object elem1 = arrayGet(array, n);
     Object elem2 = arrayGet(other, n);
-    if (!objEqual(elem1, elem2)) {
+    if (!objEquals(elem1, elem2)) {
       return false;
     }
   }
