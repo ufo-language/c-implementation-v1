@@ -77,6 +77,7 @@ set(TEST_SRC_FILES
   test/test_list.c
   test/test_mem.c
   test/test_object.c
+  test/test_parser.c
   test/test_queue.c
   test/test_seq.c
   test/test_set.c

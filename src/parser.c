@@ -10,17 +10,6 @@
 #include "lexer.h"
 #include "parser.h"
 
-#define DEBUG 1
-
-typedef Object (*Parser)(Object tokens);
-
-Object p_spot(Object tokenList, TokenType tokenType, Object value);
-Object p_int(Object tokens);
-Object p_real(Object tokens);
-Object p_number(Object tokens);
-Object p_string(Object tokens);
-Object p_object(Object tokens);
-
 /* parser entry function */
 #if 0
 Object parse(char* inputString, Transition** syntax) {

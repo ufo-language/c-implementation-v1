@@ -46,7 +46,7 @@ Transition pointState[] = {
 
 /* S_REAL */
 Transition realState[] = {
-  {'0', '9',     S_POINT, A_KEEP,      T_NONE},
+  {'0', '9',     S_REAL,  A_KEEP,      T_NONE},
   {C_ANY, C_ANY, S_I,     A_REUSE,     T_REAL}
 };
 

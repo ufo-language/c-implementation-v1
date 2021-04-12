@@ -20,6 +20,7 @@ int test_lexer();
 int test_list();
 int test_mem();
 int test_object();
+int test_parser();
 int test_queue();
 int test_seq();
 int test_set();
@@ -53,6 +54,7 @@ static int (*tests[])() = {
   test_gc,
   test_delegate,
   test_lexer,
+  test_parser,
   0
 };
 

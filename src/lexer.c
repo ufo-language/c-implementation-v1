@@ -31,15 +31,16 @@ char cDisp(char c) {
 
 Transition* findTransition(Transition** syntax, StateName stateName, char c) {
   Transition* state = syntax[stateName];
-#if 0
+#define FIND_DEBUG 0
+#if FIND_DEBUG
   printf("State: %s\n", S_NAMES[stateName]);
 #endif
   for (int n=0;; n++) {
     Transition* transition = &state[n];
     char from = transition->from;
     char to = transition->to;
-#if 0
-    printf("  comparing %c (%d) to %c - %c\n", cDisp(c), c, cDisp(from), cDisp(to));
+#if FIND_DEBUG
+    printf("  comparing char '%c' (%d) to range '%c' - '%c'\n", cDisp(c), c, cDisp(from), cDisp(to));
 #endif
     if (from == C_ANY) {
       return transition;
@@ -48,6 +49,8 @@ Transition* findTransition(Transition** syntax, StateName stateName, char c) {
       return transition;
     }
   }
+  fprintf(stderr, "lexer.findTransition should not get here");
+  return NULL;
 }
 
 void lexInit(LexerState* lexerState, Transition** syntax, Object inputString) {

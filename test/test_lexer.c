@@ -15,6 +15,7 @@
 #include "../src/lexer.h"
 #include "../src/lexer_obj.h"
 #include "../src/object.h"
+#include "../src/syntax.h"
 
 static void test_lexInt1();
 static void test_lexInt2();
@@ -55,6 +56,11 @@ static void test_after() {
 }
 
 /* Runs all the listed tests ---------------------------------------*/
+
+// TODO debugging
+extern Transition pointState[];
+extern Transition realState[];
+extern char* S_NAMES[];
 
 void test_lexer() {
   runTests((char*)__func__, test_before, testEntries, test_after);
@@ -105,14 +111,14 @@ void test_lexInt2() {
 }
 
 void test_lexReal() {
-  char* input = "123.456";
+  char* input = "123.45";
   Object inputStr = stringNew(input);
   Object tokenQ = lex(inputStr);
   ASSERT_EQ(2, queueCount(tokenQ));
   Object realTok = queueDeq(tokenQ);
-  Object realTokSym = symbolNew(T_NAMES[T_REAL]);
-  Object realTokVal = realNew(123.456);
   ASSERT_NE(nullObj.a, realTok.a);
+  Object realTokSym = symbolNew(T_NAMES[T_REAL]);
+  Object realTokVal = realNew(123.45);
   EXPECT_T(objEquals(realTokSym, arrayGet(realTok, 0)));
   EXPECT_T(objEquals(realTokVal, arrayGet(realTok, 1)));
   Object eoiTok = queueDeq(tokenQ);
