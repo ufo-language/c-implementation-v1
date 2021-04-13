@@ -4,6 +4,7 @@
 
 #include "d_array.h"
 #include "d_list.h"
+#include "d_queue.h"
 #include "d_symbol.h"
 #include "delegate.h"
 #include "globals.h"
@@ -41,8 +42,8 @@ Object p_spot(Object tokenList, TokenType tokenType, Object value) {
 
 /* parser combinators ==============================================*/
 
-Object p_maybe(Object tokens, Parser* parser) {
-  Object res = (*parser)(tokens);
+Object p_maybe(Object tokens, Parser parser) {
+  Object res = (parser)(tokens);
   return (res.a == nullObj.a) ? listNew(NOTHING, tokens) : res;
 }
 
@@ -57,19 +58,35 @@ Object p_oneOf(Object tokens, Parser* parsers) {
   return nullObj;
 }
 
-Object p_some(Object tokens, Parser* parser, int min) {
-  Object objs = EMPTY_LIST;
+Object p_seq(Object tokens, Parser* parsers) {
+  Object objQ = queueNew();
+  while (*parsers) {
+    Object res = (*parsers)(tokens);
+    if (res.a == nullObj.a) {
+      return nullObj;
+    }
+    queueEnq(objQ, listGetFirst(res));
+    tokens = listGetRest(tokens);
+    parsers++;
+  }
+  Object objs = queueAsList(objQ);
+  return listNew(objs, tokens);
+}
+
+Object p_some(Object tokens, Parser parser, int min) {
+  Object objQ = queueNew();
   while (true) {
     Object res = (*parser)(tokens);
     if (res.a == nullObj.a) {
       break;
     }
     Object obj = listGetFirst(res);
-    objs = listNew(obj, objs);
+    queueEnq(objQ, obj);
     min--;
     tokens = listGetRest(tokens);
   }
   if (min <= 0) {
+    Object objs = queueAsList(objQ);
     return listNew(objs, tokens);
   }
   return nullObj;
