@@ -23,6 +23,7 @@ typedef enum {
   D_Set,
   D_String,
   D_Symbol,
+  D_Tuple,
   E_Abstr,
   E_App,
   E_Ident,

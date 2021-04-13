@@ -15,7 +15,6 @@ RawBlock _nextAdjacent(RawBlock blk);
 bool _isFree(RawBlock blk);
 void _remove(RawBlock blk);
 
-Word _getSize(RawBlock blk);
 void _setSize(RawBlock blk, Word size);
 RawBlock _getPrev(RawBlock blk);
 void _setPrev(RawBlock blk, RawBlock prev);
@@ -104,11 +103,11 @@ void checkForCycle(char* message) {
 Block memAlloc(Word nWords) {
   RawBlock blk = _memFreeRoot;
   while (blk.a) {
-    Word blkSize = _getSize(blk);
+    Word blkSize = memGetSize(blk);
     if (blkSize == nWords) {
       _remove(blk);
       _memNFreeBlocks--;
-      _memNFreeWords -= _getSize(blk);
+      _memNFreeWords -= memGetSize(blk);
       memSetStatus(blk, 0);
       return memRawBlockToBlock(blk);
     }
@@ -136,11 +135,11 @@ void memFree(Block blk) {
 /*------------------------------------------------------------------*/
 void memFreeRaw(RawBlock blk) {
   checkForCycle("memFree(1)");
-  Word blkOrigSize = _getSize(blk);
+  Word blkOrigSize = memGetSize(blk);
   int nJoins = 0;
   RawBlock prevBlk = _prevAdjacent(blk);
   if (_isFree(prevBlk)) {
-    Word joinedSize = _getSize(blk) + _getSize(prevBlk) + MEMBLK_OVERHEAD;
+    Word joinedSize = memGetSize(blk) + memGetSize(prevBlk) + MEMBLK_OVERHEAD;
     if (joinedSize < MEMBLK_GC_MARK) {
       blk = prevBlk;
       _setSize(blk, joinedSize);
@@ -149,7 +148,7 @@ void memFreeRaw(RawBlock blk) {
   }
   RawBlock nextBlk = _nextAdjacent(blk);
   if (_isFree(nextBlk)) {
-    Word joinedSize = _getSize(blk) + _getSize(nextBlk) + MEMBLK_OVERHEAD;
+    Word joinedSize = memGetSize(blk) + memGetSize(nextBlk) + MEMBLK_OVERHEAD;
     if (joinedSize < MEMBLK_GC_MARK) {
       _remove(nextBlk);
       _setSize(blk, joinedSize);
@@ -160,7 +159,7 @@ void memFreeRaw(RawBlock blk) {
     if (_memFreeRoot.a) _setPrev(_memFreeRoot, blk);
     memSetNext(blk, _memFreeRoot);
     _setPrev(blk, nullRawBlock);
-    memSetStatus(blk, _getSize(blk));
+    memSetStatus(blk, memGetSize(blk));
     _memFreeRoot = blk;
   }
   _memNFreeBlocks += (1 - nJoins);
@@ -178,11 +177,11 @@ void memFreeRaw(RawBlock blk) {
 void memShowBlock(RawBlock blk) {
   printf("@=%d, Sz=%d, P=%d, N=%d, Status=%d, nextAdj=%d\n",
     blk.a,
-    _getSize(blk),
+    memGetSize(blk),
     _getPrev(blk).a,
     memGetNext(blk).a,
     memGetStatus(blk),
-    blk.a + _getSize(blk) + MEMBLK_OVERHEAD);
+    blk.a + memGetSize(blk) + MEMBLK_OVERHEAD);
 }
 
 /*------------------------------------------------------------------*/
@@ -225,7 +224,7 @@ RawBlock _prevAdjacent(RawBlock blk) {
 /*------------------------------------------------------------------*/
 /* Returns the next adjacent block, but only if it is a free block. */
 RawBlock _nextAdjacent(RawBlock blk) {
-  RawBlock nextBlk = memAddrToRawBlock(blk.a + _getSize(blk) + MEMBLK_OVERHEAD);
+  RawBlock nextBlk = memAddrToRawBlock(blk.a + memGetSize(blk) + MEMBLK_OVERHEAD);
   if (nextBlk.a > MAX_ADDRESS - MEMBLK_OVERHEAD) {
     return nullRawBlock;
   }
@@ -259,7 +258,7 @@ bool _isFree(RawBlock blk) {
 
 /*------------------------------------------------------------------*/
 /* This returns the size in words of the payload area of the block */
-Word _getSize(RawBlock blk) {
+Word memGetSize(RawBlock blk) {
   Word size = vmemGet(blk.a + MEMBLK_SIZE_OFFSET);
   return size;
 }

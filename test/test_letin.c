@@ -26,7 +26,7 @@ static TestEntry testEntries[] = {
   {"test_letInEval", test_letInEval},
   {"test_letInFreeVarsFreeBody", test_letInFreeVarsFreeBody},
   {"test_letInFreeVarsBoundBody", test_letInFreeVarsBoundBody},
-  {0, }
+  {0, 0}
 };
 
 /* Before & after --------------------------------------------------*/

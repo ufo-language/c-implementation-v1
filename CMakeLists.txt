@@ -32,6 +32,7 @@ set(LIB_SRC_FILES
   src/d_set.c
   src/d_string.c
   src/d_symbol.c
+  src/d_tuple.c
   src/delegate.c
   src/e_abstr.c
   src/e_app.c
@@ -84,6 +85,7 @@ set(TEST_SRC_FILES
   test/test_string.c
   test/test_thread.c
   test/test_throw.c
+  test/test_tuple.c
   test/test_vmem.c
 )
 

@@ -26,7 +26,7 @@ static TestEntry testEntries[] = {
   {"test_letEvalSingle", test_letEvalSingle},
   {"test_letEvalMultiple", test_letEvalMultiple},
   {"test_letFreeVars", test_letFreeVars},
-  {0, }
+  {0, 0}
 };
 
 /* Before & after --------------------------------------------------*/

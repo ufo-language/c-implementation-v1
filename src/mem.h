@@ -47,6 +47,7 @@ RawBlock memAddrToRawBlock(Address addr);
 /* user functions */
 Block memAlloc(Word nWords);
 void memFree(Block blk);
+Word memGetSize(RawBlock blk);
 
 /* non-user functions */
 void memStart();

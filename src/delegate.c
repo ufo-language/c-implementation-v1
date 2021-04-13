@@ -16,6 +16,7 @@
 #include "d_set.h"
 #include "d_string.h"
 #include "d_symbol.h"
+#include "d_tuple.h"
 #include "delegate.h"
 #include "e_abstr.h"
 #include "e_app.h"
@@ -58,6 +59,18 @@ bool objBoolValue(Object obj) {
       /* E_Ident, E_If, etc. */
       return true;
   }
+}
+
+/*------------------------------------------------------------------*/
+Object objCopy(Object obj) {
+  RawBlock blk = objToRawBlock(obj);
+  Word nWords = memGetSize(blk) - OBJ_OVERHEAD;
+  ObjType objType = objGetType(obj);
+  Object objCopy = objAlloc(objType, nWords);
+  for (int n=0; n<nWords; n++) {
+    objSetData(objCopy, n, objGetData(obj, n));
+  }
+  return objCopy;
 }
 
 /*------------------------------------------------------------------*/
@@ -235,6 +248,8 @@ Word objHashCode(Object obj) {
       return stringHash(obj);
     case D_Symbol:
       return symbolHash(obj);
+    case D_Tuple:
+      return tupleHash(obj);
     case E_Ident:
       return identHash(obj);
     default:
@@ -391,6 +406,9 @@ void objShow(Object obj, FILE* stream) {
     case D_Symbol:
       symbolShow(obj, stream);
       break;
+    case D_Tuple:
+      tupleShow(obj, stream);
+      break;
     case E_Abstr:
       abstrShow(obj, stream);
       break;
@@ -419,6 +437,6 @@ void objShow(Object obj, FILE* stream) {
       fprintf(stream, "NULL-OBJECT");
       break;
     default:
-      fprintf(stream, "SHOW_UNHANDLED_OBJECT_%s@%d", ObjTypeNames[objGetType(obj)], obj.a);
+      fprintf(stream, "SHOW:UNHANDLED-OBJECT(%s)@%d", ObjTypeNames[objGetType(obj)], obj.a);
   }
 }

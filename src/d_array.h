@@ -11,9 +11,9 @@
 #define ARY_ELEMS_OFS 1
 
 Object arrayNew(Word size);
+void arrayDel(Object array);
 
 Word arrayCount(Object array);
-void arrayDel(Object array);
 bool arrayEqual(Object array, Object other);
 Object arrayEval(Object array, Thread* thd);
 void arrayFill(Object array, Object elem);

@@ -30,6 +30,7 @@ char* ObjTypeNames[] = {
   "Set",
   "String",
   "Symbol",
+  "Tuple",
   /* expressions */
   "Abstraction",
   "Application",

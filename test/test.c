@@ -27,6 +27,7 @@ int test_set();
 int test_string();
 int test_thread();
 int test_throw();
+int test_tuple();
 int test_vmem();
 
 static int (*tests[])() = {
@@ -52,9 +53,10 @@ static int (*tests[])() = {
   test_app,
   test_abstr,
   test_gc,
-  test_delegate,
   test_lexer,
   test_parser,
+  test_delegate,
+  test_tuple,
   0
 };
 

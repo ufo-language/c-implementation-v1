@@ -36,7 +36,7 @@ static TestEntry testEntries[] = {
   {"test_parseSeq", test_parseSeq},
   {"test_parseSome", test_parseSome},
   {"test_parseReserved", test_parseReserved},
-  {0, }
+  {0, 0}
 };
 
 /* Before & after --------------------------------------------------*/

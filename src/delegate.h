@@ -6,6 +6,7 @@
 #include "vmem.h"
 
 bool objBoolValue(Object obj);
+Object objCopy(Object obj);
 void objDisp(Object obj, FILE* stream);
 bool objEquals(Object obj1, Object obj2);
 Object objEval(Object obj, Thread* thd);

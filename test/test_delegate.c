@@ -40,6 +40,7 @@ static void test_objMarkLet();
 static void test_objMarkLetIn();
 static void test_objMarkSeq();
 static void test_objMarkThrow();
+static void test_objCopy();
 
 /* List the unit tests to run here ---------------------------------*/
 
@@ -60,6 +61,7 @@ static TestEntry testEntries[] = {
   {"test_objMarkLetIn", test_objMarkLetIn},
   {"test_objMarkSeq", test_objMarkSeq},
   {"test_objMarkThrow", test_objMarkThrow},
+  {"test_objCopy", test_objCopy},
   {0, 0}
 };
 
@@ -355,4 +357,21 @@ void test_objMarkThrow() {
 
   EXPECT_T(gcIsMarked(x));
   EXPECT_T(gcIsMarked(throw));
+}
+
+void test_objCopy() {
+  Object i100 = intNew(100);
+  Object i200 = intNew(200);
+  Object i300 = intNew(300);
+  Object ary0 = arrayNew(3);
+  arraySet(ary0, 0, i100);
+  arraySet(ary0, 1, i200);
+  arraySet(ary0, 2, i300);
+  Object ary1 = objCopy(ary0);
+  EXPECT_NE(ary0.a, ary1.a);
+  EXPECT_T(objEquals(ary0, ary1));
+  Object lst0 = listNew(i100, i200);
+  Object lst1 = objCopy(lst0);
+  EXPECT_NE(lst0.a, lst1.a);
+  EXPECT_T(objEquals(lst0, lst1));
 }
