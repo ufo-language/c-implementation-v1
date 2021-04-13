@@ -22,6 +22,7 @@ static void test_parseMaybe();
 static void test_parseOneOf();
 static void test_parseSeq();
 static void test_parseSome();
+static void test_parseReserved();
 
 /* List the unit tests to run here ---------------------------------*/
 
@@ -34,6 +35,7 @@ static TestEntry testEntries[] = {
   {"test_parseOneOf", test_parseOneOf},
   {"test_parseSeq", test_parseSeq},
   {"test_parseSome", test_parseSome},
+  {"test_parseReserved", test_parseReserved},
   {0, }
 };
 
@@ -225,5 +227,22 @@ void test_parseSeq() {
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
   res = p_seq(tokens, parsers);
+  ASSERT_EQ(nullObj.a, res.a);
+}
+
+void test_parseReserved() {
+  /* test a parse success */
+  char* input = "end";
+  Object inputStr = stringNew(input);
+  Object tokenQ = lex(inputStr);
+  Object tokens = queueAsList(tokenQ);
+  Object res = p_reserved(tokens, stringNew("end"));
+  ASSERT_NE(nullObj.a, res.a);
+  /* test a parse failure */
+  input = "100";
+  inputStr = stringNew(input);
+  tokenQ = lex(inputStr);
+  tokens = queueAsList(tokenQ);
+  res = p_reserved(tokens, stringNew("end"));
   ASSERT_EQ(nullObj.a, res.a);
 }

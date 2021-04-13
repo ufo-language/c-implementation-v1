@@ -28,5 +28,7 @@ Object p_number(Object tokens);
 Object p_string(Object tokens);
 Object p_object(Object tokens);
 
+/* reserved word parsers */
+Object p_end(Object tokens);
 
 #endif
