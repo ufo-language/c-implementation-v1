@@ -60,6 +60,11 @@ Object p_oneOf(Object tokens, Parser* parsers) {
   return nullObj;
 }
 
+Object p_reserved(Object tokens, Object reservedString) {
+  Object res = p_spot(tokens, T_RESERVED, reservedString);
+  return res;
+}
+
 Object p_seq(Object tokens, Parser* parsers) {
   Object objQ = queueNew();
   while (*parsers) {
@@ -96,6 +101,11 @@ Object p_some(Object tokens, Parser parser, int min) {
 
 /* Object parsers ==================================================*/
 
+Object p_bool(Object tokens) {
+  Object res = p_spot(tokens, T_BOOL, nullObj);
+  return res;
+}
+
 Object p_int(Object tokens) {
   Object res = p_spot(tokens, T_INT, nullObj);
   return res;
@@ -114,11 +124,6 @@ Object p_number(Object tokens) {
 
 Object p_string(Object tokens) {
   Object res = p_spot(tokens, T_STRING, nullObj);
-  return res;
-}
-
-Object p_reserved(Object tokens, Object reservedString) {
-  Object res = p_spot(tokens, T_RESERVED, reservedString);
   return res;
 }
 

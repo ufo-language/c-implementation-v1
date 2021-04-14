@@ -15,6 +15,7 @@
 #include "../src/parser.h"
 
 static void test_parseSpot();
+static void test_parseBool();
 static void test_parseInt();
 static void test_parseReal();
 static void test_parseString();
@@ -28,6 +29,7 @@ static void test_parseReserved();
 
 static TestEntry testEntries[] = {
   {"test_parseSpot", test_parseSpot},
+  {"test_parseBool", test_parseBool},
   {"test_parseInt", test_parseInt},
   {"test_parseReal", test_parseReal},
   {"test_parseString", test_parseString},
@@ -71,6 +73,30 @@ void test_parseSpot() {
   tokens = queueAsList(tokenQ);
   res = p_spot(tokens, T_SPECIAL, nullObj);
   ASSERT_EQ(nullObj.a, res.a);
+}
+
+void test_parseBool() {
+  /* test a parse 'true' success */
+  char* input = "true";
+  Object inputStr = stringNew(input);
+  Object tokenQ = lex(inputStr);
+  Object tokens = queueAsList(tokenQ);
+  Object res = p_bool(tokens);
+  EXPECT_NE(nullObj.a, res.a);
+  /* test a parse 'false' success */
+  input = "false";
+  inputStr = stringNew(input);
+  tokenQ = lex(inputStr);
+  tokens = queueAsList(tokenQ);
+  res = p_bool(tokens);
+  EXPECT_NE(nullObj.a, res.a);
+  /* test a parse failures */
+  input = "abc";
+  inputStr = stringNew(input);
+  tokenQ = lex(inputStr);
+  tokens = queueAsList(tokenQ);
+  res = p_bool(tokens);
+  EXPECT_EQ(nullObj.a, res.a);
 }
 
 void test_parseInt() {
