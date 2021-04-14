@@ -26,7 +26,7 @@ Object parse(Parser parser, Object tokens) {
   return res;
 }
 
-/* primitive 'spot' parser =========================================*/
+/* primitive 'spot' parser -----------------------------------------*/
 
 Object p_spot(Object tokenList, TokenType tokenType, Object value) {
   Object token = listGetFirst(tokenList);
@@ -42,7 +42,7 @@ Object p_spot(Object tokenList, TokenType tokenType, Object value) {
   return tokenList;
 }
 
-/* parser combinators ==============================================*/
+/* parser combinators ----------------------------------------------*/
 
 Object p_maybe(Object tokens, Parser parser) {
   Object res = parse(parser, tokens);
@@ -99,7 +99,7 @@ Object p_some(Object tokens, Parser parser, int min) {
   return nullObj;
 }
 
-/* Object parsers ==================================================*/
+/* Object parsers --------------------------------------------------*/
 
 Object p_bool(Object tokens) {
   Object res = p_spot(tokens, T_BOOL, nullObj);
@@ -121,6 +121,13 @@ Object p_string(Object tokens) {
   return res;
 }
 
+Object p_symbol(Object tokens) {
+  Object res = p_spot(tokens, T_SYMBOL, nullObj);
+  return res;
+}
+
+/* Aggregate object parsers ----------------------------------------*/
+
 Object p_number(Object tokens) {
   Parser parsers[] = {&p_int, &p_real, NULL};
   Object res = p_oneOf(tokens, parsers);
@@ -130,5 +137,12 @@ Object p_number(Object tokens) {
 Object p_object(Object tokens) {
   Parser parsers[] = {&p_int, &p_real, &p_string, NULL};
   Object res = p_oneOf(tokens, parsers);
+  return res;
+}
+
+/* Expression parsers ----------------------------------------------*/
+
+Object p_ident(Object tokens) {
+  Object res = p_spot(tokens, T_IDENT, nullObj);
   return res;
 }

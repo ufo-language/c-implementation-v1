@@ -24,9 +24,14 @@ Object p_reserved(Object tokens, Object reservedString);
 Object p_bool(Object tokens);
 Object p_int(Object tokens);
 Object p_real(Object tokens);
-Object p_number(Object tokens);
 Object p_string(Object tokens);
+Object p_symbol(Object tokens);
+
+Object p_number(Object tokens);
 Object p_object(Object tokens);
+
+/* expression parsers */
+Object p_ident(Object tokens);
 
 /* reserved word parsers */
 Object p_end(Object tokens);

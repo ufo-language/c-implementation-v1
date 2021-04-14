@@ -19,11 +19,13 @@ static void test_parseBool();
 static void test_parseInt();
 static void test_parseReal();
 static void test_parseString();
+static void test_parseSymbol();
 static void test_parseMaybe();
 static void test_parseOneOf();
 static void test_parseSeq();
 static void test_parseSome();
 static void test_parseReserved();
+static void test_parseIdent();
 
 /* List the unit tests to run here ---------------------------------*/
 
@@ -33,11 +35,13 @@ static TestEntry testEntries[] = {
   {"test_parseInt", test_parseInt},
   {"test_parseReal", test_parseReal},
   {"test_parseString", test_parseString},
+  {"test_parseSymbol", test_parseSymbol},
   {"test_parseMaybe", test_parseMaybe},
   {"test_parseOneOf", test_parseOneOf},
   {"test_parseSeq", test_parseSeq},
   {"test_parseSome", test_parseSome},
   {"test_parseReserved", test_parseReserved},
+  {"test_parseIdent", test_parseIdent},
   {0, 0}
 };
 
@@ -147,6 +151,23 @@ void test_parseString() {
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
   res = p_string(tokens);
+  EXPECT_EQ(nullObj.a, res.a);
+}
+
+void test_parseSymbol() {
+  /* test a parse success */
+  char* input = "Abc";
+  Object inputStr = stringNew(input);
+  Object tokenQ = lex(inputStr);
+  Object tokens = queueAsList(tokenQ);
+  Object res = p_symbol(tokens);
+  EXPECT_NE(nullObj.a, res.a);
+  /* test a parse failure */
+  input = "abc";
+  inputStr = stringNew(input);
+  tokenQ = lex(inputStr);
+  tokens = queueAsList(tokenQ);
+  res = p_symbol(tokens);
   EXPECT_EQ(nullObj.a, res.a);
 }
 
@@ -270,5 +291,22 @@ void test_parseReserved() {
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
   res = p_reserved(tokens, stringNew("end"));
+  ASSERT_EQ(nullObj.a, res.a);
+}
+
+void test_parseIdent() {
+  /* test a parse success */
+  char* input = "abc";
+  Object inputStr = stringNew(input);
+  Object tokenQ = lex(inputStr);
+  Object tokens = queueAsList(tokenQ);
+  Object res = p_ident(tokens);
+  ASSERT_NE(nullObj.a, res.a);
+  /* test a parse failure */
+  input = "100";
+  inputStr = stringNew(input);
+  tokenQ = lex(inputStr);
+  tokens = queueAsList(tokenQ);
+  res = p_ident(tokens);
   ASSERT_EQ(nullObj.a, res.a);
 }
