@@ -24,4 +24,4 @@ Features:
   * finite map / hash table
   * set
   * queue
-
+  * tuple
