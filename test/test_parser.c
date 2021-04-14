@@ -70,12 +70,12 @@ void test_parseSpot() {
   Object inputStr = stringNew(input);
   Object tokenQ = lex(inputStr);
   Object tokens = queueAsList(tokenQ);
-  Object res = p_spot(tokens, T_EOI, nullObj);
+  Object res = p_spot(tokens, T_EOI);
   ASSERT_NE(nullObj.a, res.a);
   /* test a parse failure */
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
-  res = p_spot(tokens, T_SPECIAL, nullObj);
+  res = p_spot(tokens, T_SPECIAL);
   ASSERT_EQ(nullObj.a, res.a);
 }
 
@@ -283,14 +283,14 @@ void test_parseReserved() {
   Object inputStr = stringNew(input);
   Object tokenQ = lex(inputStr);
   Object tokens = queueAsList(tokenQ);
-  Object res = p_reserved(tokens, stringNew("end"));
+  Object res = p_spotReserved(tokens, "end");
   ASSERT_NE(nullObj.a, res.a);
   /* test a parse failure */
   input = "100";
   inputStr = stringNew(input);
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
-  res = p_reserved(tokens, stringNew("end"));
+  res = p_spotReserved(tokens, "end");
   ASSERT_EQ(nullObj.a, res.a);
 }
 

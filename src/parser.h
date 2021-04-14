@@ -10,15 +10,15 @@ Object parseCharString(char* input, Parser parser);
 Object parse(Parser parser, Object tokens);
 
 /* primitive */
-Object p_spot(Object tokenList, TokenType tokenType, Object value);
+Object p_spot(Object tokenList, TokenType tokenType);
+Object p_spotReserved(Object tokenList, char* word);
+Object p_spotSpecial(Object tokenList, char* word);
 
 /* combinators */
 Object p_maybe(Object tokens, Parser parser);
 Object p_oneOf(Object tokens, Parser* parsers);
 Object p_seq(Object tokens, Parser* parsers);
 Object p_some(Object tokens, Parser parser, int min);
-
-Object p_reserved(Object tokens, Object reservedString);
 
 /* object parsers */
 Object p_bool(Object tokens);

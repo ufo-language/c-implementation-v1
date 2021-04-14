@@ -26,18 +26,13 @@ Object parse(Parser parser, Object tokens) {
   return res;
 }
 
-/* Primitive 'spot' parser -----------------------------------------*/
+/* Primitive 'spot' parsers ----------------------------------------*/
 
-Object p_spot(Object tokenList, TokenType tokenType, Object value) {
+Object p_spot(Object tokenList, TokenType tokenType) {
   Object token = listGetFirst(tokenList);
   Object tokenSym = arrayGet(token, 0);
   if (!symbolHasName(tokenSym, T_NAMES[tokenType])) {
     return nullObj;
-  }
-  if (value.a != nullObj.a) {
-    if (!objEquals(arrayGet(token, 1), value)) {
-      return nullObj;
-    }
   }
   return tokenList;
 }
@@ -48,7 +43,15 @@ Object p_spotReserved(Object tokenList, char* word) {
   if (!symbolHasName(tokenSym, T_NAMES[T_RESERVED])) {
     return nullObj;
   }
-  Object string = arrayGet(token, 1);
+  return tokenList;
+}
+
+Object p_spotSpecial(Object tokenList, char* word) {
+  Object token = listGetFirst(tokenList);
+  Object tokenSym = arrayGet(token, 0);
+  if (!symbolHasName(tokenSym, T_NAMES[T_SPECIAL])) {
+    return nullObj;
+  }
   return tokenList;
 }
 
@@ -68,11 +71,6 @@ Object p_oneOf(Object tokens, Parser* parsers) {
     parsers++;
   }
   return nullObj;
-}
-
-Object p_reserved(Object tokens, Object reservedString) {
-  Object res = p_spot(tokens, T_RESERVED, reservedString);
-  return res;
 }
 
 Object p_seq(Object tokens, Parser* parsers) {
@@ -112,27 +110,27 @@ Object p_some(Object tokens, Parser parser, int min) {
 /* Object parsers --------------------------------------------------*/
 
 Object p_bool(Object tokens) {
-  Object res = p_spot(tokens, T_BOOL, nullObj);
+  Object res = p_spot(tokens, T_BOOL);
   return res;
 }
 
 Object p_int(Object tokens) {
-  Object res = p_spot(tokens, T_INT, nullObj);
+  Object res = p_spot(tokens, T_INT);
   return res;
 }
 
 Object p_real(Object tokens) {
-  Object res = p_spot(tokens, T_REAL, nullObj);
+  Object res = p_spot(tokens, T_REAL);
   return res;
 }
 
 Object p_string(Object tokens) {
-  Object res = p_spot(tokens, T_STRING, nullObj);
+  Object res = p_spot(tokens, T_STRING);
   return res;
 }
 
 Object p_symbol(Object tokens) {
-  Object res = p_spot(tokens, T_SYMBOL, nullObj);
+  Object res = p_spot(tokens, T_SYMBOL);
   return res;
 }
 
@@ -158,7 +156,7 @@ Object p_end(Object tokens) {
 }
 
 Object p_ident(Object tokens) {
-  Object res = p_spot(tokens, T_IDENT, nullObj);
+  Object res = p_spot(tokens, T_IDENT);
   return res;
 }
 
