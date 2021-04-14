@@ -71,6 +71,7 @@ set(TEST_SRC_FILES
   test/test_eval.c
   test/test_gc.c
   test/test_hash.c
+  test/test_ident.c
   test/test_if.c
   test/test_let.c
   test/test_letin.c

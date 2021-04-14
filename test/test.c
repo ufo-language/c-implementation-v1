@@ -14,6 +14,7 @@ int test_eval();
 int test_gc();
 int test_hash();
 int test_if();
+int test_ident();
 int test_let();
 int test_letIn();
 int test_lexer();
@@ -57,6 +58,7 @@ static int (*tests[])() = {
   test_parser,
   test_delegate,
   test_tuple,
+  test_ident,
   0
 };
 
