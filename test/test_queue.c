@@ -12,7 +12,7 @@
 
 static void test_queueNew();
 static void test_queueEnqDeq();
-static void test_queueEqual();
+static void test_queueEquals();
 static void test_queueEval();
 
 /* List the unit tests to run here ---------------------------------*/
@@ -20,7 +20,7 @@ static void test_queueEval();
 static TestEntry testEntries[] = {
   {"test_queueNew", test_queueNew},
   {"test_queueEnqDeq", test_queueEnqDeq},
-  {"test_queueEqual", test_queueEqual},
+  {"test_queueEquals", test_queueEquals},
   {"test_queueEval", test_queueEval},
   {0, 0}
 };
@@ -80,20 +80,20 @@ void test_queueEnqDeq() {
   EXPECT_EQ(EMPTY_LIST.a, objGetData(q, 2));  /* tail */
 }
 
-void test_queueEqual() {
+void test_queueEquals() {
   Object i100 = intNew(100);
   Object i200 = intNew(200);
   Object i300 = intNew(300);
 
   Object q1 = queueNew();
   Object q2 = queueNew();
-  EXPECT_T(queueEqual(q1, q2));
+  EXPECT_T(queueEquals(q1, q2));
 
   queueEnq(q1, i100);
-  EXPECT_F(queueEqual(q1, q2));
+  EXPECT_F(queueEquals(q1, q2));
 
   queueEnq(q2, i100);
-  EXPECT_T(queueEqual(q1, q2));
+  EXPECT_T(queueEquals(q1, q2));
 }
 
 void test_queueEval() {

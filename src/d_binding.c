@@ -7,6 +7,7 @@
 #include "object.h"
 #include "thread.h"
 
+/*------------------------------------------------------------------*/
 Object bindingNew(Object lhs, Object rhs) {
   Object binding = objAlloc(D_Binding, 2);
   objSetData(binding, BND_LHS_OFS, lhs.a);
@@ -14,7 +15,8 @@ Object bindingNew(Object lhs, Object rhs) {
   return binding;
 }
 
-bool bindingEqual(Object binding, Object other) {
+/*------------------------------------------------------------------*/
+bool bindingEquals(Object binding, Object other) {
   Object lhs1 = bindingGetLhs(binding);
   Object lhs2 = bindingGetLhs(other);
   if (!objEquals(lhs1, lhs2)) {
@@ -25,27 +27,32 @@ bool bindingEqual(Object binding, Object other) {
   return objEquals(rhs1, rhs2);
 }
 
+/*------------------------------------------------------------------*/
 Object bindingEval(Object binding, Thread* thd) {
   Object newLhs = eval(bindingGetLhs(binding), thd);
   Object newRhs = eval(bindingGetRhs(binding), thd);
   return bindingNew(newLhs, newRhs);
 }
 
+/*------------------------------------------------------------------*/
 void bindingFreeVars(Object binding, Object freeVarSet) {
   objFreeVars(bindingGetLhs(binding), freeVarSet);
   objFreeVars(bindingGetRhs(binding), freeVarSet);
 }
 
+/*------------------------------------------------------------------*/
 Object bindingGetLhs(Object binding) {
   Object obj = {objGetData(binding, BND_LHS_OFS)};
   return obj;
 }
 
+/*------------------------------------------------------------------*/
 Object bindingGetRhs(Object binding) {
   Object obj = {objGetData(binding, BND_RHS_OFS)};
   return obj;
 }
 
+/*------------------------------------------------------------------*/
 Object bindingMatch(Object binding, Object other, Object bindingList) {
   Object lhs1 = bindingGetLhs(binding);
   Object lhs2 = bindingGetLhs(other);
@@ -58,10 +65,12 @@ Object bindingMatch(Object binding, Object other, Object bindingList) {
   return objMatch(rhs1, rhs2, bindingList);
 }
 
+/*------------------------------------------------------------------*/
 void bindingSetRhs(Object binding, Object obj) {
   objSetData(binding, BND_RHS_OFS, obj.a);
 }
 
+/*------------------------------------------------------------------*/
 void bindingShow(Object binding, FILE* stream) {
   objShow(bindingGetLhs(binding), stream);
   fputc('=', stream);

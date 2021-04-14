@@ -7,7 +7,7 @@
 #include "object.h"
 
 Object realNew(float i);
-bool realEqual(Object real, Object other);
+bool realEquals(Object real, Object other);
 float realGet(Object real);
 void realShow(Object real, FILE* stream);
 

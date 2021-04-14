@@ -4,6 +4,7 @@
 #include "defines.h"
 #include "object.h"
 
+/*------------------------------------------------------------------*/
 Object realNew(float f) {
   Object real = objAlloc(D_Real, 2);
   union {
@@ -16,10 +17,12 @@ Object realNew(float f) {
   return real;
 }
 
-bool realEqual(Object real, Object obj) {
+/*------------------------------------------------------------------*/
+bool realEquals(Object real, Object obj) {
   return realGet(real) == realGet(obj);
 }
 
+/*------------------------------------------------------------------*/
 float realGet(Object real) {
   union {
     Word w[2];
@@ -30,6 +33,7 @@ float realGet(Object real) {
   return u.f;
 }
 
+/*------------------------------------------------------------------*/
 void realShow(Object real, FILE* stream) {
   fprintf(stream, "%f", realGet(real));
 }

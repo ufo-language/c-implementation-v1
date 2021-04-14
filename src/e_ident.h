@@ -4,7 +4,7 @@
 #include "object.h"
 #include "thread.h"
 
-bool identEqual(Object ident, Object obj);
+bool identEquals(Object ident, Object obj);
 Object identEval(Object ident, Thread* thd);
 Word identHash(Object ident);
 Object identMatch(Object ident, Object other, Object bindingList);

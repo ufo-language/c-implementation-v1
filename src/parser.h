@@ -32,6 +32,7 @@ Object p_object(Object tokens);
 
 /* expression parsers */
 Object p_ident(Object tokens);
+Object p_if(Object tokens);
 
 /* reserved word parsers */
 Object p_end(Object tokens);

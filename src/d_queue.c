@@ -36,10 +36,10 @@ Object queueDeq(Object q) {
 }
 
 /*------------------------------------------------------------------*/
-bool queueEqual(Object q, Object other) {
+bool queueEquals(Object q, Object other) {
   Object elems1 = {objGetData(q, Q_HEAD_OFS)};
   Object elems2 = {objGetData(other, Q_HEAD_OFS)};
-  return listEqual(elems1, elems2);
+  return listEquals(elems1, elems2);
 }
 
 /*------------------------------------------------------------------*/

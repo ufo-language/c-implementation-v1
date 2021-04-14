@@ -37,7 +37,7 @@ Word setCount(Object set) {
 }
 
 /*------------------------------------------------------------------*/
-bool setEqual(Object set, Object other) {
+bool setEquals(Object set, Object other) {
   if (setCount(set) != setCount(other)) {
     return false;
   }

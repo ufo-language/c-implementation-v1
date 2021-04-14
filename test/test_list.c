@@ -13,7 +13,7 @@
 
 void test_listEmptyGet();
 void test_listEmptySet();
-void test_listEqual();
+void test_listEquals();
 void test_listGet();
 void test_listIsEmpty();
 void test_listMatch();
@@ -27,7 +27,7 @@ static TestEntry testEntries[] = {
   {"test_listGet", test_listGet},
   {"test_listSet", test_listSet},
   {"test_listIsEmpty", test_listIsEmpty},
-  {"test_listEqual", test_listEqual},
+  {"test_listEquals", test_listEquals},
   {"test_listMatch", test_listMatch},
   {0, 0}
 };
@@ -70,24 +70,24 @@ void test_listEmptySet() {
   EXPECT_EQ(EMPTY_LIST.a, listGetRest(EMPTY_LIST).a);
 }
 
-void test_listEqual() {
-  EXPECT_T(listEqual(EMPTY_LIST, EMPTY_LIST));
+void test_listEquals() {
+  EXPECT_T(listEquals(EMPTY_LIST, EMPTY_LIST));
 
   Object i100 = intNew(100);
   Object i200 = intNew(200);
 
   Object list1 = listNew(i100, EMPTY_LIST);
-  EXPECT_T(listEqual(list1, list1));
+  EXPECT_T(listEquals(list1, list1));
 
   Object list2 = listNew(i100, EMPTY_LIST);
-  EXPECT_T(listEqual(list1, list2));
-  EXPECT_T(listEqual(list2, list1));
+  EXPECT_T(listEquals(list1, list2));
+  EXPECT_T(listEquals(list2, list1));
 
   Object list3 = listNew(i200, EMPTY_LIST);
-  EXPECT_F(listEqual(list1, list3));
-  EXPECT_F(listEqual(list2, list3));
-  EXPECT_F(listEqual(list3, list1));
-  EXPECT_F(listEqual(list3, list2));
+  EXPECT_F(listEquals(list1, list3));
+  EXPECT_F(listEquals(list2, list3));
+  EXPECT_F(listEquals(list3, list1));
+  EXPECT_F(listEquals(list3, list2));
 }
 
 void test_listGet() {

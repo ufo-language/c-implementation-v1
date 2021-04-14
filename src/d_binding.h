@@ -13,7 +13,7 @@
 Object bindingNew(Object lhs, Object rhs);
 
 void bindingDel(Object binding);
-bool bindingEqual(Object binding, Object other);
+bool bindingEquals(Object binding, Object other);
 Object bindingEval(Object binding, Thread* thd);
 void bindingFreeVars(Object binding, Object freeVarSet);
 Object bindingGetLhs(Object binding);

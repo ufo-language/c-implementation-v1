@@ -16,7 +16,7 @@ static void test_arrayNewSize();
 static void test_arrayGet();
 static void test_arraySet();
 static void test_arrayCount();
-static void test_arrayEqual();
+static void test_arrayEquals();
 static void test_arrayMatch();
 
 /* List the unit tests to run here ---------------------------------*/
@@ -26,7 +26,7 @@ static TestEntry testEntries[] = {
   {"test_arrayGet", test_arrayGet},
   {"test_arraySet", test_arraySet},
   {"test_arrayCount", test_arrayCount},
-  {"test_arrayEqual", test_arrayEqual},
+  {"test_arrayEquals", test_arrayEquals},
   {"test_arrayMatch", test_arrayMatch},
   {0, 0}
 };
@@ -87,25 +87,25 @@ void test_arrayCount() {
   EXPECT_EQ(2, arrayCount(ary2));
 }
 
-void test_arrayEqual() {
+void test_arrayEquals() {
   Object ary0a = arrayNew(0);
   Object ary0b = arrayNew(0);
-  EXPECT_T(arrayEqual(ary0a, ary0b));
+  EXPECT_T(arrayEquals(ary0a, ary0b));
 
   Object ary1a = arrayNew(1);
   Object ary1b = arrayNew(1);
-  EXPECT_T(arrayEqual(ary1a, ary1b));
-  EXPECT_F(arrayEqual(ary0a, ary1a));
-  EXPECT_F(arrayEqual(ary1a, ary0a));
+  EXPECT_T(arrayEquals(ary1a, ary1b));
+  EXPECT_F(arrayEquals(ary0a, ary1a));
+  EXPECT_F(arrayEquals(ary1a, ary0a));
   
   Object i100a = intNew(100);
-  EXPECT_F(arrayEqual(ary1a, i100a));
+  EXPECT_F(arrayEquals(ary1a, i100a));
   arraySet(ary1a, 0, i100a);
-  EXPECT_F(arrayEqual(ary1a, ary1b));
-  EXPECT_F(arrayEqual(ary1b, ary1a));
+  EXPECT_F(arrayEquals(ary1a, ary1b));
+  EXPECT_F(arrayEquals(ary1b, ary1a));
   Object i100b = intNew(100);
   arraySet(ary1b, 0, i100b);
-  EXPECT_T(arrayEqual(ary1a, ary1b));
+  EXPECT_T(arrayEquals(ary1a, ary1b));
 }
 
 void test_arrayMatch() {

@@ -39,7 +39,7 @@ Object hashFold(Object hash, Object data, Object (*fun)(Object data, Object key,
 }
 
 /*------------------------------------------------------------------*/
-bool hashEqual(Object hash, Object other) {
+bool hashEquals(Object hash, Object other) {
   if (hashCount(hash) != hashCount(other)) {
     return false;
   }

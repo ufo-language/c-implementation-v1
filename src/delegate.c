@@ -96,31 +96,31 @@ bool objEquals(Object obj1, Object obj2) {
   }
   switch (obj1Type) {
     case D_Array:
-      return arrayEqual(obj1, obj2);
+      return arrayEquals(obj1, obj2);
     case D_Binding:
-      return bindingEqual(obj1, obj2);
+      return bindingEquals(obj1, obj2);
     case D_Bool:
-      return boolEqual(obj1, obj2);
+      return boolEquals(obj1, obj2);
     case D_Exn:
-      return exnEqual(obj1, obj2);
+      return exnEquals(obj1, obj2);
     case D_Hash:
-      return hashEqual(obj1, obj2);
+      return hashEquals(obj1, obj2);
     case D_Int:
-      return intEqual(obj1, obj2);
+      return intEquals(obj1, obj2);
     case D_List:
-      return listEqual(obj1, obj2);
+      return listEquals(obj1, obj2);
     case D_Queue:
-      return queueEqual(obj1, obj2);
+      return queueEquals(obj1, obj2);
     case D_Real:
-      return realEqual(obj1, obj2);
+      return realEquals(obj1, obj2);
     case D_Set:
-      return setEqual(obj1, obj2);
+      return setEquals(obj1, obj2);
     case D_String:
-      return stringEqual(obj1, obj2);
+      return stringEquals(obj1, obj2);
     case D_Symbol:
-      return symbolEqual(obj1, obj2);
+      return symbolEquals(obj1, obj2);
     case E_Ident:
-      return identEqual(obj1, obj2);
+      return identEquals(obj1, obj2);
     default:
       printf("objEqual not implemented for type %s\n", ObjTypeNames[objGetType(obj1)]);
       printf("  returning default false\n");

@@ -15,6 +15,7 @@ void abstrShow_aux(Object abstr, char* prefix, FILE* stream);
 /* Returns a lexical environment for an abstraction rule */
 Object _close(Object closure, Object env);
 
+/*------------------------------------------------------------------*/
 Object closureApply(Object closure, Object argList, Thread* thd) {
   while (closure.a != nullObj.a) {
     Object paramList = {objGetData(closure, CLO_PARAMS_OFS)};
@@ -35,6 +36,7 @@ Object closureApply(Object closure, Object argList, Thread* thd) {
   return nullObj;
 }
 
+/*------------------------------------------------------------------*/
 Object closureNew(Object abstr, Object env) {
   Object firstRule = nullObj;
   Object prevRule = nullObj;
@@ -58,10 +60,12 @@ Object closureNew(Object abstr, Object env) {
   return firstRule;
 }
 
+/*------------------------------------------------------------------*/
 void closureShow(Object closure, FILE* stream) {
   abstrShow_aux(closure, "fun*", stream);
 }
 
+/*------------------------------------------------------------------*/
 Object _close(Object rule, Object env) {
   Object freeVarSet = setNew();
   abstrFreeVars_rule(rule, freeVarSet);

@@ -8,14 +8,14 @@
 #include "../src/object.h"
 
 void test_stringNew();
-void test_stringEqual();
+void test_stringEquals();
 void test_stringBounds();
 
 /* List the unit tests to run here ---------------------------------*/
 
 static TestEntry testEntries[] = {
   {"test_stringNew", test_stringNew},
-  {"test_stringEqual", test_stringEqual},
+  {"test_stringEquals", test_stringEquals},
   {"test_stringBounds", test_stringBounds},
   {0, 0}
 };
@@ -48,26 +48,26 @@ void test_stringNew() {
   }
 }
 
-void test_stringEqual() {
+void test_stringEquals() {
   char* s0 = "";
   Object str0 = stringNew(s0);
-  EXPECT_T(stringEqual(str0, str0));
+  EXPECT_T(stringEquals(str0, str0));
   
   char* s1 = "Abcd";
   Object str1 = stringNew(s1);
-  EXPECT_T(stringEqual(str1, str1));
-  EXPECT_F(stringEqual(str0, str1));
-  EXPECT_F(stringEqual(str1, str0));
+  EXPECT_T(stringEquals(str1, str1));
+  EXPECT_F(stringEquals(str0, str1));
+  EXPECT_F(stringEquals(str1, str0));
 
   Object str2 = stringNew(s1);
-  EXPECT_T(stringEqual(str1, str2));
-  EXPECT_T(stringEqual(str2, str1));
+  EXPECT_T(stringEquals(str1, str2));
+  EXPECT_T(stringEquals(str2, str1));
 
   char* s2 = "Defg";
   Object str3 = stringNew(s2);
-  EXPECT_F(stringEqual(str1, str3));
-  EXPECT_F(stringEqual(str2, str3));
-  EXPECT_F(stringEqual(str3, str1));
+  EXPECT_F(stringEquals(str1, str3));
+  EXPECT_F(stringEquals(str2, str3));
+  EXPECT_F(stringEquals(str3, str1));
 }
 
 void test_stringBounds() {

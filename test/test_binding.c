@@ -15,7 +15,7 @@
 
 static void test_bindingNew();
 static void test_bindingGetSet();
-static void test_bindingEqual();
+static void test_bindingEquals();
 static void test_bindingEval();
 static void test_bindingMatch();
 
@@ -24,7 +24,7 @@ static void test_bindingMatch();
 static TestEntry testEntries[] = {
   {"test_bindingNew", test_bindingNew},
   {"test_bindingGetSet", test_bindingGetSet},
-  {"test_bindingEqual", test_bindingEqual},
+  {"test_bindingEquals", test_bindingEquals},
   {"test_bindingEval", test_bindingEval},
   {"test_bindingMatch", test_bindingMatch},
   {0, 0}
@@ -70,7 +70,7 @@ void test_bindingGetSet() {
   EXPECT_EQ(i200.a, bindingGetRhs(bnd).a);
 }
 
-void test_bindingEqual() {
+void test_bindingEquals() {
   Object x = identNew("x");
   Object i100 = intNew(100);
   Object bndx1 = bindingNew(x, i100);
@@ -85,7 +85,7 @@ void test_bindingEqual() {
   Object y = identNew("x");
   Object bndy1 = bindingNew(y, i200);
 
-  EXPECT_F(bindingEqual(bndx1, bndy1));
+  EXPECT_F(bindingEquals(bndx1, bndy1));
 }
 
 void test_bindingEval() {

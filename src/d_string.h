@@ -10,7 +10,8 @@ Object stringNew(char* str);
 
 Word stringCount(Object string);
 void stringDisp(Object string, FILE* stream);
-bool stringEqual(Object string, Object other);
+bool stringEquals(Object string, Object other);
+bool stringEqualsChars(Object string, char* chars);
 Word stringHash(Object string);
 Word stringHash_aux(Object string);
 char stringGetChar(Object string, Word offset);

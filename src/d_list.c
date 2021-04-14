@@ -9,6 +9,7 @@
 #include "object.h"
 #include "thread.h"
 
+/*------------------------------------------------------------------*/
 Word listCount(Object list) {
   Word n = 0;
   while (!listIsEmpty(list)) {
@@ -22,6 +23,7 @@ Word listCount(Object list) {
   return n;
 }
 
+/*------------------------------------------------------------------*/
 Object listCreateEmpty() {
   Object list = listNew(nullObj, nullObj);
   objSetData(list, LST_FIRST_OFS, NOTHING.a);
@@ -29,7 +31,8 @@ Object listCreateEmpty() {
   return list;
 }
 
-bool listEqual(Object list, Object other) {
+/*------------------------------------------------------------------*/
+bool listEquals(Object list, Object other) {
   if (listIsEmpty(list)) {
     return listIsEmpty(other);
   }
@@ -46,6 +49,7 @@ bool listEqual(Object list, Object other) {
   return objEquals(rest1, rest2);
 }
 
+/*------------------------------------------------------------------*/
 Object listEval(Object list, Thread* thd) {
   if (listIsEmpty(list)) {
     return EMPTY_LIST;
@@ -55,6 +59,7 @@ Object listEval(Object list, Thread* thd) {
   return listNew(newFirst, newRest);
 }
 
+/*------------------------------------------------------------------*/
 void listFreeVars(Object list, Object freeVarSet) {
   if (listIsEmpty(list)) {
     return;
@@ -65,20 +70,24 @@ void listFreeVars(Object list, Object freeVarSet) {
   objFreeVars(listGetRest(list), freeVarSet);
 }
 
+/*------------------------------------------------------------------*/
 Object listGetFirst(Object list) {
   Object obj = {objGetData(list, LST_FIRST_OFS)};
   return obj;
 }
 
+/*------------------------------------------------------------------*/
 Object listGetRest(Object list) {
   Object obj = {objGetData(list, LST_REST_OFS)};
   return obj;
 }
 
+/*------------------------------------------------------------------*/
 bool listIsEmpty(Object list) {
   return list.a == EMPTY_LIST.a;
 }
 
+/*------------------------------------------------------------------*/
 Object listLocate(Object list, Object key) {
   while (!listIsEmpty(list)) {
     Object binding = listGetFirst(list);
@@ -96,6 +105,7 @@ Object listLocate(Object list, Object key) {
   return nullObj;
 }
 
+/*------------------------------------------------------------------*/
 Object listMatch(Object list, Object other, Object bindingList) {
   if (listIsEmpty(list)) {
     return listIsEmpty(other) ? bindingList : nullObj;
@@ -111,6 +121,7 @@ Object listMatch(Object list, Object other, Object bindingList) {
   return objMatch(rest1, rest2, bindingList);
 }
 
+/*------------------------------------------------------------------*/
 Object listNew(Object first, Object rest) {
   Object list = objAlloc(D_List, 2);
   objSetData(list, LST_FIRST_OFS, first.a);
@@ -118,6 +129,7 @@ Object listNew(Object first, Object rest) {
   return list;
 }
 
+/*------------------------------------------------------------------*/
 Object listReverse(Object list) {
   Object rev = EMPTY_LIST;
   while (!listIsEmpty(list)) {
@@ -134,22 +146,26 @@ Object listReverse(Object list) {
   return rev;
 }
 
+/*------------------------------------------------------------------*/
 void listSetFirst(Object list, Object obj) {
   if (!listIsEmpty(list)) {
     objSetData(list, LST_FIRST_OFS, obj.a);
   }
 }
 
+/*------------------------------------------------------------------*/
 void listSetRest(Object list, Object obj) {
   if (!listIsEmpty(list)) {
     objSetData(list, LST_REST_OFS, obj.a);
   }
 }
 
+/*------------------------------------------------------------------*/
 void listShow(Object list, FILE* stream) {
   listShowWith(list, "[", ", ", "]", stream);
 }
 
+/*------------------------------------------------------------------*/
 void listShowWith(Object list, char* start, char* sep, char* end, FILE* stream) {
   bool firstIter = true;
   fputs(start, stream);

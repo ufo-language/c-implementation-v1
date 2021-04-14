@@ -82,7 +82,7 @@ Word tupleCount(Object tuple) {
 }
 
 /*------------------------------------------------------------------*/
-bool tupleEqual(Object tuple, Object other) {
+bool tupleEquals(Object tuple, Object other) {
   Word len1 = tupleCount(tuple);
   Word len2 = tupleCount(other);
   if (len1 != len2) {

@@ -25,7 +25,7 @@ Word arrayCount(Object array) {
 }
 
 /*------------------------------------------------------------------*/
-bool arrayEqual(Object array, Object other) {
+bool arrayEquals(Object array, Object other) {
   Word len1 = arrayCount(array);
   Word len2 = arrayCount(other);
   if (len1 != len2) {

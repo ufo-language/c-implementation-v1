@@ -8,7 +8,7 @@
 
 Object intNew(int i);
 
-bool intEqual(Object integer, Object other);
+bool intEquals(Object integer, Object other);
 int intGet(Object integer);
 int intHash(Object integer);
 void intShow(Object integer, FILE* stream);

@@ -6,11 +6,13 @@
 #include "hash.h"
 #include "object.h"
 
+/*------------------------------------------------------------------*/
 Word stringCount(Object string) {
   return objGetData(string, 0);
 }
 
-bool stringEqual(Object string, Object other) {
+/*------------------------------------------------------------------*/
+bool stringEquals(Object string, Object other) {
   Word len1 = stringCount(string);
   Word len2 = stringCount(other);
   if (len1 != len2) {
@@ -24,10 +26,24 @@ bool stringEqual(Object string, Object other) {
   return true;
 }
 
+/*------------------------------------------------------------------*/
+bool stringEqualsChars(Object string, char* chars) {
+  Word len = stringCount(string);
+  for (Word n=0; n<len; n++) {
+    if (stringGetChar(string, n) != chars[n]) {
+      return false;
+    }
+    chars++;
+  }
+  return true;
+}
+
+/*------------------------------------------------------------------*/
 Word stringHash(Object str) {
  return stringHash_aux(str) ^ hashPrimes(objGetType(str));
 }
 
+/*------------------------------------------------------------------*/
 Word stringHash_aux(Object str) {
   Word hashCode = 0;
   Word strLen = stringCount(str);
@@ -37,6 +53,7 @@ Word stringHash_aux(Object str) {
   return hashCode;
 }
 
+/*------------------------------------------------------------------*/
 Object stringNew(char* str) {
   int len = strlen(str);
   Word nWords = (len + 1) / sizeof(Word);
@@ -49,6 +66,7 @@ Object stringNew(char* str) {
   return string;
 }
 
+/*------------------------------------------------------------------*/
 char stringGetChar(Object string, Word offset) {
   Word word = objGetData(string, 1 + offset / 2);
   if (offset % 2 == 0) {
@@ -57,6 +75,7 @@ char stringGetChar(Object string, Word offset) {
   return (word >> 8);
 }
 
+/*------------------------------------------------------------------*/
 void stringSetChar(Object string, Word offset, char c) {
   Word word = objGetData(string, 1 + offset / 2);
   if (offset % 2 == 0) {
@@ -68,6 +87,7 @@ void stringSetChar(Object string, Word offset, char c) {
   objSetData(string, 1 + offset / 2, word);
 }
 
+/*------------------------------------------------------------------*/
 void stringDisp(Object string, FILE* stream) {
   Word len = stringCount(string);
   for (Word n=0; n<len; n++) {
@@ -76,6 +96,7 @@ void stringDisp(Object string, FILE* stream) {
   }
 }
 
+/*------------------------------------------------------------------*/
 void stringShow(Object string, FILE* stream) {
   fputc('"', stream);
   stringDisp(string, stream);

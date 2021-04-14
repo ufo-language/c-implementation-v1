@@ -12,7 +12,7 @@ Object setNew();
 
 void setAddElem(Object set, Object elem);
 Word setCount(Object set);
-bool setEqual(Object set, Object other);
+bool setEquals(Object set, Object other);
 Object setEval(Object set, Thread* thd);
 void setFreeVars(Object set, Object freeVarSet);
 bool setHas(Object set, Object elem);

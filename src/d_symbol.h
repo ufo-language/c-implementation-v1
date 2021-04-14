@@ -4,7 +4,7 @@
 #include "object.h"
 #include "thread.h"
 
-bool symbolEqual(Object symbol, Object obj);
+bool symbolEquals(Object symbol, Object obj);
 Word symbolHash(Object symbol);
 bool symbolHasName(Object symbol, char* name);
 Object symbolNew(char* name);

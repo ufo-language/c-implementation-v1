@@ -12,7 +12,7 @@
 #include "lexer_obj.h"
 #include "parser.h"
 
-/* parser entry function */
+/* Parser entry function */
 Object parseCharString(char* input, Parser parser) {
   Object inputStr = stringNew(input);
   Object tokenQ = lex(inputStr);
@@ -26,7 +26,7 @@ Object parse(Parser parser, Object tokens) {
   return res;
 }
 
-/* primitive 'spot' parser -----------------------------------------*/
+/* Primitive 'spot' parser -----------------------------------------*/
 
 Object p_spot(Object tokenList, TokenType tokenType, Object value) {
   Object token = listGetFirst(tokenList);
@@ -42,7 +42,17 @@ Object p_spot(Object tokenList, TokenType tokenType, Object value) {
   return tokenList;
 }
 
-/* parser combinators ----------------------------------------------*/
+Object p_spotReserved(Object tokenList, char* word) {
+  Object token = listGetFirst(tokenList);
+  Object tokenSym = arrayGet(token, 0);
+  if (!symbolHasName(tokenSym, T_NAMES[T_RESERVED])) {
+    return nullObj;
+  }
+  Object string = arrayGet(token, 1);
+  return tokenList;
+}
+
+/* Parser combinators ----------------------------------------------*/
 
 Object p_maybe(Object tokens, Parser parser) {
   Object res = parse(parser, tokens);
@@ -129,20 +139,29 @@ Object p_symbol(Object tokens) {
 /* Aggregate object parsers ----------------------------------------*/
 
 Object p_number(Object tokens) {
-  Parser parsers[] = {&p_int, &p_real, NULL};
+  Parser parsers[] = {p_int, p_real, NULL};
   Object res = p_oneOf(tokens, parsers);
   return res;
 }
 
 Object p_object(Object tokens) {
-  Parser parsers[] = {&p_int, &p_real, &p_string, NULL};
+  Parser parsers[] = {p_int, p_bool, p_symbol, p_string, p_real, NULL};
   Object res = p_oneOf(tokens, parsers);
   return res;
 }
 
 /* Expression parsers ----------------------------------------------*/
 
+/* reserved words */
+Object p_end(Object tokens) {
+  return p_spotReserved(tokens, "end");
+}
+
 Object p_ident(Object tokens) {
   Object res = p_spot(tokens, T_IDENT, nullObj);
   return res;
+}
+
+Object p_if(Object tokens) {
+  return p_spotReserved(tokens, "if");
 }

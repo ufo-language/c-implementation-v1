@@ -20,7 +20,7 @@ Object tupleFromArray(Object array);
 void tupleDel(Object tuple);
 
 Word tupleCount(Object tuple);
-bool tupleEqual(Object tuple, Object other);
+bool tupleEquals(Object tuple, Object other);
 Object tupleEval(Object tuple, Thread* thd);
 void tupleFreeVars(Object tuple, Object freeVarSet);
 Object tupleGet(Object tuple, Word index);

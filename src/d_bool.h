@@ -11,7 +11,7 @@
 
 Object boolNew(bool b);
 
-bool boolEqual(Object bln, Object other);
+bool boolEquals(Object bln, Object other);
 bool boolGet(Object bln);
 void boolShow(Object bln, FILE* stream);
 

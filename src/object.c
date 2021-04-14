@@ -53,8 +53,6 @@ char* ObjTypeNames[] = {
 
 Object nullObj = {0};
 
-void objSetType(Object obj, ObjType type);
-
 /* Object functions ------------------------------------------------*/
 
 Object objRawBlockToObj(RawBlock rawBlk) {

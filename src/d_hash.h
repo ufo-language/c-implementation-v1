@@ -11,7 +11,7 @@
 Object hashNew();
 
 Word hashCount(Object hash);
-bool hashEqual(Object hash, Object other);
+bool hashEquals(Object hash, Object other);
 Object hashEval(Object hash, Thread* thd);
 void hashFreeVars(Object hash, Object freeVarSet);
 Object hashGet(Object hash, Object key);
