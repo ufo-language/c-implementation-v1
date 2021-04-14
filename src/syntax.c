@@ -16,7 +16,7 @@ char* BOOL_WORDS[] = {
 /* S_I */
 Transition initialState[] = {
   {'a', 'z',     S_WORD,  A_KEEP,      T_NONE},
-  {'A', 'Z',     S_WORD,  A_KEEP,      T_NONE},
+  {'A', 'Z',     S_SYM,   A_KEEP,      T_NONE},
   {'0', '9',     S_INT,   A_KEEP,      T_NONE},
   {'"', '"',     S_STR,   A_IGNORE,    T_NONE},
   {' ', ' ',     S_I,     A_IGNORE,    T_NONE},
@@ -76,6 +76,14 @@ Transition operatorState[] = {
   {C_ANY, C_ANY, S_I,     A_REUSE,     T_OPER}
 };
 
+/* S_SYM */
+Transition symbolState[] = {
+  {'a', 'z',     S_SYM,  A_KEEP,      T_NONE},
+  {'A', 'Z',     S_SYM,  A_KEEP,      T_NONE},
+  {'_', '_',     S_SYM,  A_KEEP,      T_NONE},
+  {C_ANY, C_ANY, S_I,    A_REUSE,     T_SYMBOL}
+};
+
 /* the order of the elements in this array must match the order
    of the enumerations in the StateName enum in lexer.h */
 Transition* syntax[] = {
@@ -85,7 +93,8 @@ Transition* syntax[] = {
   realState,
   wordState,
   stringState,
-  operatorState
+  operatorState,
+  symbolState
 };
 
 #endif

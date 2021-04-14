@@ -21,6 +21,7 @@ static void test_lexInt1();
 static void test_lexInt2();
 static void test_lexReal();
 static void test_lexIdent();
+static void test_lexSymbol();
 static void test_lexReserved();
 static void test_lexString();
 static void test_lexOper();
@@ -35,6 +36,7 @@ static TestEntry testEntries[] = {
   {"test_lexInt2", test_lexInt2},
   {"test_lexReal", test_lexReal},
   {"test_lexIdent", test_lexIdent},
+  {"test_lexSymbol", test_lexSymbol},
   {"test_lexReserved", test_lexReserved},
   {"test_lexString", test_lexString},
   {"test_lexOper", test_lexOper},
@@ -138,6 +140,23 @@ void test_lexIdent() {
   Object identTokVal = identNew(input);
   EXPECT_T(objEquals(identTokSym, arrayGet(identTok, 0)));
   EXPECT_T(objEquals(identTokVal, arrayGet(identTok, 1)));
+  Object eoiTok = queueDeq(tokenQ);
+  ASSERT_NE(nullObj.a, eoiTok.a);
+  Object eoiTokSym = symbolNew(T_NAMES[T_EOI]);
+  EXPECT_T(objEquals(eoiTokSym, arrayGet(eoiTok, 0)));
+}
+
+void test_lexSymbol() {
+  char* input = "Abc";
+  Object inputStr = stringNew(input);
+  Object tokenQ = lex(inputStr);
+  ASSERT_EQ(2, queueCount(tokenQ));
+  Object symTok = queueDeq(tokenQ);
+  ASSERT_NE(nullObj.a, symTok.a);
+  Object symTokSym = symbolNew(T_NAMES[T_SYMBOL]);
+  Object symTokVal = symbolNew(input);
+  EXPECT_T(objEquals(symTokSym, arrayGet(symTok, 0)));
+  EXPECT_T(objEquals(symTokVal, arrayGet(symTok, 1)));
   Object eoiTok = queueDeq(tokenQ);
   ASSERT_NE(nullObj.a, eoiTok.a);
   Object eoiTokSym = symbolNew(T_NAMES[T_EOI]);

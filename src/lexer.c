@@ -11,7 +11,7 @@
 
 /* There must be a 1:1 correspondence between this and the StateName enum */
 char* S_NAMES[] = {
-  "I", "Integer", "Point", "Real", "Word", "String", "Operator"
+  "I", "Integer", "Point", "Real", "Word", "String", "Operator", "Symbol"
 };
 
 /* There must be a 1:1 correspondence between this and the Action enum */
@@ -22,7 +22,7 @@ char* A_NAMES[] = {
 /* There must be a 1:1 correspondence between this and the TokenType enum */
 char* T_NAMES[] = {
   "None", "Int", "Real", "Bool", "Word", "Ident", "Reserved",
-  "String", "Operator", "Special", "EOI"
+  "String", "Operator", "Special", "Symbol", "EOI"
 };
 
 char cDisp(char c) {

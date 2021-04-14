@@ -116,14 +116,14 @@ Object p_real(Object tokens) {
   return res;
 }
 
-Object p_number(Object tokens) {
-  Parser parsers[] = {&p_int, &p_real, NULL};
-  Object res = p_oneOf(tokens, parsers);
+Object p_string(Object tokens) {
+  Object res = p_spot(tokens, T_STRING, nullObj);
   return res;
 }
 
-Object p_string(Object tokens) {
-  Object res = p_spot(tokens, T_STRING, nullObj);
+Object p_number(Object tokens) {
+  Parser parsers[] = {&p_int, &p_real, NULL};
+  Object res = p_oneOf(tokens, parsers);
   return res;
 }
 

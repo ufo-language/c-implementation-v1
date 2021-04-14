@@ -52,6 +52,9 @@ Object lex(Object string) {
       case T_EOI:
         lexeme = NOTHING;
         break;
+      case T_SYMBOL:
+        lexeme = symbolNew(token.lexeme);
+        break;
       case T_SPECIAL:
       case T_WORD:
       case T_RESERVED:

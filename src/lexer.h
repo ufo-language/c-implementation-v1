@@ -2,7 +2,6 @@
 #define LEXER_H
 
 #include "defines.h"
-//#include "mem.h"
 #include "object.h"
 
 #define LEXEME_SIZE 16
@@ -17,7 +16,7 @@ extern char* A_NAMES[];
 extern char* T_NAMES[];
 
 typedef enum {
-  S_I, S_INT, S_POINT, S_REAL, S_WORD, S_STR, S_OPER
+  S_I, S_INT, S_POINT, S_REAL, S_WORD, S_STR, S_OPER, S_SYM
 } StateName;
 
 typedef enum {
@@ -26,7 +25,7 @@ typedef enum {
 
 typedef enum {
   T_NONE, T_INT, T_REAL, T_BOOL, T_WORD, T_IDENT, T_RESERVED,
-  T_STRING, T_OPER, T_SPECIAL, T_EOI
+  T_STRING, T_OPER, T_SPECIAL, T_SYMBOL, T_EOI
 } TokenType;
 
 #define C_NUL ((char)0x00)
