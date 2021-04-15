@@ -67,4 +67,5 @@ void ifShow(Object ifThen, FILE* stream) {
   objShow(conseq, stream);
   fprintf(stream, " else ");
   objShow(alt, stream);
+  fprintf(stream, " end");
 }

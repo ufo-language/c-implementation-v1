@@ -8,9 +8,57 @@
 #include "d_string.h"
 #include "d_symbol.h"
 #include "delegate.h"
+#include "e_if.h"
 #include "globals.h"
 #include "lexer_obj.h"
 #include "parser.h"
+
+Object p_ELSE(Object);
+Object p_END(Object);
+Object p_IF(Object);
+Object p_THEN(Object);
+Object p_expr(Object);
+
+struct ParserEntry_struct {
+  void* parserAddr;
+  char* parserName;
+} parserEntry[] = {
+  {p_spot, "p_spot"},
+  {p_spotReserved, "p_spotReserved"},
+  {p_spotSpecial, "p_spotSpecial"},
+  {p_ignore, "p_ignore"},
+  {p_maybe, "p_maybe"},
+  {p_oneOf, "p_oneOf"},
+  {p_seq, "p_seq"},
+  {p_some, "p_some"},
+  {p_bool, "p_bool"},
+  {p_int, "p_int"},
+  {p_real, "p_real"},
+  {p_string, "p_string"},
+  {p_symbol, "p_symbol"},
+  {p_number, "p_number"},
+  {p_object, "p_object"},
+  {p_ELSE, "p_ELSE"},
+  {p_END, "p_END"},
+  {p_IF, "p_IF"},
+  {p_THEN, "p_THEN"},
+  {p_ident, "p_ident"},
+  {p_any, "p_any"},
+  {p_if, "p_if"},
+  {p_expr, "p_expr"},
+  {0, 0}
+};
+
+char* lookupParserName(Parser parser) {
+  struct ParserEntry_struct* pe = parserEntry;
+  while (pe->parserAddr) {
+    if (pe->parserAddr == parser) {
+      return pe->parserName;
+    }
+    pe++;
+  }
+  return "unknown-parser";
+}
 
 /* Parser entry function */
 Object parseCharString(char* input, Parser parser) {
@@ -22,7 +70,15 @@ Object parseCharString(char* input, Parser parser) {
 }
 
 Object parse(Parser parser, Object tokens) {
+#define DEBUG_PARSE 0
+#if DEBUG_PARSE
+  printf(" / parser.parse parser = %s (%p)\n", lookupParserName(parser), parser);
+  printf(" > tokens = "); objShow(tokens, stdout); printf("\n");
+#endif
   Object res = parser(tokens);
+#if DEBUG_PARSE
+  printf(" \\ parser.parse res = "); objShow(res, stdout); printf("\n");
+#endif
   return res;
 }
 
@@ -43,6 +99,10 @@ Object p_spotReserved(Object tokenList, char* word) {
   if (!symbolHasName(tokenSym, T_NAMES[T_RESERVED])) {
     return nullObj;
   }
+  Object tokenStr = arrayGet(token, 1);
+  if (!stringEqualsChars(tokenStr, word)) {
+    return nullObj;
+  }
   return tokenList;
 }
 
@@ -52,10 +112,26 @@ Object p_spotSpecial(Object tokenList, char* word) {
   if (!symbolHasName(tokenSym, T_NAMES[T_SPECIAL])) {
     return nullObj;
   }
+  Object tokenStr = arrayGet(token, 1);
+  if (!stringEqualsChars(tokenStr, word)) {
+    return nullObj;
+  }
   return tokenList;
 }
 
 /* Parser combinators ----------------------------------------------*/
+
+Object _ignore(Object res) {
+  if (res.a == nullObj.a) {
+    return nullObj;
+  }
+  Object tokens = listGetRest(res);
+  return listNew(NOTHING, tokens);
+}
+
+Object p_ignore(Object tokens, Parser parser) {
+  return _ignore(parse(parser, tokens));
+}
 
 Object p_maybe(Object tokens, Parser parser) {
   Object res = parse(parser, tokens);
@@ -80,11 +156,17 @@ Object p_seq(Object tokens, Parser* parsers) {
     if (res.a == nullObj.a) {
       return nullObj;
     }
-    queueEnq(objQ, listGetFirst(res));
+    Object obj = listGetFirst(res);
+    if (obj.a != NOTHING.a) {
+      queueEnq(objQ, listGetFirst(res));
+    }
     tokens = listGetRest(tokens);
     parsers++;
   }
   Object objs = queueAsList(objQ);
+  if (listGetRest(objs).a == EMPTY_LIST.a) {
+    objs = listGetFirst(objs);
+  }
   return listNew(objs, tokens);
 }
 
@@ -151,15 +233,45 @@ Object p_object(Object tokens) {
 /* Expression parsers ----------------------------------------------*/
 
 /* reserved words */
-Object p_end(Object tokens) {
-  return p_spotReserved(tokens, "end");
-}
+Object p_ELSE(Object tokens) { return _ignore(p_spotReserved(tokens, "else")); }
+Object p_END(Object tokens) { return _ignore(p_spotReserved(tokens, "end")); }
+Object p_IF(Object tokens) { return _ignore(p_spotReserved(tokens, "if")); }
+Object p_THEN(Object tokens) { return _ignore(p_spotReserved(tokens, "then")); }
 
 Object p_ident(Object tokens) {
   Object res = p_spot(tokens, T_IDENT);
-  return res;
+  if (res.a == nullObj.a) {
+    return nullObj;
+  }
+  Object resObj = listGetFirst(res);
+  Object ident = arrayGet(resObj, 1);
+  tokens = listGetRest(res);
+  return listNew(ident, tokens);
 }
 
 Object p_if(Object tokens) {
-  return p_spotReserved(tokens, "if");
+  Parser parsers[] = {p_IF, p_any, p_THEN, p_any, p_ELSE, p_any, p_END, NULL};
+  Object res = p_seq(tokens, parsers);
+  if (res.a == nullObj.a) {
+    return nullObj;
+  }
+  Object resList = listGetFirst(res);
+  Object cond = listGetFirst(resList);
+  Object conseq = listGetFirst(listGetRest(resList));
+  Object alt = listGetFirst(listGetRest(listGetRest(resList)));
+  Object ifExpr = ifNew(cond, conseq, alt);
+  tokens = listGetRest(res);
+  return listNew(ifExpr, tokens);
+}
+
+Object p_expr(Object tokens) {
+  Parser parsers[] = {p_if, NULL};
+  Object res = p_oneOf(tokens, parsers);
+  return res;
+}
+
+Object p_any(Object tokens) {
+  Parser parsers[] = {p_ident, p_int, NULL};
+  Object res = p_oneOf(tokens, parsers);
+  return res;
 }

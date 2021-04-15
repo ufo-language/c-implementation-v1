@@ -55,10 +55,10 @@ static int (*tests[])() = {
   test_abstr,
   test_gc,
   test_lexer,
-  test_parser,
   test_delegate,
   test_tuple,
   test_ident,
+  test_parser,
   0
 };
 

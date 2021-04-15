@@ -27,13 +27,13 @@ bool stringEquals(Object string, Object other) {
 }
 
 /*------------------------------------------------------------------*/
+void objShow(Object obj, FILE* file);
 bool stringEqualsChars(Object string, char* chars) {
   Word len = stringCount(string);
   for (Word n=0; n<len; n++) {
     if (stringGetChar(string, n) != chars[n]) {
       return false;
     }
-    chars++;
   }
   return true;
 }

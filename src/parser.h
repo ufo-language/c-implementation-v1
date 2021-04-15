@@ -15,6 +15,7 @@ Object p_spotReserved(Object tokenList, char* word);
 Object p_spotSpecial(Object tokenList, char* word);
 
 /* combinators */
+Object p_ignore(Object tokens, Parser parser);
 Object p_maybe(Object tokens, Parser parser);
 Object p_oneOf(Object tokens, Parser* parsers);
 Object p_seq(Object tokens, Parser* parsers);
@@ -30,11 +31,13 @@ Object p_symbol(Object tokens);
 Object p_number(Object tokens);
 Object p_object(Object tokens);
 
+/* reserved word parsers */
+Object p_end(Object tokens);
+
 /* expression parsers */
 Object p_ident(Object tokens);
 Object p_if(Object tokens);
 
-/* reserved word parsers */
-Object p_end(Object tokens);
+Object p_any(Object tokens);
 
 #endif
