@@ -228,7 +228,10 @@ Object p_number(Object tokens) {
 Object p_object(Object tokens) {
   Parser parsers[] = {p_int, p_bool, p_symbol, p_string, p_real, NULL};
   Object res = p_oneOf(tokens, parsers);
-  return _strip(res);
+  if (res.a != nullObj.a) {
+    res = _strip(res);
+  }
+  return res;
 }
 
 /* Expression parsers ----------------------------------------------*/
@@ -269,7 +272,7 @@ Object p_expr(Object tokens) {
 }
 
 Object p_any(Object tokens) {
-  Parser parsers[] = {p_ident, p_object, NULL};
+  Parser parsers[] = {p_ident, p_object, p_if, NULL};
   Object res = p_oneOf(tokens, parsers);
   return res;
 }
