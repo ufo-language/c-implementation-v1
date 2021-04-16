@@ -2,7 +2,15 @@
 
 Plain-vanilla C implementation of UFO.
 
+Why plain-vanilla C?
+
+Because what's become interesting to me is not what you can build using a language that gives you everything, but with a language that gives you very little.
+
+----
+
 Right now there are only a bunch of unit tests that run. There's no way to enter and run programs.
+
+Nevertheless, the lexer is complete and the parser is taking shape.
 
 Features:
 * Virtual memory with memory defragmentation
@@ -14,7 +22,7 @@ Features:
   * do/end (sequence)
   * let (variable definition)
   * let/in (local scope)
-  * abstraction & application (function & function call)
+  * abstraction & application (function with lexical binding & function call)
   * exception throwing (exception catching not yet implemented)
 * Data types:
   * integer, real, boolean, string
@@ -24,4 +32,4 @@ Features:
   * finite map / hash table
   * set
   * queue
-  * tuple
+  * tuple (immutable array)
