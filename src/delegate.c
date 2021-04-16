@@ -358,10 +358,10 @@ Object objMatch(Object obj, Object other, Object bindingList) {
   }
 }
 
+/*------------------------------------------------------------------*/
 Word _getSize(RawBlock blk);
 RawBlock objToRawBlock(Object obj);
 
-/*------------------------------------------------------------------*/
 void objShow(Object obj, FILE* stream) {
   switch (objGetType(obj)) {
     case D_Nothing:
