@@ -10,9 +10,7 @@ See https://github.com/ufo-language/reference-implementation/tree/master/doc (do
 
 ----
 
-Right now there are only a bunch of unit tests that run. There's no way to enter and run programs.
-
-Nevertheless, the lexer is complete and the parser is taking shape.
+Current status: there's a REPL that mostly just shows you debugging information. The lexer is mostly grown up but the parser is still an infant.
 
 Features:
 * Virtual memory with memory defragmentation
