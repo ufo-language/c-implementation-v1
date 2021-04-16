@@ -16,6 +16,8 @@ void showStats() {
 #endif
 
 int main(int argc, char** argv) {
+  (void)argc;  /* suppresses unused parameter warning */
+  (void)argv;  /* suppresses unused parameter warning */
   memStart();
   globalsSetup();
   repl();
