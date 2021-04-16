@@ -36,4 +36,11 @@ Object eval(Object obj, Thread* thd) {
 
 /*------------------------------------------------------------------*/
 void evalThrowException(Object payload, Thread* thd) {
+  /* TODO finish */
+  fprintf(stderr, "%s is incomplete\n", __func__);
+  /* keep the compiler from throwing warnings */
+  Object junkObj = payload;
+  payload = junkObj;
+  Thread* junkThd = thd;
+  thd = junkThd;
 }

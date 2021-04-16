@@ -82,8 +82,6 @@ void test_queueEnqDeq() {
 
 void test_queueEquals() {
   Object i100 = intNew(100);
-  Object i200 = intNew(200);
-  Object i300 = intNew(300);
 
   Object q1 = queueNew();
   Object q2 = queueNew();

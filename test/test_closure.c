@@ -55,8 +55,6 @@ void test_closure() {
 /* Unit tests ------------------------------------------------------*/
 
 void test_closureNew() {
-  Object a = identNew("a");
-  Object b = identNew("b");
   Object x = identNew("x");
   Object y = identNew("y");
   Object z = identNew("z");
@@ -154,8 +152,6 @@ void test_closureLexEnv() {
                      EMPTY_LIST)));
   Object closure = closureNew(abstr1, env);
 
-  const Word PARAMS_OFS = 0;
-  const Word BODY_OFS = 1;
   const Word NEXT_OFS = 2;
   const Word LEXENV_OFS = 3;
 

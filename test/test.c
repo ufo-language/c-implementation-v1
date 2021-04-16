@@ -64,7 +64,6 @@ static int (*tests[])() = {
 
 void test() {
   fprintf(stderr, "/ %s started\n\n", __func__);
-  int nFailures = 0;
 
   for (int n=0; *tests[n]; n++) {
     __pfTestRun__.nPasses = 0;

@@ -23,36 +23,36 @@ struct ParserEntry_struct {
   void* parserAddr;
   char* parserName;
 } parserEntry[] = {
-  {p_spot, "p_spot"},
-  {p_spotReserved, "p_spotReserved"},
-  {p_spotSpecial, "p_spotSpecial"},
-  {p_ignore, "p_ignore"},
-  {p_maybe, "p_maybe"},
-  {p_oneOf, "p_oneOf"},
-  {p_seq, "p_seq"},
-  {p_some, "p_some"},
-  {p_bool, "p_bool"},
-  {p_int, "p_int"},
-  {p_real, "p_real"},
-  {p_string, "p_string"},
-  {p_symbol, "p_symbol"},
-  {p_number, "p_number"},
-  {p_object, "p_object"},
-  {p_ELSE, "p_ELSE"},
-  {p_END, "p_END"},
-  {p_IF, "p_IF"},
-  {p_THEN, "p_THEN"},
-  {p_ident, "p_ident"},
-  {p_any, "p_any"},
-  {p_if, "p_if"},
-  {p_expr, "p_expr"},
+  {(void*)p_spot, "p_spot"},
+  {(void*)p_spotReserved, "p_spotReserved"},
+  {(void*)p_spotSpecial, "p_spotSpecial"},
+  {(void*)p_ignore, "p_ignore"},
+  {(void*)p_maybe, "p_maybe"},
+  {(void*)p_oneOf, "p_oneOf"},
+  {(void*)p_seq, "p_seq"},
+  {(void*)p_some, "p_some"},
+  {(void*)p_bool, "p_bool"},
+  {(void*)p_int, "p_int"},
+  {(void*)p_real, "p_real"},
+  {(void*)p_string, "p_string"},
+  {(void*)p_symbol, "p_symbol"},
+  {(void*)p_number, "p_number"},
+  {(void*)p_object, "p_object"},
+  {(void*)p_ELSE, "p_ELSE"},
+  {(void*)p_END, "p_END"},
+  {(void*)p_IF, "p_IF"},
+  {(void*)p_THEN, "p_THEN"},
+  {(void*)p_ident, "p_ident"},
+  {(void*)p_any, "p_any"},
+  {(void*)p_if, "p_if"},
+  {(void*)p_expr, "p_expr"},
   {0, 0}
 };
 
 char* lookupParserName(Parser parser) {
   struct ParserEntry_struct* pe = parserEntry;
   while (pe->parserAddr) {
-    if (pe->parserAddr == parser) {
+    if (pe->parserAddr == (void*)parser) {
       return pe->parserName;
     }
     pe++;

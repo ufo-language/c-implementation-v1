@@ -57,7 +57,7 @@ void test_throwEval() {
   Object thrw = throwNew(errSym);
 
   Thread* thd = threadNew();
-  Object res = evaluate(thrw, thd);
+  /*Object res =*/ evaluate(thrw, thd);
   printf("******** test_throwEval is not finished\n");
 
   threadDelete(thd);

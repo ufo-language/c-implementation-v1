@@ -159,7 +159,6 @@ void test_abstrMark() {
 void test_abstrEval() {
   Object x = identNew("x");
   Object y = identNew("y");
-  Object i100 = intNew(100);
   Object params = listNew(x, EMPTY_LIST);
   Object body = listNew(x, listNew(y, EMPTY_LIST));
   Object abstr = abstrNew(params, body);

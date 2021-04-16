@@ -40,9 +40,7 @@ Object closureApply(Object closure, Object argList, Thread* thd) {
 Object closureNew(Object abstr, Object env) {
   Object firstRule = nullObj;
   Object prevRule = nullObj;
-  Object rule = nullObj;
   while (abstr.a != nullObj.a) {
-    Object body = {objGetData(abstr, CLO_BODY_OFS)};
     Object rule = objAlloc(D_Closure, 4);
     if (firstRule.a == nullObj.a) {
       firstRule = rule;

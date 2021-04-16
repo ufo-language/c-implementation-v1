@@ -106,12 +106,12 @@ void test_gcMarkUnmark_integer() {
 
 void test_gcMarkUnmark_list() {
   Object int1_obj = intNew(100);
-  RawBlock int1_raw = objToRawBlock(int1_obj);
+  //RawBlock int1_raw = objToRawBlock(int1_obj);
   Object int2_obj = intNew(200);
-  RawBlock int2_raw = objToRawBlock(int2_obj);
+  //RawBlock int2_raw = objToRawBlock(int2_obj);
 
   Object list1_obj = listNew(int1_obj, int2_obj);
-  RawBlock list1_raw = objToRawBlock(list1_obj);
+  //RawBlock list1_raw = objToRawBlock(list1_obj);
 
   EXPECT_F(gcIsMarked(int1_obj));
   EXPECT_F(gcIsMarked(int2_obj));
@@ -126,17 +126,17 @@ void test_gcMarkUnmark_list() {
 
 void test_gcMarkUnmark_array() {
   Object int1_obj = intNew(100);
-  RawBlock int1_raw = objToRawBlock(int1_obj);
+  //RawBlock int1_raw = objToRawBlock(int1_obj);
   Object int2_obj = intNew(200);
-  RawBlock int2_raw = objToRawBlock(int2_obj);
+  //RawBlock int2_raw = objToRawBlock(int2_obj);
   Object int3_obj = intNew(300);
-  RawBlock int3_raw = objToRawBlock(int3_obj);
+  //RawBlock int3_raw = objToRawBlock(int3_obj);
 
   Object ary1_obj = arrayNew(3);
   arraySet(ary1_obj, 0, int1_obj);
   arraySet(ary1_obj, 1, int2_obj);
   arraySet(ary1_obj, 2, int3_obj);
-  RawBlock ary1_raw = objToRawBlock(ary1_obj);
+  //RawBlock ary1_raw = objToRawBlock(ary1_obj);
 
   EXPECT_F(gcIsMarked(int1_obj));
   EXPECT_F(gcIsMarked(int2_obj));
@@ -155,7 +155,7 @@ void test_gcCommit1() {
   Word freeBlocks0 = memGetNBlocks();
   Word freeWords0 = memGetNFreeWords();
 
-  Object i100 = intNew(100);
+  intNew(100);
 
   Word freeBlocks1 = memGetNBlocks();
   Word freeWords1 = memGetNFreeWords();
@@ -178,7 +178,7 @@ void test_gcCommit1() {
   EXPECT_EQ(freeBlocks0, freeBlocks3);
   EXPECT_EQ(freeWords0, freeWords3);
 
-  Object i200 = intNew(200);
+  intNew(200);
 
   _sweep();
   

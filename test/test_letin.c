@@ -110,7 +110,6 @@ void test_letInFreeVarsBoundBody() {
   Object y = identNew("y");
   Object z = identNew("z");
   Object a = identNew("a");
-  Object b = identNew("a");
   Object i100 = intNew(100);
   Object binding = bindingNew(x, i100);
   Object bindings = listNew(binding, EMPTY_LIST);

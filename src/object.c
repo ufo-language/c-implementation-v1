@@ -115,7 +115,7 @@ ObjType objGetType(Object obj) {
 
 /* An Object's type is the first word of the object. */
 void objSetType(Object obj, ObjType type) {
-  return vmemSet(obj.a, type);
+  vmemSet(obj.a, type);
 }
 
 /* gets and sets values in an object's data area */
