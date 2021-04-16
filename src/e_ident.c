@@ -19,7 +19,7 @@ Object identEval(Object ident, Thread* thd) {
   Object env = threadGetEnv(thd);
   Object binding = listLocate(env, ident);
   if (binding.a == nullObj.a) {
-    fprintf(stderr, "ERROR: unbound identiable: ");
+    fprintf(stderr, "ERROR: unbound identifier: ");
     stringShow(ident, stderr);
     fprintf(stderr, "\n");
     return nullObj;
