@@ -1,34 +1,79 @@
 #include <stdio.h>
 
+#include "d_list.h"
+#include "d_queue.h"
+#include "d_string.h"
 #include "delegate.h"
+#include "eval.h"
+#include "globals.h"
+#include "lexer_obj.h"
 #include "object.h"
+#include "parser.h"
 #include "repl.h"
+#include "thread.h"
 
 #define READ_BUF_SIZE 256
 
-void getLine(char* buffer, int len) {
+void prompt() {
+  printf("UFO> ");
+}
+
+int getLine(char* buffer, int len) {
   int i = 0;
   char c;
-  while (i < len) {
+  while (i < len - 1) {
     c = getchar();
     if (c == '\n') {
-      buffer[i] = '\0';
-      return;
+      break;
     }
     buffer[i++] = c;
   }
-  while ((c = getchar()) != '\n');
-  printf("line too long, extra ignored\n");
+  buffer[i] = '\0';
+  if (c != '\n') {
+    while ((c = getchar()) != '\n');
+    printf("line too long, extra ignored\n");
+  }
+  return i;
 }
 
-Object read() {
-  char buffer[READ_BUF_SIZE];
-  getLine(buffer, READ_BUF_SIZE);
-  printf("read got buffer '%s'\n", buffer);
-  return nullObj;
+Object read(Object string) {
+  Object tokenQ = lex(string);
+  Object tokens = queueAsList(tokenQ);
+  printf("read() lexer tokens = "); objShow(tokens, stdout); printf("\n");
+  Object res = p_any(tokens);
+  return res;
 }
 
 void repl() {
-  Object obj = read();
-  printf("repl got object "); objShow(obj, stdout); printf("\n");
+  printf("^C to abort\n");
+  Thread* thd = threadNew();
+  while (true) {
+    prompt();
+    char inputBuffer[READ_BUF_SIZE];
+    int nChars = getLine(inputBuffer, READ_BUF_SIZE);
+    if (nChars > 0) {
+      printf("repl() input string = '%s'\n", inputBuffer);
+      Object inputString = stringNew(inputBuffer);
+      Object parseRes = read(inputString);
+      if (parseRes.a == nullObj.a) {
+        printf("parse error\n");
+      }
+      else {
+        Object obj = listGetFirst(parseRes);
+        Object tokens = listGetRest(parseRes);
+        if (listGetRest(tokens).a != EMPTY_LIST.a) {
+          printf("repl() found too many tokens on line [probably because the parser is incomplete]\n");
+          printf("repl() remaining tokens = "); objShow(tokens, stdout); printf("\n");
+          /* TODO should I just call the parser on the remaining tokens? */
+        }
+        else {
+          printf("repl() object = "); objShow(obj, stdout); printf(" : %s\n",ObjTypeNames[objGetType(obj)]);
+          Object val = evaluate(obj, thd);
+          if (val.a != nullObj.a) {
+            printf("repl() val = "); objShow(val, stdout); printf(" : %s\n",ObjTypeNames[objGetType(val)]);
+          }
+        }
+      }
+    }
+  }
 }
