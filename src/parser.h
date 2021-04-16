@@ -6,7 +6,6 @@
 
 typedef Object (*Parser)(Object tokens);
 
-Object parseCharString(char* input, Parser parser);
 Object parse(Parser parser, Object tokens);
 
 /* primitive */

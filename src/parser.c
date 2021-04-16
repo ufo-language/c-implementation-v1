@@ -60,15 +60,6 @@ char* lookupParserName(Parser parser) {
   return "unknown-parser";
 }
 
-/* Parser entry function */
-Object parseCharString(char* input, Parser parser) {
-  Object inputStr = stringNew(input);
-  Object tokenQ = lex(inputStr);
-  Object tokens = queueAsList(tokenQ);
-  Object res = parse(parser, tokens);
-  return res;
-}
-
 Object parse(Parser parser, Object tokens) {
 #define DEBUG_PARSE 0
 #if DEBUG_PARSE
