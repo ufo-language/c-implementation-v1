@@ -90,7 +90,9 @@ void hashFreeVars(Object hash, Object freeVarSet) {
   hashFold(hash, freeVarSet, *hashFreeVars_aux);
 }
 
-void hashFreeVars_old(Object hash, Object freeVarSet) {
+#if 0
+/* TODO decide what to do with this, especially w.r.t. hashFold */
+void hashFreeVars(Object hash, Object freeVarSet) {
   Object buckets = {objGetData(hash, HASH_BUCKETS_OFS)};
   Word nBuckets = arrayCount(buckets);
   for (Word n=0; n<nBuckets; n++) {
@@ -105,6 +107,7 @@ void hashFreeVars_old(Object hash, Object freeVarSet) {
     }
   }
 }
+#endif
 
 /*------------------------------------------------------------------*/
 Object hashGet(Object hash, Object key) {
