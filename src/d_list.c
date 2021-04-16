@@ -64,8 +64,6 @@ void listFreeVars(Object list, Object freeVarSet) {
   if (listIsEmpty(list)) {
     return;
   }
-  Object first = listGetFirst(list);
-  Object rest = listGetRest(list);
   objFreeVars(listGetFirst(list), freeVarSet);
   objFreeVars(listGetRest(list), freeVarSet);
 }
