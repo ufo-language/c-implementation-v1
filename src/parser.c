@@ -72,7 +72,7 @@ Object parseCharString(char* input, Parser parser) {
 Object parse(Parser parser, Object tokens) {
 #define DEBUG_PARSE 0
 #if DEBUG_PARSE
-  printf(" / parser.parse parser = %s (%p)\n", lookupParserName(parser), parser);
+  printf(" / parser.parse parser = %s (%p)\n", lookupParserName(parser), (void*)parser);
   printf(" > tokens = "); objShow(tokens, stdout); printf("\n");
 #endif
   Object res = parser(tokens);
@@ -80,6 +80,24 @@ Object parse(Parser parser, Object tokens) {
   printf(" \\ parser.parse res = "); objShow(res, stdout); printf("\n");
 #endif
   return res;
+}
+
+/* Utility functions -----------------------------------------------*/
+
+static Object _ignore(Object res) {
+  if (res.a == nullObj.a) {
+    return nullObj;
+  }
+  Object tokens = listGetRest(res);
+  return listNew(NOTHING, tokens);
+}
+
+static Object _strip(Object res) {
+  Object resObj = listGetFirst(res);
+  Object tokens = listGetRest(res);
+  Object ident = arrayGet(resObj, 1);
+  tokens = listGetRest(res);
+  return listNew(ident, tokens);
 }
 
 /* Primitive 'spot' parsers ----------------------------------------*/
@@ -120,14 +138,6 @@ Object p_spotSpecial(Object tokenList, char* word) {
 }
 
 /* Parser combinators ----------------------------------------------*/
-
-Object _ignore(Object res) {
-  if (res.a == nullObj.a) {
-    return nullObj;
-  }
-  Object tokens = listGetRest(res);
-  return listNew(NOTHING, tokens);
-}
 
 Object p_ignore(Object tokens, Parser parser) {
   return _ignore(parse(parser, tokens));
@@ -227,7 +237,7 @@ Object p_number(Object tokens) {
 Object p_object(Object tokens) {
   Parser parsers[] = {p_int, p_bool, p_symbol, p_string, p_real, NULL};
   Object res = p_oneOf(tokens, parsers);
-  return res;
+  return _strip(res);
 }
 
 /* Expression parsers ----------------------------------------------*/
@@ -243,10 +253,7 @@ Object p_ident(Object tokens) {
   if (res.a == nullObj.a) {
     return nullObj;
   }
-  Object resObj = listGetFirst(res);
-  Object ident = arrayGet(resObj, 1);
-  tokens = listGetRest(res);
-  return listNew(ident, tokens);
+  return _strip(res);
 }
 
 Object p_if(Object tokens) {
@@ -271,7 +278,7 @@ Object p_expr(Object tokens) {
 }
 
 Object p_any(Object tokens) {
-  Parser parsers[] = {p_ident, p_int, NULL};
+  Parser parsers[] = {p_ident, p_object, NULL};
   Object res = p_oneOf(tokens, parsers);
   return res;
 }
