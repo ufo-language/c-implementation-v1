@@ -77,6 +77,16 @@ Object listGetFirst(Object list) {
 }
 
 /*------------------------------------------------------------------*/
+Object listGetSecond(Object list) {
+  return listGetFirst(listGetRest(list));
+}
+
+/*------------------------------------------------------------------*/
+Object listGetThird(Object list) {
+  return listGetFirst(listGetRest(listGetRest(list)));
+}
+
+/*------------------------------------------------------------------*/
 Object listGetRest(Object list) {
   Object obj = {objGetData(list, LST_REST_OFS)};
   return obj;

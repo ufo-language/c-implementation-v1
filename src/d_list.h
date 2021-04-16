@@ -18,6 +18,8 @@ bool listEquals(Object list, Object other);
 Object listEval(Object list, Thread* thd);
 void listFreeVars(Object list, Object freeVarSet);
 Object listGetFirst(Object list);
+Object listGetSecond(Object list);
+Object listGetThird(Object list);
 Object listGetRest(Object list);
 bool listIsEmpty(Object list);
 
