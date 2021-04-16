@@ -188,9 +188,9 @@ void memShowBlock(RawBlock blk) {
 void memDump() {
   printf("  +----------------\n");
   printf("  | memBlkDump:\n");
-  int n = 0;
   printf("  |  blocks     %d\n", _memNFreeBlocks);
   printf("  |  free words %d\n", _memNFreeWords);
+  int n = 0;
   RawBlock blk = _memFreeRoot;
   while (blk.a && n < 15) { /* shows a maximum of 15 blocks */
     printf("  | %d. ", n++);
