@@ -24,8 +24,6 @@ Object identEval(Object ident, Thread* thd) {
     fprintf(stderr, "\n");
     return nullObj;
   }
-  //return listGetRest(binding);
-  // TODO verify that this works
   return bindingGetRhs(binding);
 }
 
