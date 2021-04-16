@@ -1,8 +1,8 @@
-#include <assert.h>  // TODO remove after debugging
+#include <assert.h>  /* TODO remove after debugging */
 #include <stdio.h>
 
 #include "mem.h"
-#include "stacktrace.h"  // TODO remove after debugging
+#include "stacktrace.h"  /* TODO remove after debugging */
 #include "vmem.h"
 
 /* TODO these three variables should be static */
@@ -74,7 +74,7 @@ void memStop() {
 }
 
 /*------------------------------------------------------------------*/
-// TODO remove checkForCycle after debugging
+/* TODO remove checkForCycle after debugging */
 
 void exit(int);
 extern int nMarkSweeps;

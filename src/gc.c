@@ -40,7 +40,6 @@ bool gcIsMarked(Object obj) {
 /*------------------------------------------------------------------*/
 void gcCommit() {
   _gcSpine = _gcNew;
-  //_gcNew = nullRawBlock;
   _gcSpinePrev = nullRawBlock;
 }
 
@@ -70,7 +69,7 @@ void gcDumpSpine() {
   int n = 0;
   bool isNew = true;
   RawBlock blk = _gcNew;
-  while (blk.a && n < 15) { // shows a maximum of 15 blocks
+  while (blk.a && n < 15) { /* shows a maximum of 15 blocks */
     if (blk.a == _gcSpine.a) { isNew = false; }
     printf("  | [%s] %d. ", (isNew ? "NEW" : "   "), n++);
     objShow(objRawBlockToObj(blk), stdout);
