@@ -48,7 +48,6 @@ typedef struct {
 
 typedef struct {
   Transition** syntax;
-  //char* inputString;
   Object inputString;
   int inputLen;
   int pos;
@@ -59,7 +58,6 @@ typedef struct {
 
 Transition* findTransition(Transition** syntax, StateName stateName, char c);
 bool isIn(char* str, char* strAry[]);
-//void lexInit(LexerState* lexerState, Transition** syntax, char* inputString);
 void lexInit(LexerState* lexerState, Transition** syntax, Object inputString);
 bool lexToken(LexerState* lexerState, Token* token);
 
