@@ -75,19 +75,25 @@ Object parse(Parser parser, Object tokens) {
 
 /* Utility functions -----------------------------------------------*/
 
-static Object _ignore(Object res) {
-  if (res.a == nullObj.a) {
+/* Returns `nothing` in place of the last successful token. The p_seq
+   parser does not accumulate `nothing` tokens. */
+static Object _ignore(Object parseRes) {
+  if (parseRes.a == nullObj.a) {
     return nullObj;
   }
-  Object tokens = listGetRest(res);
+  Object tokens = listGetRest(parseRes);
   return listNew(NOTHING, tokens);
 }
 
-static Object _strip(Object res) {
-  Object resObj = listGetFirst(res);
-  Object tokens = listGetRest(res);
+/* Extracts the token payload out of the last successful token. */
+static Object _extract(Object parseRes) {
+  if (parseRes.a == nullObj.a) {
+    return nullObj;
+  }
+  Object resObj = listGetFirst(parseRes);
+  Object tokens = listGetRest(parseRes);
   Object ident = arrayGet(resObj, 1);
-  tokens = listGetRest(res);
+  tokens = listGetRest(parseRes);
   return listNew(ident, tokens);
 }
 
@@ -228,10 +234,7 @@ Object p_number(Object tokens) {
 Object p_object(Object tokens) {
   Parser parsers[] = {p_int, p_bool, p_symbol, p_string, p_real, NULL};
   Object res = p_oneOf(tokens, parsers);
-  if (res.a != nullObj.a) {
-    res = _strip(res);
-  }
-  return res;
+  return _extract(res);
 }
 
 /* Expression parsers ----------------------------------------------*/
@@ -244,10 +247,7 @@ Object p_THEN(Object tokens) { return _ignore(p_spotReserved(tokens, "then")); }
 
 Object p_ident(Object tokens) {
   Object res = p_spot(tokens, T_IDENT);
-  if (res.a == nullObj.a) {
-    return nullObj;
-  }
-  return _strip(res);
+  return _extract(res);
 }
 
 Object p_if(Object tokens) {
