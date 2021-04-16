@@ -8,6 +8,8 @@ project(ufo VERSION 0.1.0 LANGUAGES C)
 
 configure_file(src/config.h.in src/config.h)
 
+add_compile_options(-Wall -Wextra -pedantic)
+
 #-----------------------------------------------------------------------
 # Source files
 #
@@ -52,6 +54,7 @@ set(LIB_SRC_FILES
   src/mem.c
   src/object.c
   src/parser.c
+  src/repl.c
   src/stacktrace.c
   src/syntax.c
   src/thread.c
@@ -90,28 +93,28 @@ set(TEST_SRC_FILES
   test/test_vmem.c
 )
 
-set(LIB_DEPENDENCIES
-)
-
 #-----------------------------------------------------------------------
 # Library
 #
 
 add_library(${PROJECT_NAME}_lib ${LIB_SRC_FILES})
 target_include_directories(${PROJECT_NAME}_lib PRIVATE src)
-add_executable(${PROJECT_NAME} ${EXEC_SRC_FILES})
+
 target_link_libraries(${PROJECT_NAME}_lib PUBLIC ${LIB_DEPENDENCIES})
-target_link_libraries(${PROJECT_NAME} PUBLIC ${PROJECT_NAME}_lib ${LIB_DEPENDENCIES})
+
+#-----------------------------------------------------------------------
+# Main executable
+#
+
+add_executable(${PROJECT_NAME} ${EXEC_SRC_FILES})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${PROJECT_NAME}_lib)
 
 #-----------------------------------------------------------------------
 # Tests
 #
 
 add_executable(test-${PROJECT_NAME} ${TEST_SRC_FILES})
-
-target_link_libraries(test-${PROJECT_NAME}
-  ${PROJECT_NAME}_lib
-)
+target_link_libraries(test-${PROJECT_NAME} ${PROJECT_NAME}_lib)
 
 # Invoke test.
 #add_test(test-${PROJECT_NAME} ${CMAKE_CURRENT_BINARY_DIR}/test-${PROJECT_NAME})
