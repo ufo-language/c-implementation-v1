@@ -55,12 +55,16 @@ static TestEntry testEntries[] = {
 
 /* Before & after --------------------------------------------------*/
 
+Thread* _thd;
+
 static void test_before() {
   memStart();
   globalsSetup();
+  _thd = threadNew();
 }
 
 static void test_after() {
+  threadDelete(_thd);
   memStop();
 }
 
@@ -93,21 +97,21 @@ void test_parseBool() {
   Object inputStr = stringNew(input);
   Object tokenQ = lex(inputStr);
   Object tokens = queueAsList(tokenQ);
-  Object res = p_bool(tokens);
+  Object res = p_bool(_thd, tokens);
   EXPECT_NE(nullObj.a, res.a);
   /* test a parse 'false' success */
   input = "false";
   inputStr = stringNew(input);
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
-  res = p_bool(tokens);
+  res = p_bool(_thd, tokens);
   EXPECT_NE(nullObj.a, res.a);
   /* test a parse failures */
   input = "abc";
   inputStr = stringNew(input);
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
-  res = p_bool(tokens);
+  res = p_bool(_thd, tokens);
   EXPECT_EQ(nullObj.a, res.a);
 }
 
@@ -117,14 +121,14 @@ void test_parseInt() {
   Object inputStr = stringNew(input);
   Object tokenQ = lex(inputStr);
   Object tokens = queueAsList(tokenQ);
-  Object res = p_int(tokens);
+  Object res = p_int(_thd, tokens);
   EXPECT_NE(nullObj.a, res.a);
   /* test a parse failures */
   input = "abc";
   inputStr = stringNew(input);
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
-  res = p_int(tokens);
+  res = p_int(_thd, tokens);
   EXPECT_EQ(nullObj.a, res.a);
 }
 
@@ -134,14 +138,14 @@ void test_parseReal() {
   Object inputStr = stringNew(input);
   Object tokenQ = lex(inputStr);
   Object tokens = queueAsList(tokenQ);
-  Object res = p_real(tokens);
+  Object res = p_real(_thd, tokens);
   EXPECT_NE(nullObj.a, res.a);
   /* test a parse failure */
   input = "abc";
   inputStr = stringNew(input);
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
-  res = p_real(tokens);
+  res = p_real(_thd, tokens);
   EXPECT_EQ(nullObj.a, res.a);
 }
 
@@ -151,14 +155,14 @@ void test_parseString() {
   Object inputStr = stringNew(input);
   Object tokenQ = lex(inputStr);
   Object tokens = queueAsList(tokenQ);
-  Object res = p_string(tokens);
+  Object res = p_string(_thd, tokens);
   EXPECT_NE(nullObj.a, res.a);
   /* test a parse failure */
   input = "abc";
   inputStr = stringNew(input);
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
-  res = p_string(tokens);
+  res = p_string(_thd, tokens);
   EXPECT_EQ(nullObj.a, res.a);
 }
 
@@ -168,14 +172,14 @@ void test_parseSymbol() {
   Object inputStr = stringNew(input);
   Object tokenQ = lex(inputStr);
   Object tokens = queueAsList(tokenQ);
-  Object res = p_symbol(tokens);
+  Object res = p_symbol(_thd, tokens);
   EXPECT_NE(nullObj.a, res.a);
   /* test a parse failure */
   input = "abc";
   inputStr = stringNew(input);
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
-  res = p_symbol(tokens);
+  res = p_symbol(_thd, tokens);
   EXPECT_EQ(nullObj.a, res.a);
 }
 
@@ -185,14 +189,14 @@ void test_parseMaybe() {
   Object inputStr = stringNew(input);
   Object tokenQ = lex(inputStr);
   Object tokens = queueAsList(tokenQ);
-  Object res = p_maybe(tokens, p_int);
+  Object res = p_maybe(_thd, tokens, p_int);
   EXPECT_NE(nullObj.a, res.a);
   /* test a parse falure */
   input = "abc";
   inputStr = stringNew(input);
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
-  res = p_maybe(tokens, p_int);
+  res = p_maybe(_thd, tokens, p_int);
   EXPECT_NE(nullObj.a, res.a);
   Object token = listGetFirst(res);
   EXPECT_T(objEquals(NOTHING, token));
@@ -205,21 +209,21 @@ void test_parseOneOf() {
   Object tokenQ = lex(inputStr);
   Object tokens = queueAsList(tokenQ);
   Parser parsers[] = {p_int, p_string, NULL};
-  Object res = p_oneOf(tokens, parsers);
+  Object res = p_oneOf(_thd, tokens, parsers);
   EXPECT_NE(nullObj.a, res.a);
   /* test another parse success */
   input = "\"abc\"";
   inputStr = stringNew(input);
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
-  res = p_oneOf(tokens, parsers);
+  res = p_oneOf(_thd, tokens, parsers);
   EXPECT_NE(nullObj.a, res.a);
   /* test a parse falure */
   input = "abc";
   inputStr = stringNew(input);
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
-  res = p_oneOf(tokens, parsers);
+  res = p_oneOf(_thd, tokens, parsers);
   EXPECT_EQ(nullObj.a, res.a);
 }
 
@@ -229,7 +233,7 @@ void test_parseSome() {
   Object inputStr = stringNew(input);
   Object tokenQ = lex(inputStr);
   Object tokens = queueAsList(tokenQ);
-  Object res = p_some(tokens, p_int, 1);
+  Object res = p_some(_thd, tokens, p_int, 1);
   ASSERT_NE(nullObj.a, res.a);
   Object resObj = listGetFirst(res);
   ASSERT_EQ(D_List, objGetType(resObj));
@@ -252,7 +256,7 @@ void test_parseSome() {
   inputStr = stringNew(input);
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
-  res = p_some(tokens, p_int, 3);
+  res = p_some(_thd, tokens, p_int, 3);
   EXPECT_EQ(nullObj.a, res.a);
 }
 
@@ -263,7 +267,7 @@ void test_parseSeq() {
   Object tokenQ = lex(inputStr);
   Object tokens = queueAsList(tokenQ);
   Parser parsers[] = {p_int, p_string, NULL};
-  Object res = p_seq(tokens, parsers);
+  Object res = p_seq(_thd, tokens, parsers);
   ASSERT_NE(nullObj.a, res.a);
   Object resObj = listGetFirst(res);
   ASSERT_EQ(D_List, objGetType(resObj));
@@ -281,7 +285,7 @@ void test_parseSeq() {
   inputStr = stringNew(input);
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
-  res = p_seq(tokens, parsers);
+  res = p_seq(_thd, tokens, parsers);
   EXPECT_EQ(nullObj.a, res.a);
 }
 
@@ -290,14 +294,14 @@ void test_parseIgnore() {
   Object inputStr = stringNew(input);
   Object tokenQ = lex(inputStr);
   Object tokens = queueAsList(tokenQ);
-  Object res = p_ignore(tokens, p_int);
+  Object res = p_ignore(_thd, tokens, p_int);
   ASSERT_NE(nullObj.a, res.a);
   Object resObj = listGetFirst(res);
   EXPECT_EQ(NOTHING.a, resObj.a);
 }
 
-static Object p_ignoreInt(Object tokens) {
-  return p_ignore(tokens, p_int);
+static Object p_ignoreInt(Thread* thd, Object tokens) {
+  return p_ignore(thd, tokens, p_int);
 }
 
 void test_parseSeqWithIgnore() {
@@ -306,7 +310,7 @@ void test_parseSeqWithIgnore() {
   Object tokenQ = lex(inputStr);
   Object tokens = queueAsList(tokenQ);
   Parser parsers[] = {p_ignoreInt, p_int, p_ignoreInt, NULL};
-  Object res = p_seq(tokens, parsers);
+  Object res = p_seq(_thd, tokens, parsers);
   ASSERT_NE(nullObj.a, res.a);
   Object resObj = listGetFirst(res);
   ASSERT_NE(NOTHING.a, resObj.a);
@@ -339,14 +343,14 @@ void test_parseIdent() {
   Object inputStr = stringNew(input);
   Object tokenQ = lex(inputStr);
   Object tokens = queueAsList(tokenQ);
-  Object res = p_ident(tokens);
+  Object res = p_ident(_thd, tokens);
   EXPECT_NE(nullObj.a, res.a);
   /* test a parse failure */
   input = "100";
   inputStr = stringNew(input);
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
-  res = p_ident(tokens);
+  res = p_ident(_thd, tokens);
   EXPECT_EQ(nullObj.a, res.a);
 }
 
@@ -356,42 +360,42 @@ void test_parseObject() {
   Object inputStr = stringNew(input);
   Object tokenQ = lex(inputStr);
   Object tokens = queueAsList(tokenQ);
-  Object res = p_object(tokens);
+  Object res = p_object(_thd, tokens);
   EXPECT_NE(nullObj.a, res.a);
   /* test a parse success */
   input = "Abc";
   inputStr = stringNew(input);
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
-  res = p_object(tokens);
+  res = p_object(_thd, tokens);
   EXPECT_NE(nullObj.a, res.a);
   /* test a parse success */
   input = "\"hello world\"";
   inputStr = stringNew(input);
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
-  res = p_object(tokens);
+  res = p_object(_thd, tokens);
   EXPECT_NE(nullObj.a, res.a);
   /* test a parse success */
   input = "3.14159";
   inputStr = stringNew(input);
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
-  res = p_object(tokens);
+  res = p_object(_thd, tokens);
   EXPECT_NE(nullObj.a, res.a);
   /* test a parse failure */
   input = "end";
   inputStr = stringNew(input);
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
-  res = p_object(tokens);
+  res = p_object(_thd, tokens);
   EXPECT_EQ(nullObj.a, res.a);
 }
 
-Object p_IF(Object tokens);
-Object p_THEN(Object tokens);
-Object p_ELSE(Object tokens);
-Object p_END(Object tokens);
+Object p_IF(Thread* thd, Object tokens);
+Object p_THEN(Thread* thd, Object tokens);
+Object p_ELSE(Thread* thd, Object tokens);
+Object p_END(Thread* thd, Object tokens);
 
 void test_parseIf() {
   /* test IF reserved word */
@@ -399,7 +403,7 @@ void test_parseIf() {
   Object inputStr = stringNew(input);
   Object tokenQ = lex(inputStr);
   Object tokens = queueAsList(tokenQ);
-  Object res = p_IF(tokens);
+  Object res = p_IF(_thd, tokens);
   EXPECT_NE(nullObj.a, res.a);
 
   /* test THEN reserved word */
@@ -407,7 +411,7 @@ void test_parseIf() {
   inputStr = stringNew(input);
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
-  res = p_THEN(tokens);
+  res = p_THEN(_thd, tokens);
   EXPECT_NE(nullObj.a, res.a);
 
   /* test ELSE reserved word */
@@ -415,7 +419,7 @@ void test_parseIf() {
   inputStr = stringNew(input);
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
-  res = p_ELSE(tokens);
+  res = p_ELSE(_thd, tokens);
   EXPECT_NE(nullObj.a, res.a);
 
   /* test END reserved word */
@@ -423,7 +427,7 @@ void test_parseIf() {
   inputStr = stringNew(input);
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
-  res = p_END(tokens);
+  res = p_END(_thd, tokens);
   EXPECT_NE(nullObj.a, res.a);
 
   /* test a parse success */
@@ -431,7 +435,7 @@ void test_parseIf() {
   inputStr = stringNew(input);
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
-  res = p_if(tokens);
+  res = p_if(_thd, tokens);
   ASSERT_NE(nullObj.a, res.a);
   Object resObj = listGetFirst(res);
   EXPECT_EQ(E_If, objGetType(resObj));
@@ -440,6 +444,6 @@ void test_parseIf() {
   inputStr = stringNew(input);
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
-  res = p_if(tokens);
+  res = p_if(_thd, tokens);
   EXPECT_EQ(nullObj.a, res.a);
 }

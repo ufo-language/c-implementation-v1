@@ -36,11 +36,11 @@ int getLine(char* buffer, int len) {
   return i;
 }
 
-Object read(Object string) {
+Object read(Thread* thd, Object string) {
   Object tokenQ = lex(string);
   Object tokens = queueAsList(tokenQ);
   printf("read() lexer tokens = "); objShow(tokens, stdout); printf("\n");
-  Object res = p_any(tokens);
+  Object res = p_any(thd, tokens);
   return res;
 }
 
@@ -54,7 +54,7 @@ void repl() {
     if (nChars > 0) {
       printf("repl() input string = '%s'\n", inputBuffer);
       Object inputString = stringNew(inputBuffer);
-      Object parseRes = read(inputString);
+      Object parseRes = read(thd, inputString);
       if (parseRes.a == nullObj.a) {
         printf("parse error\n");
       }
