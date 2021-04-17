@@ -14,13 +14,25 @@
 #include "lexer_obj.h"
 #include "parser.h"
 
+/* combinators */
+Object p_sepBy(Object tokens, Parser parser, Parser separator);
+
+/* objects */
+Object p_binding(Object tokens);
+
+/* reserved words */
 Object p_DO(Object tokens);
 Object p_ELSE(Object tokens);
 Object p_END(Object tokens);
 Object p_IF(Object tokens);
+Object p_LET(Object tokens);
 Object p_THEN(Object tokens);
 
+/* expressions */
 Object p_do(Object tokens);
+Object p_if(Object tokens);
+Object p_let(Object tokens);
+
 Object p_expr(Object tokens);
 Object p_listOfAny(Object tokens);
 
@@ -179,6 +191,33 @@ Object p_oneOf(Object tokens, Parser* parsers) {
   return nullObj;
 }
 
+Object p_sepBy(Object tokens, Parser parser, Parser separator) {
+  Object objQ = queueNew();
+  bool firstIter = true;
+  while (true) {
+    /* parse an object */
+    Object res = parse(parser, tokens);
+    if (res.a == nullObj.a) {
+      if (firstIter) {
+        break;
+      }
+      else {
+        fprintf(stderr, "separator expected after object: ");
+        objShow(tokens, stderr);
+        printf("\n");
+        return nullObj;
+      }
+    }
+    Object obj = listGetFirst(res);
+    queueEnq(objQ, obj);
+    tokens = listGetRest(tokens);
+    /* parse a separator */
+    firstIter = false;
+  }
+  Object objs = queueAsList(objQ);
+  return listNew(objs, tokens);
+}
+
 Object p_seq(Object tokens, Parser* parsers) {
   Object objQ = queueNew();
   while (*parsers) {
@@ -226,6 +265,19 @@ Object p_bool(Object tokens) {
   return res;
 }
 
+/* support for p_binding */
+Object p_pattern(Object tokens) {
+}
+
+/* support for p_binding */
+Object p_equalSign(Object tokens) {
+  return p_spotSpecial(tokens, "=");
+}
+
+Object p_binding(Object tokens) {
+  Parser parser[] = {p_pattern, p_equalSign, p_any, NULL};
+}
+
 Object p_int(Object tokens) {
   Object res = p_spot(tokens, T_INT);
   return res;
@@ -267,6 +319,7 @@ Object p_DO(Object tokens) { return _ignore(p_spotReserved(tokens, "do")); }
 Object p_ELSE(Object tokens) { return _ignore(p_spotReserved(tokens, "else")); }
 Object p_END(Object tokens) { return _ignore(p_spotReserved(tokens, "end")); }
 Object p_IF(Object tokens) { return _ignore(p_spotReserved(tokens, "if")); }
+Object p_LET(Object tokens) { return _ignore(p_spotReserved(tokens, "let")); }
 Object p_THEN(Object tokens) { return _ignore(p_spotReserved(tokens, "then")); }
 
 Object p_do(Object tokens) {
@@ -299,6 +352,18 @@ Object p_if(Object tokens) {
   Object ifExpr = ifNew(cond, conseq, alt);
   tokens = listGetRest(res);
   return listNew(ifExpr, tokens);
+}
+
+Object p_comma(Object tokens) {
+  return p_spotSpecial(tokens, ",");
+}
+
+Object p_commaBindings(Object tokens) {
+  return p_sepBy(tokens, p_binding, p_comma);
+}
+
+Object p_let(Object tokens) {
+  Parser parsers[] = {p_LET, p_commaBindings, NULL};
 }
 
 /* any expression */
