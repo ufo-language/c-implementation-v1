@@ -8,6 +8,8 @@ typedef Object (*Parser)(Object tokens);
 
 Object parse(Parser parser, Object tokens);
 
+/* TODO most of these declarations should not be in this header file */
+
 /* primitive */
 Object p_spot(Object tokenList, TokenType tokenType);
 Object p_spotReserved(Object tokenList, char* word);
@@ -27,7 +29,7 @@ Object p_real(Object tokens);
 Object p_string(Object tokens);
 Object p_symbol(Object tokens);
 
-Object p_number(Object tokens);
+//Object p_number(Object tokens);
 Object p_object(Object tokens);
 
 /* reserved word parsers */

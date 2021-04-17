@@ -9,15 +9,20 @@
 #include "d_symbol.h"
 #include "delegate.h"
 #include "e_if.h"
+#include "e_seq.h"
 #include "globals.h"
 #include "lexer_obj.h"
 #include "parser.h"
 
-Object p_ELSE(Object);
-Object p_END(Object);
-Object p_IF(Object);
-Object p_THEN(Object);
-Object p_expr(Object);
+Object p_DO(Object tokens);
+Object p_ELSE(Object tokens);
+Object p_END(Object tokens);
+Object p_IF(Object tokens);
+Object p_THEN(Object tokens);
+
+Object p_do(Object tokens);
+Object p_expr(Object tokens);
+Object p_listOfAny(Object tokens);
 
 struct ParserEntry_struct {
   void* parserAddr;
@@ -36,16 +41,19 @@ struct ParserEntry_struct {
   {(void*)p_real, "p_real"},
   {(void*)p_string, "p_string"},
   {(void*)p_symbol, "p_symbol"},
-  {(void*)p_number, "p_number"},
+  //{(void*)p_number, "p_number"},
   {(void*)p_object, "p_object"},
+  {(void*)p_DO, "p_DO"},
   {(void*)p_ELSE, "p_ELSE"},
   {(void*)p_END, "p_END"},
   {(void*)p_IF, "p_IF"},
   {(void*)p_THEN, "p_THEN"},
   {(void*)p_ident, "p_ident"},
-  {(void*)p_any, "p_any"},
   {(void*)p_if, "p_if"},
+  {(void*)p_do, "p_do"},
   {(void*)p_expr, "p_expr"},
+  {(void*)p_any, "p_any"},
+  {(void*)p_listOfAny, "p_listOfAny"},
   {0, 0}
 };
 
@@ -60,15 +68,30 @@ char* lookupParserName(Parser parser) {
   return "unknown-parser";
 }
 
-Object parse(Parser parser, Object tokens) {
 #define DEBUG_PARSE 0
+
 #if DEBUG_PARSE
-  printf(" / parser.parse parser = %s (%p)\n", lookupParserName(parser), (void*)parser);
-  printf(" > tokens = "); objShow(tokens, stdout); printf("\n");
+int debugLevel = 0;
+void indent() {
+  for (int n=0; n<debugLevel; n++) {
+    printf("| ");
+  }
+}
+#endif
+
+Object parse(Parser parser, Object tokens) {
+#if DEBUG_PARSE
+  indent(); 
+  printf("/ parser.parse parser = %s (%p)\n", lookupParserName(parser), (void*)parser);
+  indent();
+  printf("> tokens = "); objShow(tokens, stdout); printf("\n");
+  debugLevel++;
 #endif
   Object res = parser(tokens);
 #if DEBUG_PARSE
-  printf(" \\ parser.parse res = "); objShow(res, stdout); printf("\n");
+  debugLevel--;
+  indent();
+  printf("\\ parser.parse res = "); objShow(res, stdout); printf("\n");
 #endif
   return res;
 }
@@ -167,7 +190,7 @@ Object p_seq(Object tokens, Parser* parsers) {
     if (obj.a != NOTHING.a) {
       queueEnq(objQ, listGetFirst(res));
     }
-    tokens = listGetRest(tokens);
+    tokens = listGetRest(res);
     parsers++;
   }
   Object objs = queueAsList(objQ);
@@ -225,11 +248,11 @@ Object p_symbol(Object tokens) {
 
 /* Aggregate object parsers ----------------------------------------*/
 
-Object p_number(Object tokens) {
+/*Object p_number(Object tokens) {
   Parser parsers[] = {p_int, p_real, NULL};
   Object res = p_oneOf(tokens, parsers);
   return res;
-}
+}*/
 
 Object p_object(Object tokens) {
   Parser parsers[] = {p_int, p_bool, p_symbol, p_string, p_real, NULL};
@@ -240,10 +263,23 @@ Object p_object(Object tokens) {
 /* Expression parsers ----------------------------------------------*/
 
 /* reserved words */
+Object p_DO(Object tokens) { return _ignore(p_spotReserved(tokens, "do")); }
 Object p_ELSE(Object tokens) { return _ignore(p_spotReserved(tokens, "else")); }
 Object p_END(Object tokens) { return _ignore(p_spotReserved(tokens, "end")); }
 Object p_IF(Object tokens) { return _ignore(p_spotReserved(tokens, "if")); }
 Object p_THEN(Object tokens) { return _ignore(p_spotReserved(tokens, "then")); }
+
+Object p_do(Object tokens) {
+  Parser parsers[] = {p_DO, p_listOfAny, p_END, NULL};
+  Object res = p_seq(tokens, parsers);
+  if (res.a == nullObj.a) {
+    return nullObj;
+  }
+  Object exprs = listGetFirst(res);
+  Object doExpr = seqNew(exprs);
+  tokens = listGetRest(res);
+  return listNew(doExpr, tokens);
+}
 
 Object p_ident(Object tokens) {
   Object res = p_spot(tokens, T_IDENT);
@@ -265,14 +301,22 @@ Object p_if(Object tokens) {
   return listNew(ifExpr, tokens);
 }
 
+/* any expression */
 Object p_expr(Object tokens) {
-  Parser parsers[] = {p_if, NULL};
+  Parser parsers[] = {p_do, p_if, NULL};
   Object res = p_oneOf(tokens, parsers);
   return res;
 }
 
+/* list of expressions */
+Object p_listOfAny(Object tokens) {
+  Object res = p_some(tokens, p_any, 0);
+  return res;
+}
+
+/* any object or expression */
 Object p_any(Object tokens) {
-  Parser parsers[] = {p_ident, p_object, p_if, NULL};
+  Parser parsers[] = {p_ident, p_object, p_if, p_do, NULL};
   Object res = p_oneOf(tokens, parsers);
   return res;
 }
