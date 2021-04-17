@@ -36,7 +36,7 @@ Object seqNew(Object lst) {
 
 /*------------------------------------------------------------------*/
 void seqShow(Object seq, FILE* stream) {
-  fputs("seq ", stream);
+  fputs("do ", stream);
   Object list = {objGetData(seq, SEQ_EXPRS_OFS)};
   while (!listIsEmpty(list)) {
     objShow(listGetFirst(list), stream);
