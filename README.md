@@ -13,8 +13,8 @@ See https://github.com/ufo-language/reference-implementation/tree/master/doc (do
 Current status: there's a REPL that shows a bunch of debugging information. The lexer is mostly grown up but the parser is still an infant.
 
 Features:
-* Virtual memory with memory defragmentation
-* Automatic memory management
+* Virtual memory
+* Automatic memory management with memory block defragmentation
 * Recursive evaluator
 * Expressions:
   * variable
