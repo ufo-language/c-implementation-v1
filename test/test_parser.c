@@ -30,6 +30,7 @@ static void test_parseReserved();
 static void test_parseIdent();
 static void test_parseObject();
 static void test_parseIf();
+static void test_parseSepBy();
 
 /* List the unit tests to run here ---------------------------------*/
 
@@ -50,6 +51,7 @@ static TestEntry testEntries[] = {
   {"test_parseIdent", test_parseIdent},
   {"test_parseObject", test_parseObject},
   {"test_parseIf", test_parseIf},
+  {"test_parseSepBy", test_parseSepBy},
   {0, 0}
 };
 
@@ -431,7 +433,7 @@ void test_parseIf() {
   EXPECT_NE(nullObj.a, res.a);
 
   /* test a parse success */
-  input = "if x then y else z end";
+  input = "if true then 100 else 200 end";
   inputStr = stringNew(input);
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
@@ -446,4 +448,7 @@ void test_parseIf() {
   tokens = queueAsList(tokenQ);
   res = p_if(_thd, tokens);
   EXPECT_EQ(nullObj.a, res.a);
+}
+
+void test_parseSepBy() {
 }
