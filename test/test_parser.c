@@ -434,16 +434,36 @@ void test_parseIf() {
 }
 
 void test_parseSepBy() {
+  /* test parse success, multiple elements */
   char* input = "100, 200, 300";
   Object inputStr = stringNew(input);
   Object tokenQ = lex(inputStr);
   Object tokens = queueAsList(tokenQ);
   Object res = p_sepBy(_thd, tokens, p_object, p_comma);
-  printf("test_parseSepBy res = "); objShow(res, stdout); printf("\n");
   ASSERT_NE(nullObj.a, res.a);
-  Object expectedRes = listNew(intNew(100), listNew(intNew(200), listNew(intNew(300), EMPTY_LIST)));
-  printf("expectedRes = "); objShow(expectedRes, stdout); printf("\n");
+  Object exp = listNew(intNew(100), listNew(intNew(200), listNew(intNew(300), EMPTY_LIST)));
   Object resObj = listGetFirst(res);
-  printf("resObj = "); objShow(resObj, stdout); printf("\n");
-  //EXPECT_T(objEquals(expectedRes, resObj));
+  EXPECT_T(objEquals(exp, resObj));
+  /* test parse success, single element */
+  input = "100";
+  inputStr = stringNew(input);
+  tokenQ = lex(inputStr);
+  tokens = queueAsList(tokenQ);
+  res = p_sepBy(_thd, tokens, p_object, p_comma);
+  ASSERT_NE(nullObj.a, res.a);
+  exp = listNew(intNew(100), EMPTY_LIST);
+  resObj = listGetFirst(res);
+  EXPECT_T(objEquals(exp, resObj));
+  /* test parse success, no elements */
+  input = "";
+  inputStr = stringNew(input);
+  tokenQ = lex(inputStr);
+  tokens = queueAsList(tokenQ);
+  res = p_sepBy(_thd, tokens, p_object, p_comma);
+  ASSERT_NE(nullObj.a, res.a);
+  exp = EMPTY_LIST;
+  resObj = listGetFirst(res);
+  EXPECT_T(objEquals(exp, resObj));
+  /* parse failure not tested because it throws an exception, and I
+     don't yet know how to handle that here */
 }
