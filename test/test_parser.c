@@ -14,6 +14,9 @@
 #include "../src/object.h"
 #include "../src/parser.h"
 
+Object p_sepBy(Thread* thd, Object tokens, Parser parser, Parser separator);
+Object p_comma(Thread* thd, Object tokens);
+
 static void test_parseSpot();
 static void test_parseBool();
 static void test_parseInt();
@@ -30,6 +33,7 @@ static void test_parseReserved();
 static void test_parseIdent();
 static void test_parseObject();
 static void test_parseIf();
+static void test_parseSepBy();
 
 /* List the unit tests to run here ---------------------------------*/
 
@@ -50,6 +54,7 @@ static TestEntry testEntries[] = {
   {"test_parseIdent", test_parseIdent},
   {"test_parseObject", test_parseObject},
   {"test_parseIf", test_parseIf},
+  {"test_parseSepBy", test_parseSepBy},
   {0, 0}
 };
 
@@ -236,21 +241,8 @@ void test_parseSome() {
   Object res = p_some(_thd, tokens, p_int, 1);
   ASSERT_NE(nullObj.a, res.a);
   Object resObj = listGetFirst(res);
-  ASSERT_EQ(D_List, objGetType(resObj));
-  ASSERT_EQ(3, listCount(resObj));
-  Object obj = listGetFirst(resObj);
-  Object exp = arrayNew(2);
-  arraySet(exp, 0, symbolNew("Int"));
-  arraySet(exp, 1, intNew(100));
-  EXPECT_T(objEquals(exp, obj));
-  obj = listGetFirst(listGetRest(resObj));
-  arraySet(exp, 0, symbolNew("Int"));
-  arraySet(exp, 1, intNew(200));
-  EXPECT_T(objEquals(exp, obj));
-  obj = listGetFirst(listGetRest(listGetRest(resObj)));
-  arraySet(exp, 0, symbolNew("Int"));
-  arraySet(exp, 1, intNew(300));
-  EXPECT_T(objEquals(exp, obj));
+  Object exp = listNew(intNew(100), listNew(intNew(200), listNew(intNew(300), EMPTY_LIST)));
+  ASSERT_T(objEquals(exp, resObj));
   /* test a parse failure */
   input = "1 2 x";
   inputStr = stringNew(input);
@@ -272,13 +264,10 @@ void test_parseSeq() {
   Object resObj = listGetFirst(res);
   ASSERT_EQ(D_List, objGetType(resObj));
   Object obj = listGetFirst(resObj);
-  Object exp = arrayNew(2);
-  arraySet(exp, 0, symbolNew("Int"));
-  arraySet(exp, 1, intNew(100));
+  Object exp = intNew(100);
   EXPECT_T(objEquals(exp, obj));
   obj = listGetFirst(listGetRest(resObj));
-  arraySet(exp, 0, symbolNew("String"));
-  arraySet(exp, 1, stringNew("abc"));
+  exp = stringNew("abc");
   EXPECT_T(objEquals(exp, obj));
   /* test a parse failure */
   input = "100 200 \"abc\"";
@@ -313,11 +302,7 @@ void test_parseSeqWithIgnore() {
   Object res = p_seq(_thd, tokens, parsers);
   ASSERT_NE(nullObj.a, res.a);
   Object resObj = listGetFirst(res);
-  ASSERT_NE(NOTHING.a, resObj.a);
-  Object resObjSym = arrayGet(resObj, 0);
-  EXPECT_T(symbolHasName(resObjSym, T_NAMES[T_INT]));
-  Object resObjVal = arrayGet(resObj, 1);
-  EXPECT_EQ(200, intGet(resObjVal));
+  EXPECT_T(objEquals(intNew(200), resObj));
 }
 
 void test_parseReserved() {
@@ -431,7 +416,7 @@ void test_parseIf() {
   EXPECT_NE(nullObj.a, res.a);
 
   /* test a parse success */
-  input = "if x then y else z end";
+  input = "if true then 100 else 200 end";
   inputStr = stringNew(input);
   tokenQ = lex(inputStr);
   tokens = queueAsList(tokenQ);
@@ -446,4 +431,19 @@ void test_parseIf() {
   tokens = queueAsList(tokenQ);
   res = p_if(_thd, tokens);
   EXPECT_EQ(nullObj.a, res.a);
+}
+
+void test_parseSepBy() {
+  char* input = "100, 200, 300";
+  Object inputStr = stringNew(input);
+  Object tokenQ = lex(inputStr);
+  Object tokens = queueAsList(tokenQ);
+  Object res = p_sepBy(_thd, tokens, p_object, p_comma);
+  printf("test_parseSepBy res = "); objShow(res, stdout); printf("\n");
+  ASSERT_NE(nullObj.a, res.a);
+  Object expectedRes = listNew(intNew(100), listNew(intNew(200), listNew(intNew(300), EMPTY_LIST)));
+  printf("expectedRes = "); objShow(expectedRes, stdout); printf("\n");
+  Object resObj = listGetFirst(res);
+  printf("resObj = "); objShow(resObj, stdout); printf("\n");
+  //EXPECT_T(objEquals(expectedRes, resObj));
 }

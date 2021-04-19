@@ -19,6 +19,7 @@
 
 #define DEBUG_PARSE 0
 
+
 /* primitives */
 Object p_spot(Object tokens, TokenType tokenType);
 Object p_spotSpecific(Object tokens, TokenType tokenType, char* word);
@@ -273,17 +274,25 @@ Object p_sepBy(Thread* thd, Object tokens, Parser parser, Parser separator) {
         break;
       }
       else {
-        fprintf(stderr, "separator expected after object: ");
+        fprintf(stderr, "ERROR: (parser) separator expected after object: ");
         objShow(tokens, stderr);
         fprintf(stderr, "\n");
+        fprintf(stderr, "(change this to a longjmp instead of an exit(1)\n");
+        exit(1);
         return nullObj;
       }
     }
     Object obj = listGetFirst(res);
     queueEnq(objQ, obj);
     tokens = listGetRest(tokens);
+    printf("p_sepBy queue = "); objShow(objQ, stdout); printf("\n");
+    printf("p_sepBy tokens = "); objShow(tokens, stdout); printf("\n");
     /* parse a separator */
-    /* TODO finish this*/
+    res = parse(thd, separator, tokens);
+    if (res.a == nullObj.a) {
+      break;
+    }
+    tokens = listGetRest(tokens);
     firstIter = false;
   }
   Object objs = queueAsList(objQ);
@@ -335,33 +344,33 @@ Object p_some(Thread* thd, Object tokens, Parser parser, int min) {
 /* literals */
 Object p_bool(Thread* thd, Object tokens) {
   Object res = p_spot(tokens, T_BOOL);
-  return res;
+  return _extract(res);
 }
 
 Object p_int(Thread* thd, Object tokens) {
   Object res = p_spot(tokens, T_INT);
-  return res;
+  return _extract(res);
 }
 
 Object p_real(Thread* thd, Object tokens) {
   Object res = p_spot(tokens, T_REAL);
-  return res;
+  return _extract(res);
 }
 
 Object p_string(Thread* thd, Object tokens) {
   Object res = p_spot(tokens, T_STRING);
-  return res;
+  return _extract(res);
 }
 
 Object p_symbol(Thread* thd, Object tokens) {
   Object res = p_spot(tokens, T_SYMBOL);
-  return res;
+  return _extract(res);
 }
 
 Object p_literal(Thread* thd, Object tokens) {
   Parser parsers[] = {p_bool, p_int, p_real, p_string, p_symbol, NULL};
   Object res = p_oneOf(thd, tokens, parsers);
-  return _extract(res);
+  return res;
 }
 
 /* containers */
