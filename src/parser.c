@@ -11,6 +11,7 @@
 #include "d_symbol.h"
 #include "delegate.h"
 #include "e_if.h"
+#include "e_let.h"
 #include "e_seq.h"
 #include "globals.h"
 #include "lexer_obj.h"
@@ -284,9 +285,7 @@ Object p_sepBy(Thread* thd, Object tokens, Parser parser, Parser separator) {
     }
     Object obj = listGetFirst(res);
     queueEnq(objQ, obj);
-    tokens = listGetRest(tokens);
-    printf("p_sepBy queue = "); objShow(objQ, stdout); printf("\n");
-    printf("p_sepBy tokens = "); objShow(tokens, stdout); printf("\n");
+    tokens = listGetRest(res);
     /* parse a separator */
     res = parse(thd, separator, tokens);
     if (res.a == nullObj.a) {
@@ -458,8 +457,14 @@ Object p_commaBindings(Thread* thd, Object tokens) {
 
 Object p_let(Thread* thd, Object tokens) {
   Parser parsers[] = {p_LET, p_commaBindings, NULL};
-  printf("p_let not finished\n");
-  return nullObj;
+  Object res = p_seq(thd, tokens, parsers);
+  if (res.a == nullObj.a) {
+    return nullObj;
+  }
+  Object bindings = listGetFirst(res);
+  tokens = listGetRest(res);
+  Object let = letNew(bindings);
+  return listNew(let, tokens);
 }
 
 /* any expression */

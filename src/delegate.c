@@ -122,7 +122,7 @@ bool objEquals(Object obj1, Object obj2) {
     case E_Ident:
       return identEquals(obj1, obj2);
     default:
-      printf("objEqual not implemented for type %s\n", ObjTypeNames[objGetType(obj1)]);
+      printf("objEquals not implemented for type %s\n", ObjTypeNames[objGetType(obj1)]);
       printf("  returning default false\n");
   }
   return false;

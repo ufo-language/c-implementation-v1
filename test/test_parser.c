@@ -3,19 +3,23 @@
 #include "test.h"
 
 #include "../src/d_array.h"
+#include "../src/d_binding.h"
 #include "../src/d_int.h"
 #include "../src/d_list.h"
 #include "../src/d_queue.h"
 #include "../src/d_string.h"
 #include "../src/d_symbol.h"
 #include "../src/delegate.h"
+#include "../src/e_ident.h"
+#include "../src/e_let.h"
 #include "../src/globals.h"
 #include "../src/lexer_obj.h"
 #include "../src/object.h"
 #include "../src/parser.h"
 
-Object p_sepBy(Thread* thd, Object tokens, Parser parser, Parser separator);
 Object p_comma(Thread* thd, Object tokens);
+Object p_let(Thread* thd, Object tokens);
+Object p_sepBy(Thread* thd, Object tokens, Parser parser, Parser separator);
 
 static void test_parseSpot();
 static void test_parseBool();
@@ -34,6 +38,7 @@ static void test_parseIdent();
 static void test_parseObject();
 static void test_parseIf();
 static void test_parseSepBy();
+static void test_parseLet();
 
 /* List the unit tests to run here ---------------------------------*/
 
@@ -55,6 +60,7 @@ static TestEntry testEntries[] = {
   {"test_parseObject", test_parseObject},
   {"test_parseIf", test_parseIf},
   {"test_parseSepBy", test_parseSepBy},
+  {"test_parseLet", test_parseLet},
   {0, 0}
 };
 
@@ -466,4 +472,25 @@ void test_parseSepBy() {
   EXPECT_T(objEquals(exp, resObj));
   /* parse failure not tested because it throws an exception, and I
      don't yet know how to handle that here */
+}
+
+void test_parseLet() {
+  /* test parse success, one binding */
+  char* input = "let a=100";
+  Object inputStr = stringNew(input);
+  Object tokenQ = lex(inputStr);
+  Object tokens = queueAsList(tokenQ);
+  Object res = p_let(_thd, tokens);
+  ASSERT_NE(nullObj.a, res.a);
+  Object resObj = listGetFirst(res);
+  ASSERT_EQ(E_Let, objGetType(resObj));
+  /* test parse success, two bindings */
+  input = "let a=100, b=200";
+  inputStr = stringNew(input);
+  tokenQ = lex(inputStr);
+  tokens = queueAsList(tokenQ);
+  res = p_let(_thd, tokens);
+   ASSERT_NE(nullObj.a, res.a);
+  resObj = listGetFirst(res);
+  ASSERT_EQ(E_Let, objGetType(resObj));
 }
