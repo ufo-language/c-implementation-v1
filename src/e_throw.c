@@ -3,11 +3,9 @@
 #include "gc.h"
 #include "object.h"
 
-Object throwPayload;
-
 /*------------------------------------------------------------------*/
 Object throwEval(Object thrw, Thread* thd) {
-  throwPayload.a = objGetData(thrw, THR_PAYLOAD_OFS);
+  thd->throwPayload.a = objGetData(thrw, THR_PAYLOAD_OFS);
   longjmp(thd->jumpBuf, 1);
   return nullObj;
 }

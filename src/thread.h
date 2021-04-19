@@ -9,6 +9,7 @@ typedef struct Thread_struct {
   Object env;
   Object expr;
   jmp_buf jumpBuf;
+  Object throwPayload;
   struct Thread_struct* prev;
   struct Thread_struct* next;
 } Thread;
