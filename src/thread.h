@@ -9,7 +9,7 @@ typedef struct Thread_struct {
   Object env;
   Object expr;
   jmp_buf jumpBuf;
-  Object throwPayload;
+  Object exception;
   struct Thread_struct* prev;
   struct Thread_struct* next;
 } Thread;
@@ -21,9 +21,11 @@ void threadEnvBind(Thread* thd, Object var, Object val);
 Object threadEnvLocate(Thread* thd, Object key);
 Object threadEval(Thread* thd, Object expr, Object bindings);
 Object threadGetEnv(Thread* thd);
+Object threadGetExn(Thread* thd);
 void threadMark(Thread* thd);
 void threadMarkAll();
 void threadSetEnv(Thread* thd, Object env);
 void threadSetExpr(Thread* thd, Object expr);
+void threadThrowException(Thread* thd, Object exn);
 
 #endif

@@ -51,6 +51,10 @@ Object threadGetEnv(Thread* thd) {
   return thd->env;
 }
 
+Object threadGetExn(Thread* thd) {
+  return thd->exception;
+}
+
 void threadMark(Thread* thd) {
   objMark(thd->env);
   if (thd->expr.a != nullObj.a) {
@@ -87,4 +91,9 @@ void threadSetEnv(Thread* thd, Object env) {
 
 void threadSetExpr(Thread* thd, Object expr) {
   thd->expr = expr;
+}
+
+void threadThrowException(Thread* thd, Object exn) {
+  thd->exception.a = exn.a;
+  longjmp(thd->jumpBuf, 1);
 }

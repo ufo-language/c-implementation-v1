@@ -266,6 +266,7 @@ Object p_oneOf(Thread* thd, Object tokens, Parser* parsers) {
 
 Object p_sepBy(Thread* thd, Object tokens, Parser parser, Parser separator) {
   Object objQ = queueNew();
+  Object lastObj = nullObj;
   bool firstIter = true;
   while (true) {
     /* parse an object */
@@ -275,15 +276,20 @@ Object p_sepBy(Thread* thd, Object tokens, Parser parser, Parser separator) {
         break;
       }
       else {
+        Object exnPayload = stringNew("PARSE ERROR: object expected after separator");
+        threadThrowException(thd, exnPayload);
+        /*
         fprintf(stderr, "ERROR: (parser) separator expected after object: ");
         objShow(tokens, stderr);
         fprintf(stderr, "\n");
         fprintf(stderr, "(change this to a longjmp instead of an exit(1)\n");
         exit(1);
+        */
         return nullObj;
       }
     }
     Object obj = listGetFirst(res);
+    lastObj = obj;
     queueEnq(objQ, obj);
     tokens = listGetRest(res);
     /* parse a separator */
@@ -396,7 +402,7 @@ Object p_binding(Thread* thd, Object tokens) {
 }
 
 Object p_object(Thread* thd, Object tokens) {
-  Parser parsers[] = {p_binding, p_literal, NULL};
+  Parser parsers[] = {p_binding, p_literal, p_ident, NULL};
   Object res = p_oneOf(thd, tokens, parsers);
   return res;
 }

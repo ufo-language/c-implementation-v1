@@ -39,6 +39,7 @@ static void test_parseObject();
 static void test_parseIf();
 static void test_parseSepBy();
 static void test_parseLet();
+static void test_parseError();
 
 /* List the unit tests to run here ---------------------------------*/
 
@@ -61,6 +62,7 @@ static TestEntry testEntries[] = {
   {"test_parseIf", test_parseIf},
   {"test_parseSepBy", test_parseSepBy},
   {"test_parseLet", test_parseLet},
+  {"test_parseError", test_parseError},
   {0, 0}
 };
 
@@ -493,4 +495,24 @@ void test_parseLet() {
    ASSERT_NE(nullObj.a, res.a);
   resObj = listGetFirst(res);
   ASSERT_EQ(E_Let, objGetType(resObj));
+}
+
+void test_parseError() {
+  char* input = "1,";
+  Object inputStr = stringNew(input);
+  Object tokenQ = lex(inputStr);
+  Object tokens = queueAsList(tokenQ);
+  Object res = nullObj;
+  Object exn = nullObj;
+  int jumpRes = setjmp(_thd->jumpBuf);
+  switch (jumpRes) {
+    case 0:
+      res = p_sepBy(_thd, tokens, p_object, p_comma);
+      EXPECT_T(false);  /* should not get here */
+      break;
+    case 1:
+      exn = threadGetExn(_thd);
+      EXPECT_EQ(D_String, objGetType(exn));
+      break;
+  }
 }

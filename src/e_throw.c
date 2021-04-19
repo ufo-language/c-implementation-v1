@@ -5,7 +5,7 @@
 
 /*------------------------------------------------------------------*/
 Object throwEval(Object thrw, Thread* thd) {
-  thd->throwPayload.a = objGetData(thrw, THR_PAYLOAD_OFS);
+  thd->exception.a = objGetData(thrw, THR_PAYLOAD_OFS);
   longjmp(thd->jumpBuf, 1);
   return nullObj;
 }
