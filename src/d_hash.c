@@ -175,7 +175,7 @@ void hashPut(Object hash, Object key, Object val) {
 
 /*------------------------------------------------------------------*/
 void hashShow(Object hash, FILE* stream) {
-  fputc('{', stream);
+  fputs("#{", stream);
   Object buckets = {objGetData(hash, HASH_BUCKETS_OFS)};
   Word nBuckets = arrayCount(buckets);
   bool firstIter = true;

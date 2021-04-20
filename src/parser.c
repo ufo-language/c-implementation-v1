@@ -5,6 +5,7 @@
 
 #include "d_array.h"
 #include "d_binding.h"
+#include "d_hash.h"
 #include "d_list.h"
 #include "d_queue.h"
 #include "d_string.h"
@@ -53,10 +54,12 @@ Object p_bracketOpen(Thread* thd, Object tokens);
 Object p_bracketClose(Thread* thd, Object tokens);
 Object p_comma(Thread* thd, Object tokens);
 Object p_equalSign(Thread* thd, Object tokens);
+Object p_hashMark(Thread* thd, Object tokens);
 
 /* containers */
 Object p_array(Thread* thd, Object tokens);
 Object p_binding(Thread* thd, Object tokens);
+Object p_hashTable(Thread* thd, Object tokens);
 Object p_list(Thread* thd, Object tokens);
 
 /* container & expression support */
@@ -109,6 +112,8 @@ struct ParserEntry_struct {
   {(void*)p_do, "p_do"},
   {(void*)p_equalSign, "p_equalSign"},
   {(void*)p_expr, "p_expr"},
+  {(void*)p_hashMark, "p_hashMark"},
+  {(void*)p_hashTable, "p_hashTable"},
   {(void*)p_ident, "p_ident"},
   {(void*)p_if, "p_if"},
   {(void*)p_ignore, "p_ignore"},
@@ -435,6 +440,11 @@ Object p_comma(Thread* thd, Object tokens) {
   return p_spotSpecial(tokens, ",");
 }
 
+Object p_hashMark(Thread* thd, Object tokens) {
+  (void)thd;
+  return p_spotSpecial(tokens, "#");
+}
+
 /* containers */
 Object p_commaAny(Thread* thd, Object tokens) {
   (void)thd;
@@ -463,6 +473,23 @@ Object p_barAny(Thread* thd, Object tokens) {
   return p_seq(thd, tokens, parsers);
 }
 
+
+Object p_hashTable(Thread* thd, Object tokens) {
+  Parser parsers[] = {p_hashMark, p_braceOpen, p_commaBindings, p_braceClose, NULL};
+  Object res = p_seq(thd, tokens, parsers);
+  if (res.a == nullObj.a) {
+    return nullObj;
+  }
+  Object hash = hashNew();
+  Object bindings = listGetFirst(res);
+  while (!listIsEmpty(bindings)) {
+    Object binding = listGetFirst(bindings);
+    hashPut(hash, bindingGetLhs(binding), bindingGetRhs(binding));
+    bindings = listGetRest(bindings);
+  }
+  tokens = listGetRest(res);
+  return listNew(hash, tokens);
+}
 
 Object p_list(Thread* thd, Object tokens) {
   Object res = p_bracketOpen(thd, tokens);
@@ -514,7 +541,7 @@ Object p_binding(Thread* thd, Object tokens) {
 }
 
 Object p_object(Thread* thd, Object tokens) {
-  Parser parsers[] = {p_array, p_list, p_binding, p_literal, p_ident, NULL};
+  Parser parsers[] = {p_array, p_list, p_hashTable, p_binding, p_literal, p_ident, NULL};
   Object res = p_oneOf(thd, tokens, parsers);
   return res;
 }
