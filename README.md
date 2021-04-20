@@ -1,8 +1,8 @@
 # c-implementation
 
-ANSI C implementation of UFO.
+Plain-vanilla C implementation of UFO. (It's not quite ANSI C, but I'd like to get it there.)
 
-Why ANSI C?
+Why plain-vanilla C?
 
 Because what's become interesting to me is not what you can build using a language that gives you everything, but with a language that gives you very little.
 
