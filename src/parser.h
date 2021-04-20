@@ -7,6 +7,8 @@
 
 typedef Object (*Parser)(Thread* thd, Object tokens);
 
+Object parseEntry(Thread* thd, Object tokens);
+
 Object parse(Thread* thd, Parser parser, Object tokens);
 
 /* TODO most of these declarations should not be in this header file */

@@ -162,7 +162,7 @@ void indent() {
 #endif
 
 /* parser entry point */
-Object parseEntry(Thread* thd, Parser parser, Object tokens) {
+Object parseEntry(Thread* thd, Object tokens) {
   // make a copy of the thread's jumpBuf
   jmp_buf jumpBuf;
   memcpy(jumpBuf, thd->jumpBuf, sizeof(jumpBuf));
@@ -172,7 +172,7 @@ Object parseEntry(Thread* thd, Parser parser, Object tokens) {
   switch (jumpRes) {
     case 0:
       // attempt a parse
-      res = parse(thd, parser, tokens);
+      res = parse(thd, p_any, tokens);
       break;
     case 1:
       printf("parseEntry caught parse error\n");
