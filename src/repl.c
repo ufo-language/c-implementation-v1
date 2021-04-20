@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "colon_command.h"
 #include "d_list.h"
 #include "d_queue.h"
 #include "d_string.h"
@@ -12,14 +13,12 @@
 #include "repl.h"
 #include "thread.h"
 
-#define READ_BUF_SIZE 256
-
-struct Repl_struct {
-  Object inputString;
-  Object tokens;
-  Object parseRes;
-  Object value;
-};
+void intro() {
+  puts("UFO version 4-rc-1");
+  puts("http://github.com/ufo-language");
+  puts("type :? for help");
+  puts("");
+}
 
 void prompt() {
   printf("UFO> ");
@@ -43,45 +42,39 @@ int getLine(char* buffer, int len) {
   return i;
 }
 
-Object read(Thread* thd, Object string) {
-  Object tokenQ = lex(string);
-  Object tokens = queueAsList(tokenQ);
-  printf("read() lexer tokens = "); objShow(tokens, stdout); printf("\n");
-  Object res = parseEntry(thd, tokens);
-  return res;
-}
-
 void repl() {
-  printf("^C to abort\n");
+  intro();
   Thread* thd = threadNew();
-  struct Repl_struct repl;
+  ReplObj repl;
   while (true) {
     prompt();
-    char inputBuffer[READ_BUF_SIZE];
-    int nChars = getLine(inputBuffer, READ_BUF_SIZE);
+    int nChars = getLine(repl.inputBuffer, READ_BUF_SIZE);
     if (nChars > 0) {
-      printf("repl() input string = '%s'\n", inputBuffer);
-      Object inputString = stringNew(inputBuffer);
-//      Object parseRes = read(thd, inputString);
-      Object tokenQ = lex(inputString);
-      Object tokens = queueAsList(tokenQ);
-      Object parseRes = parseEntry(thd, tokens);
-      if (parseRes.a == nullObj.a) {
+      if (repl.inputBuffer[0] == ':') {
+        colonCommand(thd, &repl);
+        continue;
+      }
+      repl.inputString = stringNew(repl.inputBuffer);
+      Object tokenQ = lex(repl.inputString);
+      repl.tokens = queueAsList(tokenQ);
+      repl.parseRes = parseEntry(thd, repl.tokens);
+      if (repl.parseRes.a == nullObj.a) {
         printf("parse error\n");
       }
       else {
-        Object obj = listGetFirst(parseRes);
-        Object tokens = listGetRest(parseRes);
+        Object obj = listGetFirst(repl.parseRes);
+        Object tokens = listGetRest(repl.parseRes);
         if (listGetRest(tokens).a != EMPTY_LIST.a) {
-          printf("repl() found too many tokens on line [probably because the parser is incomplete]\n");
-          printf("repl() remaining tokens = "); objShow(tokens, stdout); printf("\n");
+          fprintf(stderr, "REPL ERROR: too many tokens on line (probably because the parser is incomplete)\n");
+          fprintf(stderr, "  remaining tokens = "); objShow(tokens, stderr); fprintf(stderr, "\n");
           /* TODO should I just call the parser on the remaining tokens? */
         }
         else {
-          printf("repl() object = "); objShow(obj, stdout); printf(" : %s\n",ObjTypeNames[objGetType(obj)]);
+          repl.parseRes = obj;
           Object val = evaluate(obj, thd);
           if (val.a != nullObj.a) {
-            printf("repl() val = "); objShow(val, stdout); printf(" : %s\n",ObjTypeNames[objGetType(val)]);
+            repl.value = val;
+            objShow(val, stdout); printf(" : %s\n",ObjTypeNames[objGetType(val)]);
           }
         }
       }
