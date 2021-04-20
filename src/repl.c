@@ -14,6 +14,13 @@
 
 #define READ_BUF_SIZE 256
 
+struct Repl_struct {
+  Object inputString;
+  Object tokens;
+  Object parseRes;
+  Object value;
+};
+
 void prompt() {
   printf("UFO> ");
 }
@@ -40,13 +47,14 @@ Object read(Thread* thd, Object string) {
   Object tokenQ = lex(string);
   Object tokens = queueAsList(tokenQ);
   printf("read() lexer tokens = "); objShow(tokens, stdout); printf("\n");
-  Object res = p_any(thd, tokens);
+  Object res = parseEntry(thd, tokens);
   return res;
 }
 
 void repl() {
   printf("^C to abort\n");
   Thread* thd = threadNew();
+  struct Repl_struct repl;
   while (true) {
     prompt();
     char inputBuffer[READ_BUF_SIZE];
@@ -54,7 +62,10 @@ void repl() {
     if (nChars > 0) {
       printf("repl() input string = '%s'\n", inputBuffer);
       Object inputString = stringNew(inputBuffer);
-      Object parseRes = read(thd, inputString);
+//      Object parseRes = read(thd, inputString);
+      Object tokenQ = lex(inputString);
+      Object tokens = queueAsList(tokenQ);
+      Object parseRes = parseEntry(thd, tokens);
       if (parseRes.a == nullObj.a) {
         printf("parse error\n");
       }
