@@ -91,6 +91,20 @@ Object listGetRest(Object list) {
 }
 
 /*------------------------------------------------------------------*/
+Object listGetLastPair(Object list) {
+  if (listIsEmpty(list)) {
+    return nullObj;
+  }
+  while (true) {
+    Object rest = listGetRest(list);
+    if (listIsEmpty(rest)) {
+      return list;
+    }
+    list = rest;
+  }
+}
+
+/*------------------------------------------------------------------*/
 bool listIsEmpty(Object list) {
   return list.a == EMPTY_LIST.a;
 }

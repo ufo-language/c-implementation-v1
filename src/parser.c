@@ -46,14 +46,18 @@ Object p_symbol(Thread* thd, Object tokens);
 Object p_literal(Thread* thd, Object tokens);
 
 /* punctuation */
+Object p_bar(Thread* thd, Object tokens);
 Object p_braceOpen(Thread* thd, Object tokens);
 Object p_braceClose(Thread* thd, Object tokens);
+Object p_bracketOpen(Thread* thd, Object tokens);
+Object p_bracketClose(Thread* thd, Object tokens);
 Object p_comma(Thread* thd, Object tokens);
 Object p_equalSign(Thread* thd, Object tokens);
 
 /* containers */
 Object p_array(Thread* thd, Object tokens);
 Object p_binding(Thread* thd, Object tokens);
+Object p_list(Thread* thd, Object tokens);
 
 /* container & expression support */
 Object p_commaBindings(Thread* thd, Object tokens);
@@ -94,8 +98,11 @@ struct ParserEntry_struct {
   {(void*)p_array, "p_array"},
   {(void*)p_binding, "p_binding"},
   {(void*)p_bool, "p_bool"},
+  {(void*)p_bar, "p_bar"},
   {(void*)p_braceClose, "p_braceClose"},
   {(void*)p_braceOpen, "p_braceOpen"},
+  {(void*)p_bracketClose, "p_bracketClose"},
+  {(void*)p_bracketOpen, "p_bracketOpen"},
   {(void*)p_comma, "p_comma"},
   {(void*)p_commaAny, "p_commaAny"},
   {(void*)p_commaBindings, "p_commaBindings"},
@@ -108,6 +115,7 @@ struct ParserEntry_struct {
   {(void*)p_int, "p_int"},
   {(void*)p_let, "p_let"},
   {(void*)p_let, "p_let"},
+  {(void*)p_list, "p_list"},
   {(void*)p_listOfAny, "p_listOfAny"},
   {(void*)p_literal, "p_literal"},
   {(void*)p_maybe, "p_maybe"},
@@ -391,7 +399,12 @@ Object p_literal(Thread* thd, Object tokens) {
   return res;
 }
 
-/* containers */
+/* punctuation */
+Object p_bar(Thread* thd, Object tokens) {
+  (void)thd;
+  return p_spotSpecial(tokens, "|");
+}
+
 Object p_braceOpen(Thread* thd, Object tokens) {
   (void)thd;
   return p_spotSpecial(tokens, "{");
@@ -402,6 +415,27 @@ Object p_braceClose(Thread* thd, Object tokens) {
   return p_spotSpecial(tokens, "}");
 }
 
+Object p_bracketOpen(Thread* thd, Object tokens) {
+  (void)thd;
+  return p_spotSpecial(tokens, "[");
+}
+
+Object p_bracketClose(Thread* thd, Object tokens) {
+  (void)thd;
+  return p_spotSpecial(tokens, "]");
+}
+
+Object p_equalSign(Thread* thd, Object tokens) {
+  (void)thd;
+  return p_spotOperator(tokens, "=");
+}
+
+Object p_comma(Thread* thd, Object tokens) {
+  (void)thd;
+  return p_spotSpecial(tokens, ",");
+}
+
+/* containers */
 Object p_commaAny(Thread* thd, Object tokens) {
   (void)thd;
   return p_sepBy(thd, tokens, p_any, p_comma);
@@ -422,6 +456,40 @@ Object p_array(Thread* thd, Object tokens) {
   }
   tokens = listGetRest(res);
   return listNew(ary, tokens);
+}
+
+Object p_barAny(Thread* thd, Object tokens) {
+  Parser parsers[] = {p_bar, p_any, NULL};
+  return p_seq(thd, tokens, parsers);
+}
+
+
+Object p_list(Thread* thd, Object tokens) {
+  Object res = p_bracketOpen(thd, tokens);
+  if (res.a == nullObj.a) {
+    return nullObj;
+  }
+  tokens = listGetRest(res);
+  res = p_commaAny(thd, tokens);
+  if (res.a == nullObj.a) {
+    return nullObj;
+  }
+  Object elems = listGetFirst(res);
+  tokens = listGetRest(res);
+  res = p_barAny(thd, tokens);
+  if (res.a != nullObj.a) {
+    Object impropElem = listGetFirst(res);
+    tokens = listGetRest(res);
+    /* rebuild list with `improp` as the final improper element */
+    Object pair = listGetLastPair(elems);
+    listSetRest(pair, impropElem);
+  }
+  res = p_bracketClose(thd, tokens);
+  if (res.a == nullObj.a) {
+    return nullObj;
+  }
+  tokens = listGetRest(res);
+  return listNew(elems, tokens);
 }
 
 /* a pattern is the left-hand-side of a binding */
@@ -446,7 +514,7 @@ Object p_binding(Thread* thd, Object tokens) {
 }
 
 Object p_object(Thread* thd, Object tokens) {
-  Parser parsers[] = {p_array, p_binding, p_literal, p_ident, NULL};
+  Parser parsers[] = {p_array, p_list, p_binding, p_literal, p_ident, NULL};
   Object res = p_oneOf(thd, tokens, parsers);
   return res;
 }
@@ -515,16 +583,6 @@ Object p_if(Thread* thd, Object tokens) {
   Object ifExpr = ifNew(cond, conseq, alt);
   tokens = listGetRest(res);
   return listNew(ifExpr, tokens);
-}
-
-Object p_equalSign(Thread* thd, Object tokens) {
-  (void)thd;
-  return p_spotOperator(tokens, "=");
-}
-
-Object p_comma(Thread* thd, Object tokens) {
-  (void)thd;
-  return p_spotSpecial(tokens, ",");
 }
 
 Object p_commaBindings(Thread* thd, Object tokens) {

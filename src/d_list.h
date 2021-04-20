@@ -21,6 +21,7 @@ Object listGetFirst(Object list);
 Object listGetSecond(Object list);
 Object listGetThird(Object list);
 Object listGetRest(Object list);
+Object listGetLastPair(Object list);
 bool listIsEmpty(Object list);
 
 /* This expects the list to be a list of bindings */
