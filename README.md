@@ -1,4 +1,4 @@
-# c-implementation
+# UFO C implementation
 
 Plain-vanilla C implementation of UFO. (It's not quite ANSI C, but I'd like to get it there.)
 
@@ -6,7 +6,7 @@ Why plain-vanilla C?
 
 Because what's become interesting to me is not what you can build using a language that gives you everything, but with a language that gives you very little.
 
-See https://github.com/ufo-language/reference-implementation/tree/master/doc (download file in order to view) for the complete UFO documentation. Caveat emptor: this version is not up to that spec.
+See https://github.com/ufo-language/reference-implementation/tree/master/doc (download the file in order to view it) for the complete UFO documentation. Caveat emptor: this version is not up to that spec.
 
 ----
 

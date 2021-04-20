@@ -8,7 +8,8 @@ project(ufo VERSION 0.1.0 LANGUAGES C)
 
 configure_file(src/config.h.in src/config.h)
 
-add_compile_options(-Wall -Wextra -pedantic -ansi)
+
+add_compile_options(-Wall -Wextra -pedantic)
 
 #-----------------------------------------------------------------------
 # Source files
