@@ -20,6 +20,7 @@ set(EXEC_SRC_FILES
 
 set(LIB_SRC_FILES
   src/blockfile.c
+  src/colon_command.c
   src/d_array.c
   src/d_binding.c
   src/d_bool.c
