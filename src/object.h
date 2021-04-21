@@ -21,6 +21,8 @@ typedef enum {
   D_Queue,
   D_Real,
   D_Set,
+  D_StreamIn,
+  D_StreamOut,
   D_String,
   D_Symbol,
   D_Tuple,

@@ -34,6 +34,8 @@ set(LIB_SRC_FILES
   src/d_queue.c
   src/d_real.c
   src/d_set.c
+  src/d_streamin.c
+  src/d_streamout.c
   src/d_string.c
   src/d_symbol.c
   src/d_tuple.c
