@@ -11,6 +11,7 @@
 #include "d_string.h"
 #include "d_symbol.h"
 #include "delegate.h"
+#include "e_app.h"
 #include "e_if.h"
 #include "e_let.h"
 #include "e_seq.h"
@@ -55,6 +56,8 @@ Object p_bracketClose(Thread* thd, Object tokens);
 Object p_comma(Thread* thd, Object tokens);
 Object p_equalSign(Thread* thd, Object tokens);
 Object p_hashMark(Thread* thd, Object tokens);
+Object p_parenOpen(Thread* thd, Object tokens);
+Object p_parenClose(Thread* thd, Object tokens);
 
 /* containers */
 Object p_array(Thread* thd, Object tokens);
@@ -78,10 +81,12 @@ Object p_LET(Thread* thd, Object tokens);
 Object p_THEN(Thread* thd, Object tokens);
 
 /* expressions */
+Object p_apply(Thread* thd, Object tokens);
 Object p_do(Thread* thd, Object tokens);
 Object p_ident(Thread* thd, Object tokens);
 Object p_if(Thread* thd, Object tokens);
 Object p_let(Thread* thd, Object tokens);
+Object p_parenExpr(Thread* thd, Object tokens);
 
 Object p_expr(Thread* thd, Object tokens);
 Object p_listOfAny(Thread* thd, Object tokens);
@@ -98,6 +103,7 @@ struct ParserEntry_struct {
   {(void*)p_LET, "p_LET"},
   {(void*)p_THEN, "p_THEN"},
   {(void*)p_any, "p_any"},
+  {(void*)p_apply, "p_apply"},
   {(void*)p_array, "p_array"},
   {(void*)p_binding, "p_binding"},
   {(void*)p_bool, "p_bool"},
@@ -126,6 +132,9 @@ struct ParserEntry_struct {
   {(void*)p_maybe, "p_maybe"},
   {(void*)p_object, "p_object"},
   {(void*)p_oneOf, "p_oneOf"},
+  {(void*)p_parenClose, "p_parenClose"},
+  {(void*)p_parenExpr, "p_parenExpr"},
+  {(void*)p_parenOpen, "p_parenOpen"},
   {(void*)p_pattern, "p_pattern"},
   {(void*)p_real, "p_real"},
   {(void*)p_sepBy, "p_sepBy"},
@@ -445,6 +454,16 @@ Object p_hashMark(Thread* thd, Object tokens) {
   return p_spotSpecial(tokens, "#");
 }
 
+Object p_parenOpen(Thread* thd, Object tokens) {
+  (void)thd;
+  return p_spotSpecial(tokens, "(");
+}
+
+Object p_parenClose(Thread* thd, Object tokens) {
+  (void)thd;
+  return p_spotSpecial(tokens, ")");
+}
+
 /* containers */
 Object p_commaAny(Thread* thd, Object tokens) {
   (void)thd;
@@ -579,6 +598,27 @@ Object p_THEN(Thread* thd, Object tokens) {
   return _ignore(p_spotReserved(tokens, "then"));
 }
 
+Object p_apply(Thread* thd, Object tokens) {
+  Object abstrRes = p_parenExpr(thd, tokens);
+  if (abstrRes.a == nullObj.a) {
+    abstrRes = p_ident(thd, tokens);
+    if (abstrRes.a == nullObj.a) {
+      return nullObj;
+    }
+  }
+  Object abstr = listGetFirst(abstrRes);
+  tokens = listGetRest(abstrRes);
+  Parser parsers[] = {p_parenOpen, p_listOfAny, p_parenClose, NULL};
+  Object argsRes = p_seq(thd, tokens, parsers);
+  if (argsRes.a == nullObj.a) {
+    return nullObj;
+  }
+  Object args = listGetFirst(argsRes);
+  tokens = listGetRest(argsRes);
+  Object apply = appNew(abstr, args);
+  return listNew(apply, tokens);
+}
+
 Object p_do(Thread* thd, Object tokens) {
   Parser parsers[] = {p_DO, p_listOfAny, p_END, NULL};
   Object res = p_seq(thd, tokens, parsers);
@@ -628,9 +668,30 @@ Object p_let(Thread* thd, Object tokens) {
   return listNew(let, tokens);
 }
 
+Object p_parenExpr(Thread* thd, Object tokens) {
+  Object openRes = p_parenOpen(thd, tokens);
+  if (openRes.a == nullObj.a) {
+    return nullObj;
+  }
+  tokens = listGetRest(openRes);
+  Object exprRes = p_expr(thd, tokens);
+  if (exprRes.a == nullObj.a) {
+    return nullObj;
+  }
+  Object expr = listGetFirst(exprRes);
+  tokens = listGetRest(exprRes);
+  Object closeRes = p_parenClose(thd, tokens);
+  if (closeRes.a == nullObj.a) {
+    Object exnPayload = stringNew("PARSE ERROR: closing parenthesis expected");
+    threadThrowException(thd, exnPayload);
+  }
+  tokens = listGetRest(closeRes);
+  return listNew(expr, tokens);
+}
+
 /* any expression */
 Object p_expr(Thread* thd, Object tokens) {
-  Parser parsers[] = {p_do, p_if, p_let, NULL};
+  Parser parsers[] = {p_parenExpr, p_apply, p_do, p_if, p_let, NULL};
   Object res = p_oneOf(thd, tokens, parsers);
   return res;
 }
