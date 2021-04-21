@@ -19,6 +19,7 @@ void colonCommandShowInput(ReplObj* replObj) {
 }
 
 bool colonCommand(Thread* thd, ReplObj* replObj) {
+  (void)thd;
   char* input = replObj->inputBuffer;
   bool contin = true;
   if (!strcmp(":i", input)) {
