@@ -28,6 +28,8 @@ char* ObjTypeNames[] = {
   "Queue",
   "Real",
   "Set",
+  "StreamIn",
+  "StreamOut",
   "String",
   "Symbol",
   "Tuple",
