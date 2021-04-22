@@ -28,6 +28,9 @@ bool colonCommand(Thread* thd, ReplObj* replObj) {
   else if (!strcmp(":q", input)) {
     contin = false;
   }
+  else if (!strcmp(":?", input)) {
+    colonCommandHelp();
+  }
   else {
     printf("Colon command '%s' not understood\n", replObj->inputBuffer);
   }
