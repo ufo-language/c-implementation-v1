@@ -315,7 +315,7 @@ Object p_sepBy(Thread* thd, Object tokens, Parser parser, Parser separator) {
         break;
       }
       else {
-        threadThrowException(thd, "ParseError", "object expected after separator", NOTHING);
+        threadThrowException(thd, "ParseError", "object expected after separator", tokens);
       }
     }
     Object obj = listGetFirst(res);
@@ -750,7 +750,7 @@ Object p_parenExpr(Thread* thd, Object tokens) {
   tokens = listGetRest(exprRes);
   Object closeRes = p_parenClose(thd, tokens);
   if (closeRes.a == nullObj.a) {
-    threadThrowException(thd, "ParseError", "closing parenthesis expected", NOTHING);
+    threadThrowException(thd, "ParseError", "closing parenthesis expected", tokens);
   }
   tokens = listGetRest(closeRes);
   return listNew(expr, tokens);

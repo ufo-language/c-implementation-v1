@@ -1,0 +1,515 @@
+UFO/C
+-----
+[+] (1) 2021-03-06
+  Add a 'dirty' flag to each in-memory virtual memory page. Write the page
+  back to disk only if the page is dirty.
+  -> Added the flag, but the flag isn't used yet.
+  -> I think the vmem.pageGet function should return the page index instead of
+  the page at the page index. This will allow the vmemSet function to set the
+  vmemIsDirty bit as well.
+  -> Done.
+
+[-] (2) 2021-03-07
+  Many of the one-line functions can probably be turned into macros. This
+  should increase the performance a bit.
+
+[+] (3) 2021-03-08
+  Since the status word contains 32768 for the GC mark flag, then no block can
+  be larger than 32767 words. This means that the initial free memory can't be
+  a single 64KW block. It needs to be split into two 32KW blocks.
+  -> Done.
+
+[+] (4) 2021-03-08
+  The memBlkFree function must check to see if the nextBlk is actually past
+  the top of memory, and fail appropriately if it is.
+  -> Replaced all memBlk* functions with mem* functions.
+
+[+] (5) 2021-03-08
+  The memBlkFree function must check to see if the coalesced block has size >
+  32767, and then not coalesce the blocks.
+  -> Done.
+
+[+] (6) 2021-03-09
+  The memblk.findFree function inserts the 'rest' block before the 'next'
+  block. What happens if the 'next' block is null/0?
+  -> Replaced all memBlk* functions with mem* functions.
+
+[+] (7) 2021-03-10
+  The nFreeWords value (in mem.c) should count only the data areas of the free
+  blocks.
+  -> Done.
+
+[-] (8) 2021-03-10
+  The mem.c file should keep track of what the largest available block size
+  is.
+  -> Why?
+  -> Probably so I can keep track of how bad fragmentation gets.
+
+[+] (9) 2021-03-10
+  Should the memblk.c module store the list root internally? Currently the
+  mem.c module stores the list root, and the memblk module knows nothing about
+  the list root.
+  -> Replaced all memBlk* functions with mem* functions, and the mem module
+  stores the block root.
+  -> Done.
+
+[+] (10) 2021-03-18
+  Can the Array object use the raw block's size field for its own size field?
+  It would be something like array size = raw block size - MEMBLK_OVERHEAD -
+  OBJ_OVERHEAD.
+  -> See #45.
+  -> Done.
+
+[+] (13) 2021-03-19
+  There is a cycle being introduced in the free block list
+  -> It seems to happen on the third mark/sweep cycle (if I'm counting
+  correctly).
+  -> Is this related to #12 below?
+  -> I think it's from #16 below.
+  -> Fixed.
+
+[+] (12) 2021-03-19
+  Somehow, memory allocation is allowing size-0 blocks to be placed in the
+  free block list.
+    test_gcSweep3 got here 3
+    test_gcSweep3 got here 2, n=2075, size=75
+    objAlloc_unsafe called with type Unknown, nWords 76
+    objAlloc_unsafe calling memAlloc with 76 words
+    memAlloc checking free block 255 of size 0
+    memAlloc checking free block 1 of size 0
+    memAlloc checking free block 32768 of size 69
+  -> Put an assert somewhere to detect when a block size is 0.
+  -> But this block size might not be the raw block size, but the object
+  size.
+  -> I think it's because I'm allocating blocks using memAlloc(), but that
+  returns the address of the *data* area of the block. Then I go and use that
+  address as if it were the *base* address of the block.
+  -> See #13.
+  -> See #15.
+  -> Done.
+
+[+] (13) 2021-03-20
+  Use different names for different uses of memory blocks:
+      - vmem uses the Address type
+      - mem should use:
+          RawBlock = raw block
+          Block = user area of a raw block
+      - object uses:
+          Object = object
+  -> Can the different memory blocks be strongly typed by using structs? Yes,
+  this works.
+  -> Done.
+
+[-] (14) 2021-03-20
+  If all of memory is allocated and then the blocks are freed, they won't
+  always re-form two 32KW blocks. At best, after all memory is freed again
+  there will probably be three large-ish blocks and MEMBLK_SIZE_OVERHEAD fewer
+  words than the original amount of free memory.
+
+[+] (15) 2021-03-21
+  During GC sweep one of the blocks is at 65535, and its size is 0. How is
+  that block even being allocated?
+  -> In test_gcSweep3 I set the block size to 129. A raw block at 65402 is
+  allocated (obj addr 65404). During sweep its next pointer is found to be
+  65535.
+    test_gcSweep3 got here 2, n=246, obj=65404, size=129
+                                     obj=65271
+                                     obj=65138
+                                     obj=65005
+                                     obj=64872
+  -> It's not an allocated block: it's the _nextAdjacent block to the last
+  block allocated. It's at the correct address, but I think it needs to be
+  handled as a special case.
+  -> Fixed.
+
+[+] (16) 2021-03-21
+  After a gc sweep and *all* blocks are freed, the _root is non-zero. This is
+  wrong.
+  -> Fixed.
+  -> Nope, there's still a cycle being generated after 14,000 allocations.
+  -> I can reproduce it when each block allocated has size 16379.
+  -> But only AFTER other block sizes have been allocated and freed.
+  -> See #17 below.
+  -> Fixed.
+
+[+] (17) 2021-03-21
+  After a block from the spine is freed, it still appears in the spine. This
+  is accidentally causing a cycle in the spine.
+    _sweep finished freeing block 49152
+    +================
+    | gcDumpSpine:
+    | 0. UNKNOWN-OBJECT@3(rawsize=16380)
+    | 1. UNKNOWN-OBJECT@49154(rawsize=16380)
+    | 2. UNKNOWN-OBJECT@3(rawsize=16380)
+    | 3. UNKNOWN-OBJECT@49154(rawsize=16380)
+  -> Before _sweep even starts that cycle exists in the spine.
+  -> The cycle is being introduced by the gc._markRecursive function.
+  -> The _markRecursive function was not checking for the null block.
+  -> Fixed.
+
+[+] (18) 2021-03-23
+  The garbage needs to keep track of new objects and committed objects. New
+  objects must be marked during the GC mark phase (or must not be swept during
+  the sweep phase).
+  -> I think the "must not be swept" option is the simplest. The spine is just
+  a list, and the "new" objects can be attached to the head of the
+  spine. Sweeping starts at the spine pointer. When new objects are to be
+  committed, just move the spine pointer to be equal to the "new" pointer.
+  -> I added a gcNew pointer, and new objects are added to gcNew instead of
+  gcSpine. The gcCommit function simply sets gcSpine = gcNew.
+  -> Done.
+
+[-] (19) 2021-03-24
+  I think the null object (at location 0) should be separate from the Nothing
+  object. I want to be able to distinguish an intentional "nothing" value from
+  an unintentional "null" value.
+  -> 'Nothing' has been added.
+
+[+] (20) 2021-03-24
+  When I display an error message I use stderr, but when I show an object I
+  use stdout, so I can't display an object as part of an error message.
+  -> Add an objShow_aux function that accepts an output stream as an
+  argument.
+  -> Done.
+
+[+] (21) 2021-03-27
+  The eval functions need to return a struct of {result, environment}.
+  -> Or if a Thread structure is passed around (see #22) then the environment
+  in the thread structure can be updated so it doesn't need to be returned as
+  part of the return value.
+  -> Using threads.
+  -> Done.
+
+[+] (22) 2021-03-27
+  The environment should probably be a custom struct so that it can contain a
+  jmp_buf struct.
+  -> If I did it this way then each eval function can return a value or not
+  return at all: it can longjmp to the jump_buf in the environment.
+  -> Or should there be a Thread strucutre that contains the environment and a
+  jmp_buf structure?
+  -> The environment is contained in a Thread struct.
+  -> Done.
+
+[+] (23) 2021-03-27
+  Should a Thread be an Object, or should it be a system struct?
+  -> The Thread needs to contain a jmp_buf, so that would need to be made an
+  Object as well (or to be encoded as one somehow).
+  -> If it's an Object, then actual register values will be stored in user
+  space. This could be dangerous. Also, the jmp_buf really needs to be stored
+  in contiguous system memory, not in potentially-segmented virtual memory.
+  -> But it would be nice if the user could call functions on threads.
+  -> User functions can be written that have access to system-memory thread
+  structs.
+  -> The Thread struct is a system-level struct.
+  -> See #24.
+  -> Done.
+
+[+] (24) 2021-03-28
+  Now that there is a thread structure, I think the GC doesn't need to hold an
+  object root. It should just use the list of threads and their environments.
+  -> The thread should also hold a reference to the top-level expression it's
+  evaluating.
+  -> What should happen with the _gcRoot variable in the gc.c file?
+  -> It's been removed.
+  -> Done.
+
+[+] (25) 2021-03-28
+  Settle on a uniform naming for things like arrayCount, stringLen.
+  -> Done.
+
+[+] (26) 2021-03-29
+  Get setjmp/longjmp to work
+  -> Done.
+
+[+] (27) 2021-03-29
+  Use cmake instead of my pmake.py utility.
+  -> Done.
+
+[-] (28) 2021-03-30
+  There should be a D_Stream data type so that it can handle streaming data to
+  a number of sinks: a file, a socket, a string buffer, maybe also a list or
+  queue.
+  -> The objShow function should have a stream parameter that accepts a
+  D_Stream.
+  -> Added D_StreamIn and D_StreamOut.
+
+[+] (29) 2021-03-30
+  I've added vmemInc/vmemDec and objIncData/objDecData. Use these in the data
+  structure functions where necessary, instead of;
+    objSetData(obj, x, objGetData(obj, x) +/- 1);
+  use
+    objIncData(obj, x);
+    objDecData(obj, x);
+  -> Done.
+
+[-] (30) 2021-03-31
+  I've added a hashFold function to the d_hash class and I use it in the
+  hashFreeVars fucntion. Either use it in more places or get rid of it.
+
+[-] (31) 2021-03-31
+  Should the list functions detect cyclic lists?
+  -> This is easy to do but it's memory-expensive.
+
+[+] (32) 2021-03-31
+  Finish the objMatch function.
+  -> Done.
+
+[+] (33) 2021-04-02
+  Add *_OFS constants to the top of each data/expr .c file.
+  -> See also #36.
+  -> Done.
+
+[-] (34) 2021-04-02
+  Create iterators for the collection classes.
+  -> It's simpler to create a toArray function for each class, but otoh
+  converting to an array can require a lot of space.
+  -> Perhaps both can be done.
+
+[+] (35) 2021-04-02
+  I think each rule in a function needs its own lexical environment because
+  each one can be different:
+    (1) fun foo (a, b) -> {a, b, c}
+    (2)       | (c, d) -> {c, d, e}
+        end
+  In rule 1, bound = {a, b}, free = {c}, lexEnv = {c=_}.
+  In rule 2, bound = {c, d}, free = {e}, lexEnv = {e=_}.
+  -> So what are the free variables of an abstraction?
+  -> Is that even a valid question?
+  -> Yes, I think it is: the set of free variables will be used to create the
+  closure, and the closure will be used to locate the free variables in each
+  rule in order to create the lexical env for each rule (instead of being used
+  *as* the lexical env for each rule).
+  -> Each rule must be closed separately and have its own lexical
+  environment. This should be ensured in the test_abstrEval function.
+  -> Done.
+
+[+] (36) 2021-04-02
+  Change the d_list.c file to use FIRST_OFS and REST_OFS instead of 0 and 1.
+  -> See also #33.
+  -> Done.
+
+[-] (37) 2021-04-03
+  Can a generic objEqual function be written that compares n fields of an
+  object structure for equality? This will allow at least the ifEqual function
+  to be replaced. It should work for arrays, lists, bindings, other
+  expressions.
+  -> A generic function can also be written for objMark, objEval (some of
+  them, anyway).
+  -> The objMark function has been written. See #40.
+
+[+] (38) 2021-04-03
+  Should the test function do a commit & gc between tests?
+  -> Maybe at least a commit.
+  -> Done.
+
+[+] (39) 2021-04-03
+  Each thread that is allocated in testing must be deleted.
+  -> Done.
+
+[+] (40) 2021-04-04
+  The objMark function calls gcMark, which calls _markRecursive, which calls
+  objMark AGAIN ON THE SAME OBJECT. The recursion stops because the second
+  time objMark is called, the object has been marked.
+  -> The objMark function shouldn't call gcMark directly, it should call a
+  gcSetMarkFlag function instead.
+  -> Done.
+
+[+] (41) 2021-04-04
+  The gcMark call chain seems too long and it probably can be simplified.
+    objMark(obj): sets the marked flag and then delegates to one of:
+      {type}Mark(obj): marks each of its members
+        gcMark(obj[n]): converts to block pointer and calls:
+          _markRecursive(blk): sets the marked flag (AGAIN!), converts to
+                               object, and then calls:
+            objMark(obj)
+  -> I think _markRecursive can be refactored into the other functions.
+  -> The gcMark function does very little as well.
+  -> Done.
+
+[+] (42) 2021-04-04
+  Blocks aren't getting freed during test_gcSweep3:
+    ******** threadMarkAll called
+    gc._sweep called
+    gc._sweep finished, nFrees = 0
+    ******** threadMarkAll called
+    gc._sweep called
+    gc._sweep finished, nFrees = 0
+    etc.
+  -> The problem was introduced between these two backups:
+      210322-0717-fixed-gc-bug.tgz    [working]
+      210324-0641-gc-commit-works.tgz [not working]
+  -> In the old version, disabling the _gcNew list fixes the problem.
+  -> I think I see the problem. The _gcNew list is being built
+  (unintentionall) as a list *separate* from the _gcSpine list, instead of
+  being an extension of it.
+  -> When the first object in the spine is freed, it doesn't consider that the
+  last object in the gcNew list might point to it.
+  -> Added a "previous spine object" link.
+  -> After committing, the _gcNew pointer must be set to 0.
+  -> Now a cycle is being introduced.
+  -> The _gcSpinePrev pointer needed to be set to 0 whenever a commit
+  happened.
+  -> That fixed the cycle problem but threadMarkAll is still being called 224
+  times during test_gcSweep3.
+  -> The gcNew list isn't being constructed correctly. It always has only one
+  block in it.
+  -> I rewrote the _sweep function. Now everything works.
+  -> Done.
+
+[+] (43) 2021-04-08
+  In the delegate.objMark function, some calls to objMark_generic use a "size"
+  symbolic constant, like objMark_generic(obj, CLO_PARAMS_OFS, CLO_SIZE), and
+  others use a numeric constant, like objMark_generic(obj, LST_FIRST_OFS, 2).
+  -> Create a symbolic constant for each class.
+  -> Actually they're fine the way they are. The ones that use numeric
+  constants are simple and will never change, like binding and list.
+  -> Done.
+
+[+] (44) 2021-04-08
+  Delete the *Mark methods from the data & expr classes.
+  -> Done.
+
+[-] (45) 2021-04-09
+  Instead of calculating offsets each time the function is called, like in
+  arrayCount:
+    Word arrayCount(Object array) {
+      RawBlock rawBlk = objToRawBlock(array);
+      Word blockSize = memGetSize(rawBlk);
+      return  blockSize - OBJ_OVERHEAD - ARY_ELEMS_OFS;
+    }
+  can the offset be calculated once and then reused?
+    static int arrayCountObjOffset = OBJ_OVERHEAD + ...?;
+    Word arrayCount(Object array) {
+      return vmemGet(array - arrayCountObjOffset);
+    }
+  The value of each offset is a constant value.
+
+[-] (46) 2021-04-10
+  Add a test to vmem that uses random values and locations. It can use a
+  specific seed before writing to vmem, and then reset the generator using the
+  same seed before reading from vmem.
+
+[+] (47) 2021-04-12
+  Something is weird with the lexer. In the S_Real state it finds the
+  character '5' and somehow transitions back to the Point state.
+    State: Real
+      comparing char '5' (53) to range '0' - '9'
+      returning (2) transition to Point
+  According to the syntax arrays there's no sucn transition:
+    Transition realState[] = {
+      {'0', '9',     S_POINT, A_KEEP,      T_NONE},  <<<<<<<< this is right
+      {C_ANY, C_ANY, S_I,     A_REUSE,     T_REAL}
+    };
+  -> But after the transitions are constructed, the nextState is wrong:
+    test_lexer Real state = 0x10d597e90
+      transition @ 0x10d597eb0
+        from = 0 (48)
+        to = 9 (57)
+        nextState = Point  <<<<<<<< this is wrong
+      transition @ 0x10d597ec0
+        from = ? (-1)
+        to = ? (-1)
+        nextState = I
+  -> The "nextState" field of that transition was wrong: it said S_POINT
+  instead of S_REAL.
+  -> Done.
+
+[-] (48) 2021-04-13
+  How should a tuple be decorated visually? What should a 1-element tuple look
+  like?
+  -> Currently it's displayed as x:y:z.
+  -> Can a tuple be :x:y:z?
+  -> This precludes the use of colon commands. A 1-element tuple would be :x.
+  -> Colon is also used as a resolution operaor, along with '.', like
+  "namespace:key" or "namespace.key".
+  -> How about :{x, y, z}?
+
+[+] (49) 2021-04-13
+  I think that the T_WORD lexer token type isn't needed. Something is either
+  a T_IDENT, a T_SYMBOL, or a T_RESERVED.
+  -> Or is T_WORD used as a preliminary type before one of the others is
+  chosen?
+  -> T_WORD is an intermediate token type. Do not remove it.
+  -> Done.
+
+[-] (50) 2021-04-13
+  Is there anything stopping the garbage collector from freeing NOTHING and
+  EMPTY_LIST in the globals.h file?
+
+[-] (51) 2021-04-14
+  There is a *delete function in each class, but I don't think any one of them
+  is being used.
+
+[+] (52) 2021-04-16
+  When I add a call to repl() in the main function I get a linker error saying
+  that EMPTY_LIST and NOTHING are not defined.
+  -> After I added calls to memStart() and globalsSetup() the linker error
+  went away. That's very strange.
+  -> Done.
+
+[+] (53) 2021-04-16
+  How should evaluation errors be propagated? Currently they're not.
+    UFO> if a then 1 else 2 end
+    repl() input string = 'if a then 1 else 2 end'
+    repl() object = if a then 1 else 2 end : IfThen
+    ERROR: unbound identifier: "a"
+    repl() val = 1 : Integer
+  -> Use the jumpbuf in the thread.
+  -> I added a threadThrowException function.
+  -> Just throw an exception. The REPL will catch it.
+  -> Done.
+
+[-] (54) 2021-04-17
+  Should the list class actually be a doubly-linked list?
+   - Append to either end in O(1).
+   - Join lists in O(1).
+   - Remove element in O(1).
+  Is there a good reason not to do this?
+  -> The queue class could be eliminated.
+  -> Also See
+  https://www.geeksforgeeks.org/xor-linked-list-a-memory-efficient-doubly-linked-list-set-1/
+  -> If this is done, then the listGetRest function must return a pair that
+  has a pointer to the next element in the list, and a pointer to the last
+  element in the list.
+  -> How does this affect improper lists? Can a doubly-linked list be improper?
+
+[-] (55) 2021-04-17
+  How should parse errors be handled? Use setjmp/longjmp? If so, then the
+  jumpbuf should be passed as an argument to every parse function.
+  -> I've threaded a Thread* through all the parsers.
+  -> A preliminary test shows it to be working so far.
+
+[-] (56) 2021-04-17
+  The parsers should have a memoziation structure as a parameter so that
+  parser calls and return values can be memoized.
+  -> In that case there should also be a token list index parameter.
+  -> The hash key will be the token list index PLUS the parser ID (raw address
+  would work), the value is the parse result.
+
+[+] (57) 2021-04-19
+  Each parser should do its own _extract. This will allow any parser to be
+  called from anywhere, and it will behave the same way each time.
+  -> Done.
+
+[-] (58) 2021-04-21
+  A lexer error should actually throw an exception. This is also a strange error:
+    UFO> "Ab
+    lexer error: unterminated string
+    ""Ab"
+       ^
+    lexer error
+    ERROR: Array access violation
+      array: nothing
+      size: 0
+      index requested: 0
+    ERROR: Array access violation
+      array: nothing
+      size: 0
+      index requested: 0
+    ...
+  -> See #59.
+
+[-] (59) 2021-04-22
+  Thread a Thread* through the lexer functions. This will allow the lexer to
+  throw exceptions.
+  -> See also #58.A
