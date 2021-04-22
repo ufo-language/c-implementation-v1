@@ -11,6 +11,7 @@
 #include "d_string.h"
 #include "d_symbol.h"
 #include "delegate.h"
+#include "e_abstr.h"
 #include "e_app.h"
 #include "e_if.h"
 #include "e_let.h"
@@ -67,7 +68,9 @@ Object p_list(Thread* thd, Object tokens);
 
 /* container & expression support */
 Object p_commaBindings(Thread* thd, Object tokens);
-Object p_commaAny(Thread* thd, Object tokens);
+Object p_commaList(Thread* thd, Object tokens);
+Object p_funRule(Thread* thd, Object tokens);
+Object p_parenCommaList(Thread* thd, Object tokens);
 Object p_pattern(Thread* thd, Object tokens);
 
 Object p_object(Thread* thd, Object tokens);
@@ -76,6 +79,7 @@ Object p_object(Thread* thd, Object tokens);
 Object p_DO(Thread* thd, Object tokens);
 Object p_ELSE(Thread* thd, Object tokens);
 Object p_END(Thread* thd, Object tokens);
+Object p_FUN(Thread* thd, Object tokens);
 Object p_IF(Thread* thd, Object tokens);
 Object p_LET(Thread* thd, Object tokens);
 Object p_THEN(Thread* thd, Object tokens);
@@ -83,6 +87,7 @@ Object p_THEN(Thread* thd, Object tokens);
 /* expressions */
 Object p_apply(Thread* thd, Object tokens);
 Object p_do(Thread* thd, Object tokens);
+Object p_function(Thread* thd, Object tokens);
 Object p_ident(Thread* thd, Object tokens);
 Object p_if(Thread* thd, Object tokens);
 Object p_let(Thread* thd, Object tokens);
@@ -99,6 +104,7 @@ struct ParserEntry_struct {
   {(void*)p_DO, "p_DO"},
   {(void*)p_ELSE, "p_ELSE"},
   {(void*)p_END, "p_END"},
+  {(void*)p_FUN, "p_FUN"},
   {(void*)p_IF, "p_IF"},
   {(void*)p_LET, "p_LET"},
   {(void*)p_THEN, "p_THEN"},
@@ -113,11 +119,13 @@ struct ParserEntry_struct {
   {(void*)p_bracketClose, "p_bracketClose"},
   {(void*)p_bracketOpen, "p_bracketOpen"},
   {(void*)p_comma, "p_comma"},
-  {(void*)p_commaAny, "p_commaAny"},
+  {(void*)p_commaList, "p_commaList"},
   {(void*)p_commaBindings, "p_commaBindings"},
   {(void*)p_do, "p_do"},
   {(void*)p_equalSign, "p_equalSign"},
   {(void*)p_expr, "p_expr"},
+  {(void*)p_function, "p_function"},
+  {(void*)p_funRule, "p_funRule"},
   {(void*)p_hashMark, "p_hashMark"},
   {(void*)p_hashTable, "p_hashTable"},
   {(void*)p_ident, "p_ident"},
@@ -133,6 +141,7 @@ struct ParserEntry_struct {
   {(void*)p_object, "p_object"},
   {(void*)p_oneOf, "p_oneOf"},
   {(void*)p_parenClose, "p_parenClose"},
+  {(void*)p_parenCommaList, "p_parenCommaList"},
   {(void*)p_parenExpr, "p_parenExpr"},
   {(void*)p_parenOpen, "p_parenOpen"},
   {(void*)p_pattern, "p_pattern"},
@@ -456,13 +465,13 @@ Object p_parenClose(Thread* thd, Object tokens) {
 }
 
 /* containers */
-Object p_commaAny(Thread* thd, Object tokens) {
+Object p_commaList(Thread* thd, Object tokens) {
   (void)thd;
   return p_sepBy(thd, tokens, p_any, p_comma);
 }
 
 Object p_array(Thread* thd, Object tokens) {
-  Parser parsers[] = {p_braceOpen, p_commaAny, p_braceClose, NULL};
+  Parser parsers[] = {p_braceOpen, p_commaList, p_braceClose, NULL};
   Object res = p_seq(thd, tokens, parsers);
   if (res.a == nullObj.a) {
     return nullObj;
@@ -507,7 +516,7 @@ Object p_list(Thread* thd, Object tokens) {
     return nullObj;
   }
   tokens = listGetRest(res);
-  res = p_commaAny(thd, tokens);
+  res = p_commaList(thd, tokens);
   if (res.a == nullObj.a) {
     return nullObj;
   }
@@ -574,6 +583,11 @@ Object p_END(Thread* thd, Object tokens) {
   return _ignore(p_spotReserved(tokens, "end"));
 }
 
+Object p_FUN(Thread* thd, Object tokens) {
+  (void)thd;
+  return _ignore(p_spotReserved(tokens, "fun"));
+}
+
 Object p_IF(Thread* thd, Object tokens) {
   (void)thd;
   return _ignore(p_spotReserved(tokens, "if"));
@@ -589,7 +603,14 @@ Object p_THEN(Thread* thd, Object tokens) {
   return _ignore(p_spotReserved(tokens, "then"));
 }
 
+Object p_parenCommaList(Thread* thd, Object tokens) {
+  Parser parsers[] = {p_parenOpen, p_commaList, p_parenClose, NULL};
+  return p_seq(thd, tokens, parsers);
+}
+
 Object p_apply(Thread* thd, Object tokens) {
+  /* try a parenthesized expression, and if that fails then try just
+     an identifier */
   Object abstrRes = p_parenExpr(thd, tokens);
   if (abstrRes.a == nullObj.a) {
     abstrRes = p_ident(thd, tokens);
@@ -599,8 +620,8 @@ Object p_apply(Thread* thd, Object tokens) {
   }
   Object abstr = listGetFirst(abstrRes);
   tokens = listGetRest(abstrRes);
-  Parser parsers[] = {p_parenOpen, p_listOfAny, p_parenClose, NULL};
-  Object argsRes = p_seq(thd, tokens, parsers);
+  /* parse an argument list */
+  Object argsRes = p_parenCommaList(thd, tokens);
   if (argsRes.a == nullObj.a) {
     return nullObj;
   }
@@ -620,6 +641,62 @@ Object p_do(Thread* thd, Object tokens) {
   Object doExpr = seqNew(exprs);
   tokens = listGetRest(res);
   return listNew(doExpr, tokens);
+}
+
+Object p_funRule(Thread* thd, Object tokens) {
+  Parser parsers[] = {p_parenCommaList, p_equalSign, p_listOfAny, NULL};
+  Object res = p_seq(thd, tokens, parsers);
+  printf("p_funRule res = "); objShow(res, stdout); printf("\n");
+  return res;
+}
+
+Object p_function(Thread* thd, Object tokens) {
+  Object res = p_FUN(thd, tokens);
+  if (res.a == nullObj.a) {
+    return nullObj;
+  }
+  tokens = listGetRest(res);
+  Object funNameRes = p_ident(thd, tokens);
+  Object funName = nullObj;
+  if (funNameRes.a != nullObj.a) {
+    funName = listGetFirst(funNameRes);
+    tokens = listGetRest(funNameRes);
+  }
+  Object rulesRes = p_sepBy(thd, tokens, p_funRule, p_bar);
+  if (rulesRes.a == nullObj.a) {
+    threadThrowException(thd, "ParseError", "function rules expected", tokens);
+  }
+  Object rules = listGetFirst(rulesRes);
+  tokens = listGetRest(rulesRes);
+  res = p_END(thd, tokens);
+  if (res.a == nullObj.a) {
+    threadThrowException(thd, "ParseError", "keyword 'end' expected", tokens);
+  }
+  tokens = listGetRest(res);
+  /* build the function object */
+  Object fun = nullObj;
+  Object prev = nullObj;
+  while (!listIsEmpty(rules)) {
+    Object rule = listGetFirst(rules);
+    Object params = listGetFirst(rule);
+    Object body = listGetSecond(rule);
+    Object fun1 = abstrNew(params, body);
+    if (fun.a == nullObj.a) {
+      fun = fun1;
+    }
+    else {
+      abstrSetNext(prev, fun1);
+    }
+    prev = fun1;
+    rules = listGetRest(rules);
+  }
+  /* if the function has a name, convert it to a let expression */
+  if (funName.a != nullObj.a) {
+    Object binding = bindingNew(funName, fun);
+    Object bindings = listNew(binding, EMPTY_LIST);
+    fun = letNew(bindings);
+  }
+  return listNew(fun, tokens);
 }
 
 Object p_ident(Thread* thd, Object tokens) {
@@ -681,7 +758,7 @@ Object p_parenExpr(Thread* thd, Object tokens) {
 
 /* any expression */
 Object p_expr(Thread* thd, Object tokens) {
-  Parser parsers[] = {p_parenExpr, p_apply, p_do, p_if, p_let, NULL};
+  Parser parsers[] = {p_parenExpr, p_apply, p_do, p_function, p_if, p_let, NULL};
   Object res = p_oneOf(thd, tokens, parsers);
   return res;
 }
