@@ -33,3 +33,7 @@ Features:
   * set
   * queue
   * tuple (immutable array)
+
+CS quiz: Why is an immuatable array useful? No fair peeking at my source code before you answer it.
+
+Also, I'm thinking about combining the linked list & queue types into a single doubly-linked list type. I can think of reasons to do it, and reasons not to do it.
