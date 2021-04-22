@@ -10,7 +10,7 @@ See https://github.com/ufo-language/reference-implementation/tree/master/doc (do
 
 ----
 
-Current status: there's a REPL that lets you enter many of the data structures and a few of the expressions, but there are no build-in functions.
+Current status: there's a REPL that lets you enter many of the data structures and a few of the expressions, but there are no built-in functions.
 
 Features:
 * Virtual memory
