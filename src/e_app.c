@@ -1,7 +1,10 @@
 #include <assert.h>
 
+#include "d_array.h"
 #include "d_closure.h"
 #include "d_list.h"
+#include "d_string.h"
+#include "d_symbol.h"
 #include "delegate.h"
 #include "e_app.h"
 #include "e_ident.h"
@@ -13,16 +16,11 @@ Object appEval(Object app, Thread* thd) {
   Object args = {objGetData(app, APP_ARGS_OFS)};
   Object abstrVal = eval(abstr, thd);
   Object argsVal = eval(args, thd);
-  if (objGetType(abstrVal) == D_Closure) {
-    Object res = closureApply(abstrVal, argsVal, thd);
-    return res;
+  if (objGetType(abstrVal) != D_Closure) {
+    threadThrowException(thd, "Error", "object is not an exception", abstrVal);
   }
-  fprintf(stderr, "ERROR: value is not an abstraction\n  object: ");
-  objShow(abstr, stderr);
-  fprintf(stderr, "\n  evaluates to: ");
-  objShow(abstrVal, stderr);
-  fprintf(stderr, "\n");
-  return nullObj;
+  Object res = closureApply(abstrVal, argsVal, thd);
+  return res;
 }
 
 void appFreeVars(Object app, Object freeVarSet) {

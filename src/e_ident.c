@@ -1,8 +1,10 @@
 #include <string.h>
 
+#include "d_array.h"
 #include "d_binding.h"
 #include "d_list.h"
 #include "d_string.h"
+#include "d_symbol.h"
 #include "e_ident.h"
 #include "hash.h"
 #include "object.h"
@@ -10,6 +12,7 @@
 
 /*------------------------------------------------------------------*/
 bool identEquals(Object ident, Object obj) {
+  /* it's already determined that obj is an E_Ident */
   /* treat ident as a string and compare */
   return stringEquals(ident, obj);
 }
@@ -19,8 +22,7 @@ Object identEval(Object ident, Thread* thd) {
   Object env = threadGetEnv(thd);
   Object binding = listLocate(env, ident);
   if (binding.a == nullObj.a) {
-    Object exnPayload = stringNew("ERROR: unbound identifier");
-    threadThrowException(thd, exnPayload);
+    threadThrowException(thd, "Error", "unbound identifier", ident);
   }
   return bindingGetRhs(binding);
 }

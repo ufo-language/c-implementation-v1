@@ -306,16 +306,7 @@ Object p_sepBy(Thread* thd, Object tokens, Parser parser, Parser separator) {
         break;
       }
       else {
-        Object exnPayload = stringNew("PARSE ERROR: object expected after separator");
-        threadThrowException(thd, exnPayload);
-        /*
-        fprintf(stderr, "ERROR: (parser) separator expected after object: ");
-        objShow(tokens, stderr);
-        fprintf(stderr, "\n");
-        fprintf(stderr, "(change this to a longjmp instead of an exit(1)\n");
-        exit(1);
-        */
-        return nullObj;
+        threadThrowException(thd, "ParseError", "object expected after separator", NOTHING);
       }
     }
     Object obj = listGetFirst(res);
@@ -682,8 +673,7 @@ Object p_parenExpr(Thread* thd, Object tokens) {
   tokens = listGetRest(exprRes);
   Object closeRes = p_parenClose(thd, tokens);
   if (closeRes.a == nullObj.a) {
-    Object exnPayload = stringNew("PARSE ERROR: closing parenthesis expected");
-    threadThrowException(thd, exnPayload);
+    threadThrowException(thd, "ParseError", "closing parenthesis expected", NOTHING);
   }
   tokens = listGetRest(closeRes);
   return listNew(expr, tokens);

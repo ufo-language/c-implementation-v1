@@ -1,7 +1,10 @@
 #include <stdlib.h>
 
+#include "d_array.h"
 #include "d_binding.h"
 #include "d_list.h"
+#include "d_string.h"
+#include "d_symbol.h"
 #include "delegate.h"
 #include "eval.h"
 #include "gc.h"
@@ -93,7 +96,15 @@ void threadSetExpr(Thread* thd, Object expr) {
   thd->expr = expr;
 }
 
-void threadThrowException(Thread* thd, Object exn) {
+void threadThrowException(Thread* thd, char* sym, char* message, Object obj) {
+  Object exnAry = arrayNew(3);
+  arraySet(exnAry, 0, symbolNew(sym));
+  arraySet(exnAry, 1, stringNew(message));
+  arraySet(exnAry, 2, obj);
+  threadThrowExceptionObj(thd, exnAry);
+}
+
+void threadThrowExceptionObj(Thread* thd, Object exn) {
   thd->exception.a = exn.a;
   longjmp(thd->jumpBuf, 1);
 }
