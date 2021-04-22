@@ -16,6 +16,7 @@
 #include "../src/lexer_obj.h"
 #include "../src/object.h"
 #include "../src/syntax.h"
+#include "../src/thread.h"
 
 static void test_lexInt1();
 static void test_lexInt2();
@@ -48,12 +49,16 @@ static TestEntry testEntries[] = {
 
 /* Before & after --------------------------------------------------*/
 
+static Thread* thd;
+
 static void test_before() {
   memStart();
   globalsSetup();
+  thd = threadNew();
 }
 
 static void test_after() {
+  threadDelete(thd);
   memStop();
 }
 
@@ -73,7 +78,7 @@ void test_lexer() {
 void test_lexInt1() {
   char* input = "123";
   Object inputStr = stringNew(input);
-  Object tokenQ = lex(inputStr);
+  Object tokenQ = lex(thd, inputStr);
   ASSERT_EQ(2, queueCount(tokenQ));
   Object intTok = queueDeq(tokenQ);
   Object intTokSym = symbolNew(T_NAMES[T_INT]);
@@ -90,7 +95,7 @@ void test_lexInt1() {
 void test_lexInt2() {
   char* input = "123 456";
   Object inputStr = stringNew(input);
-  Object tokenQ = lex(inputStr);
+  Object tokenQ = lex(thd, inputStr);
   ASSERT_EQ(3, queueCount(tokenQ));
 
   Object intTok1 = queueDeq(tokenQ);
@@ -115,7 +120,7 @@ void test_lexInt2() {
 void test_lexReal() {
   char* input = "123.45";
   Object inputStr = stringNew(input);
-  Object tokenQ = lex(inputStr);
+  Object tokenQ = lex(thd, inputStr);
   ASSERT_EQ(2, queueCount(tokenQ));
   Object realTok = queueDeq(tokenQ);
   ASSERT_NE(nullObj.a, realTok.a);
@@ -132,7 +137,7 @@ void test_lexReal() {
 void test_lexIdent() {
   char* input = "abc";
   Object inputStr = stringNew(input);
-  Object tokenQ = lex(inputStr);
+  Object tokenQ = lex(thd, inputStr);
   ASSERT_EQ(2, queueCount(tokenQ));
   Object identTok = queueDeq(tokenQ);
   ASSERT_NE(nullObj.a, identTok.a);
@@ -149,7 +154,7 @@ void test_lexIdent() {
 void test_lexSymbol() {
   char* input = "Abc";
   Object inputStr = stringNew(input);
-  Object tokenQ = lex(inputStr);
+  Object tokenQ = lex(thd, inputStr);
   ASSERT_EQ(2, queueCount(tokenQ));
   Object symTok = queueDeq(tokenQ);
   ASSERT_NE(nullObj.a, symTok.a);
@@ -166,7 +171,7 @@ void test_lexSymbol() {
 void test_lexReserved() {
   char* input = "end";
   Object inputStr = stringNew(input);
-  Object tokenQ = lex(inputStr);
+  Object tokenQ = lex(thd, inputStr);
   ASSERT_EQ(2, queueCount(tokenQ));
   Object reservedTok = queueDeq(tokenQ);
   ASSERT_NE(nullObj.a, reservedTok.a);
@@ -184,7 +189,7 @@ void test_lexString() {
   char* input = "\"hello, world!\"";
   char* tokenValue = "hello, world!";
   Object inputStr = stringNew(input);
-  Object tokenQ = lex(inputStr);
+  Object tokenQ = lex(thd, inputStr);
   ASSERT_EQ(2, queueCount(tokenQ));
   Object stringTok = queueDeq(tokenQ);
   ASSERT_NE(nullObj.a, stringTok.a);
@@ -201,7 +206,7 @@ void test_lexString() {
 void test_lexOper() {
   char* input = "++";
   Object inputStr = stringNew(input);
-  Object tokenQ = lex(inputStr);
+  Object tokenQ = lex(thd, inputStr);
   ASSERT_EQ(2, queueCount(tokenQ));
   Object operTok = queueDeq(tokenQ);
   ASSERT_NE(nullObj.a, operTok.a);
@@ -218,7 +223,7 @@ void test_lexOper() {
 void test_lexSpecial() {
   char* input = "(";
   Object inputStr = stringNew(input);
-  Object tokenQ = lex(inputStr);
+  Object tokenQ = lex(thd, inputStr);
   ASSERT_EQ(2, queueCount(tokenQ));
   Object specialTok = queueDeq(tokenQ);
   ASSERT_NE(nullObj.a, specialTok.a);
@@ -235,7 +240,7 @@ void test_lexSpecial() {
 void test_lexBool() {
   char* input = "true";
   Object inputStr = stringNew(input);
-  Object tokenQ = lex(inputStr);
+  Object tokenQ = lex(thd, inputStr);
   ASSERT_EQ(2, queueCount(tokenQ));
   Object boolTok = queueDeq(tokenQ);
   ASSERT_NE(nullObj.a, boolTok.a);
@@ -252,7 +257,7 @@ void test_lexBool() {
 void test_lexMultiple() {
   char* input = "123 45.6 abc end false \"Hello\" ; ++";
   Object inputStr = stringNew(input);
-  Object tokenQ = lex(inputStr);
+  Object tokenQ = lex(thd, inputStr);
   ASSERT_EQ(9, queueCount(tokenQ));
 
   Object tok = queueDeq(tokenQ);

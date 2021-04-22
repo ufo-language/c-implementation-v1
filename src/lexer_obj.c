@@ -14,8 +14,9 @@
 #include "lexer_obj.h"
 #include "object.h"
 #include "syntax.h"
+#include "thread.h"
 
-Object lex(Object string) {
+Object lex(Thread* thd, Object string) {
   LexerState lexerState;
   lexInit(&lexerState, syntax, string);
   Token token;

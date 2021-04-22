@@ -56,7 +56,7 @@ void repl() {
         continue;
       }
       repl.inputString = stringNew(repl.inputBuffer);
-      Object tokenQ = lex(repl.inputString);
+      Object tokenQ = lex(thd, repl.inputString);
       repl.tokens = queueAsList(tokenQ);
       repl.parseRes = parseEntry(thd, repl.tokens);
       if (repl.parseRes.a == nullObj.a) {
