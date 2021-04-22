@@ -1,6 +1,6 @@
 # UFO C implementation
 
-Plain-vanilla C implementation of UFO. (It's not quite ANSI C, but I'd like to get it there.)
+Plain-vanilla C implementation of UFO. (Currently it uses the C99 standard. I kind of want to make it ANSI C, but crikey C99 is so much easier to program in than ANSI C. And every day the C99 codebase grows...)
 
 Why plain-vanilla C?
 
