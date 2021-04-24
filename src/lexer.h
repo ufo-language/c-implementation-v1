@@ -3,6 +3,7 @@
 
 #include "defines.h"
 #include "object.h"
+#include "thread.h"
 
 #define LEXEME_SIZE 16
 
@@ -59,6 +60,6 @@ typedef struct {
 Transition* findTransition(Transition** syntax, StateName stateName, char c);
 bool isIn(char* str, char* strAry[]);
 void lexInit(LexerState* lexerState, Transition** syntax, Object inputString);
-bool lexToken(LexerState* lexerState, Token* token);
+bool lexToken(Thread* thd, LexerState* lexerState, Token* token);
 
 #endif

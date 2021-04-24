@@ -33,11 +33,3 @@ Object evaluate(Object obj, Thread* thd) {
 Object eval(Object obj, Thread* thd) {
   return objEval(obj, thd);
 }
-
-/*------------------------------------------------------------------*/
-void evalThrowException(Object payload, Thread* thd) {
-  /* TODO finish */
-  fprintf(stderr, "%s is incomplete\n", __func__);
-  (void)payload;  /* suppresses unused parameter warning */
-  (void)thd;  /* suppresses unused parameter warning */
-}

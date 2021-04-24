@@ -26,6 +26,9 @@ void threadMark(Thread* thd);
 void threadMarkAll();
 void threadSetEnv(Thread* thd, Object env);
 void threadSetExpr(Thread* thd, Object expr);
+
+void threadRestoreJump(Thread* thd, jmp_buf* jumpBuf);
+int threadSetJump(Thread* thd, jmp_buf* jumpBuf);
 void threadThrowException(Thread* thd, char* sym, char* message, Object obj);
 void threadThrowExceptionObj(Thread* thd, Object exn);
 

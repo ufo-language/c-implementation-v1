@@ -59,10 +59,7 @@ void repl() {
       Object tokenQ = lex(thd, repl.inputString);
       repl.tokens = queueAsList(tokenQ);
       repl.parseRes = parseEntry(thd, repl.tokens);
-      if (repl.parseRes.a == nullObj.a) {
-        printf("parse error\n");
-      }
-      else {
+      if (repl.parseRes.a != nullObj.a) {
         Object obj = listGetFirst(repl.parseRes);
         Object tokens = listGetRest(repl.parseRes);
         if (listGetRest(tokens).a != EMPTY_LIST.a) {

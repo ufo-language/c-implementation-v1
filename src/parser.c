@@ -193,7 +193,8 @@ Object parseEntry(Thread* thd, Object tokens) {
       res = parse(thd, p_any, tokens);
       break;
     case 1:
-      printf("parseEntry caught parse error\n");
+      objShow(threadGetExn(thd), stderr);
+      printf("\n");
       res = nullObj;
       break;
   }

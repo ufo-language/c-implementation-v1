@@ -22,7 +22,7 @@ Object lex(Thread* thd, Object string) {
   Token token;
   Object tokenQ = queueNew();
   while (true) {
-    bool res = lexToken(&lexerState, &token);
+    bool res = lexToken(thd, &lexerState, &token);
     if (lexerState.error) {
       printf("lexer error\n");
       break;

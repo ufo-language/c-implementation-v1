@@ -1,4 +1,6 @@
+#include <setjmp.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "d_array.h"
 #include "d_binding.h"
@@ -94,6 +96,10 @@ void threadSetEnv(Thread* thd, Object env) {
 
 void threadSetExpr(Thread* thd, Object expr) {
   thd->expr = expr;
+}
+
+void threadRestoreJump(Thread* thd, jmp_buf* jumpBuf) {
+  memcpy(thd->jumpBuf, *jumpBuf, sizeof(*jumpBuf));
 }
 
 void threadThrowException(Thread* thd, char* sym, char* message, Object obj) {
