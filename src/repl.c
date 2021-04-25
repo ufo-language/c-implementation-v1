@@ -48,6 +48,14 @@ void repl() {
   ReplObj repl;
   bool contin = true;
   while (contin) {
+    int jumpRes = setjmp(thd->jumpBuf);
+    if (jumpRes != 0) {
+      Object exn = threadGetExn(thd);
+      fprintf(stderr, "REPL caught exception\n");
+      objShow(exn, stderr);
+      fprintf(stderr, "\n");
+      continue;
+    }
     prompt();
     int nChars = getLine(repl.inputBuffer, READ_BUF_SIZE);
     if (nChars > 0) {

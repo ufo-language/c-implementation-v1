@@ -99,6 +99,56 @@ void stringDisp(Object string, FILE* stream) {
 /*------------------------------------------------------------------*/
 void stringShow(Object string, FILE* stream) {
   fputc('"', stream);
-  stringDisp(string, stream);
+  //stringDisp(string, stream);
+  stringEscapify(string, stream);
   fputc('"', stream);
+}
+
+/*------------------------------------------------------------------*/
+void stringEscapify(Object string, FILE* stream) {
+  Word len = stringCount(string);
+  for (Word n=0; n<len; n++) {
+    char c = stringGetChar(string, n);
+    switch (c) {
+      case '"' : fprintf(stream, "\\\""); break;
+      case '\\': fprintf(stream, "\\\\"); break;
+      case '\b': fprintf(stream, "\\b"); break;
+      case '\f': fprintf(stream, "\\f"); break;
+      case '\n': fprintf(stream, "\\n"); break;
+      case '\r': fprintf(stream, "\\r"); break;
+      case '\t': fprintf(stream, "\\t"); break;
+      default:
+        fputc(c, stream);
+    }
+  }
+}
+
+/*------------------------------------------------------------------*/
+void stringUnescapify(Object string, FILE* stream) {
+  bool escaped = false;
+  Word len = stringCount(string);
+  for (Word n=0; n<len; n++) {
+    char c = stringGetChar(string, n);
+    if (escaped) {
+      switch(c) {
+        //case '\'': fprintf(stream, '\''); break;
+        case '\"': fputc('\"', stream); break;
+        case '\\': fputc('\\', stream); break;
+        case 'b' : fputc('\b', stream); break;
+        case 'f' : fputc('\f', stream); break;
+        case 'n' : fputc('\n', stream); break;
+        case 'r' : fputc('\r', stream); break;
+        case 't' : fputc('\t', stream); break;
+        default:
+          fputc(c, stream);
+      }
+      escaped = false;
+    }
+    else if (c == '\\') {
+      escaped = true;
+    }
+    else {
+      fputc(c, stream);
+    }
+  }
 }
