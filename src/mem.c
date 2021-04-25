@@ -1,4 +1,3 @@
-#include <assert.h>  /* TODO remove after debugging */
 #include <stdio.h>
 
 #include "mem.h"
@@ -164,12 +163,6 @@ void memFreeRaw(RawBlock blk) {
   }
   _memNFreeBlocks += (1 - nJoins);
   _memNFreeWords += blkOrigSize + nJoins * MEMBLK_OVERHEAD;
-  /* TODO vvv this is for debugging */
-  if (0 == blkOrigSize + nJoins * MEMBLK_OVERHEAD) {
-    stackTrace();
-    assert(0 != blkOrigSize + nJoins * MEMBLK_OVERHEAD);
-    exit(1);
-  }
   checkForCycle("memFree(2)");
 }
 
