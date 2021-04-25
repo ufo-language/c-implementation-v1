@@ -37,6 +37,20 @@ void threadEnvBind(Thread* thd, Object var, Object val) {
   threadSetEnv(thd, env);
 }
 
+void threadEnvRebind(Thread* thd, Object var, Object val) {
+  Object env = threadGetEnv(thd);
+  while (!listIsEmpty(env)) {
+    Object binding = listGetFirst(env);
+    Object ident = bindingGetLhs(binding);
+    if (objEquals(var, ident)) {
+      bindingSetRhs(binding, val);
+      return;
+    }
+    env = listGetRest(env);
+  }
+  threadThrowException(thd, "ThreadEnvError", "unable to rebind identifier (not found)", var);
+}
+
 Object threadEval(Thread* thd, Object expr, Object bindings) {
   Object savedEnv = thd->env;
   thd->env = bindings;

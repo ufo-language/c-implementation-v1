@@ -40,6 +40,7 @@ char* ObjTypeNames[] = {
   "IfThen",
   "Let",
   "LetIn",
+  "LetRec",
   "Quote",
   "Seq",
   "Throw",

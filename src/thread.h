@@ -18,6 +18,7 @@ Thread* threadNew(void);
 void threadDelete(Thread* thd);
 
 void threadEnvBind(Thread* thd, Object var, Object val);
+void threadEnvRebind(Thread* thd, Object var, Object val);
 Object threadEnvLocate(Thread* thd, Object key);
 Object threadEval(Thread* thd, Object expr, Object bindings);
 Object threadGetEnv(Thread* thd);

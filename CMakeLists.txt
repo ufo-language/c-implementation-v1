@@ -46,6 +46,7 @@ set(LIB_SRC_FILES
   src/e_if.c
   src/e_let.c
   src/e_letin.c
+  src/e_letrec.c
   src/e_quote.c
   src/e_seq.c
   src/e_throw.c

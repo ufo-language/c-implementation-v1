@@ -16,6 +16,7 @@
 #include "e_app.h"
 #include "e_if.h"
 #include "e_let.h"
+#include "e_letrec.h"
 #include "e_quote.h"
 #include "e_seq.h"
 #include "globals.h"
@@ -89,6 +90,7 @@ Object p_END_required(Thread* thd, Object tokens);
 Object p_FUN(Thread* thd, Object tokens);
 Object p_IF(Thread* thd, Object tokens);
 Object p_LET(Thread* thd, Object tokens);
+Object p_LETREC(Thread* thd, Object tokens);
 Object p_THEN(Thread* thd, Object tokens);
 
 /* expressions */
@@ -98,6 +100,7 @@ Object p_function(Thread* thd, Object tokens);
 Object p_ident(Thread* thd, Object tokens);
 Object p_if(Thread* thd, Object tokens);
 Object p_let(Thread* thd, Object tokens);
+Object p_letRec(Thread* thd, Object tokens);
 Object p_parenExpr(Thread* thd, Object tokens);
 Object p_queue(Thread* thd, Object tokens);
 Object p_quote(Thread* thd, Object tokens);
@@ -635,6 +638,11 @@ Object p_LET(Thread* thd, Object tokens) {
   return p_spotReserved(tokens, "let");
 }
 
+Object p_LETREC(Thread* thd, Object tokens) {
+  (void)thd;
+  return p_spotReserved(tokens, "letrec");
+}
+
 Object p_THEN(Thread* thd, Object tokens) {
   return p_spotReserved_required(thd, tokens, "then");
 }
@@ -778,6 +786,25 @@ Object p_let(Thread* thd, Object tokens) {
   return listNew(let, tokens);
 }
 
+Object p_letRec(Thread* thd, Object tokens) {
+  Object res = p_LETREC(thd, tokens);
+  if (res.a == nullObj.a) {
+    return nullObj;
+  }
+  tokens = listGetRest(res);
+  res = p_commaBindings(thd, tokens);
+  if (res.a == nullObj.a) {
+    p_fail(thd, tokens, "bindings expected after 'letrec'");
+  }
+  Object bindings = listGetFirst(res);
+  if (listCount(bindings) == 0) {
+    p_fail(thd, tokens, "bindings expected after 'letrec'");
+  }
+  tokens = listGetRest(res);
+  Object let = letRecNew(bindings);
+  return listNew(let, tokens);
+}
+
 Object p_parenExpr(Thread* thd, Object tokens) {
   Object openRes = p_parenOpen(thd, tokens);
   if (openRes.a == nullObj.a) {
@@ -855,7 +882,7 @@ Object p_set(Thread* thd, Object tokens) {
 
 /* any expression */
 Object p_expr(Thread* thd, Object tokens) {
-  Parser parsers[] = {p_parenExpr, p_apply, p_do, p_function, p_if, p_let, p_quote, NULL};
+  Parser parsers[] = {p_parenExpr, p_apply, p_do, p_function, p_if, p_let, p_letRec, p_quote, NULL};
   Object res = p_oneOf(thd, tokens, parsers);
   return res;
 }
