@@ -22,7 +22,7 @@
 
 #define DEBUG_PARSE 0
 
-#define PARSE_ERROR "ParseError"
+#define PARSER_ERROR "ParserError"
 
 /* primitives */
 Object p_spot(Object tokens, TokenType tokenType);
@@ -189,27 +189,7 @@ void indent() {
 
 /* parser entry point */
 Object parseEntry(Thread* thd, Object tokens) {
-  // make a copy of the thread's jumpBuf
-  jmp_buf jumpBuf;
-  memcpy(jumpBuf, thd->jumpBuf, sizeof(jumpBuf));
-  // jump back here on error
-  int jumpRes = setjmp(thd->jumpBuf);
-  Object res = nullObj;
-  switch (jumpRes) {
-    case 0:
-      // attempt a parse
-      res = parse(thd, p_any, tokens);
-      break;
-    case 1:
-      fprintf(stderr, "Parser caught exception:\n");
-      objShow(threadGetExn(thd), stderr);
-      fprintf(stderr, "\n");
-      res = nullObj;
-      break;
-  }
-  // restore the thread's jumpbuf
-  memcpy(thd->jumpBuf, jumpBuf, sizeof(jumpBuf));
-  return res;
+  return parse(thd, p_any, tokens);
 }
 
 /* parse unbrella function, callable recursively */
@@ -291,7 +271,7 @@ Object p_spotReserved_required(Thread* thd, Object tokens, char* word) {
   Object res = p_spotSpecific(tokens, T_RESERVED, word);
   if (res.a == nullObj.a) {
     Object exn = arrayNew(3);
-    arraySet(exn, 0, symbolNew(PARSE_ERROR));
+    arraySet(exn, 0, symbolNew(PARSER_ERROR));
     arraySet(exn, 1, stringNew("keyword expected"));
     arraySet(exn, 2, stringNew(word));
     threadThrowExceptionObj(thd, exn);
@@ -307,7 +287,7 @@ Object p_spotSpecial_required(Thread* thd, Object tokens, char* word) {
   Object res = p_spotSpecific(tokens, T_SPECIAL, word);
   if (res.a == nullObj.a) {
     Object exn = arrayNew(4);
-    arraySet(exn, 0, symbolNew(PARSE_ERROR));
+    arraySet(exn, 0, symbolNew(PARSER_ERROR));
     arraySet(exn, 1, stringNew("special character expected"));
     arraySet(exn, 2, stringNew(word));
     arraySet(exn, 3, tokens);
@@ -319,7 +299,7 @@ Object p_spotSpecial_required(Thread* thd, Object tokens, char* word) {
 /* Parser combinators ----------------------------------------------*/
 
 Object p_fail(Thread* thd, Object tokens, char* message) { 
- threadThrowException(thd, PARSE_ERROR, message, tokens);
+ threadThrowException(thd, PARSER_ERROR, message, tokens);
  return nullObj;  /* suppress compiler warning */
 }
 
@@ -789,7 +769,7 @@ Object p_parenExpr(Thread* thd, Object tokens) {
   tokens = listGetRest(exprRes);
   Object closeRes = p_parenClose(thd, tokens);
   if (closeRes.a == nullObj.a) {
-    threadThrowException(thd, PARSE_ERROR, "closing parenthesis expected", tokens);
+    threadThrowException(thd, PARSER_ERROR, "closing parenthesis expected", tokens);
   }
   tokens = listGetRest(closeRes);
   return listNew(expr, tokens);

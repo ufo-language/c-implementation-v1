@@ -22,7 +22,7 @@ Object identEval(Object ident, Thread* thd) {
   Object env = threadGetEnv(thd);
   Object binding = listLocate(env, ident);
   if (binding.a == nullObj.a) {
-    threadThrowException(thd, "Error", "unbound identifier", ident);
+    threadThrowException(thd, "EvaluatorError", "unbound identifier", ident);
   }
   return bindingGetRhs(binding);
 }
