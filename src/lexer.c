@@ -78,6 +78,11 @@ bool isIn(char* str, char* strAry[]) {
   }
 }
 
+void lexError(Thread* thd, LexerState* lexerState, char* message) {
+  Object exn = listNew(lexerState->inputString, intNew(lexerState->pos));
+  threadThrowException(thd, "LexerError", message, exn);
+}
+
 bool lexToken(Thread* thd, LexerState* lexerState, Token* token) {
   StateName stateName = S_I;
   int lexemeIndex = 0;
@@ -99,41 +104,11 @@ bool lexToken(Thread* thd, LexerState* lexerState, Token* token) {
       case A_IGNORE:
         break;
       case A_ERR:
-        /* TODO write a lexError function and refactor these three error cases */
-        /*
-        lexerState->error = true;
-        printf("lexer error on '%c':%d\n", c, cDisp(c));
-        objShow(lexerState->inputString, stdout); printf("\n");
-        for (int n=0; n<lexerState->pos-1; n++) {
-          printf(" ");
-        }
-        printf("^\n");
-        return false;
-*/
-        threadThrowException(thd, "LexerError", "lexer error", listNew(lexerState->inputString, intNew(lexerState->pos)));
+        lexError(thd, lexerState, "lexer error");
       case A_ERR_REAL:
-      /*
-        lexerState->error = true;
-        printf("lexer error: digits expected after decimal point\n");
-        objShow(lexerState->inputString, stdout); printf("\n");
-        for (int n=0; n<lexerState->pos-1; n++) {
-          printf(" ");
-        }
-        printf("^\n");
-        return false;
-*/
-        threadThrowException(thd, "LexerError", "digits expected after decimal point", listNew(lexerState->inputString, intNew(lexerState->pos)));
+        lexError(thd, lexerState, "digits expected after decimal point");
       case A_ERR_STRING:
-      /*
-        lexerState->error = true;
-        printf("lexer error: unterminated string\n");
-        objShow(lexerState->inputString, stdout); printf("\n");
-        for (int n=0; n<lexerState->pos; n++) {
-          printf(" ");
-        }
-        printf("^\n");
-        return false;*/
-        threadThrowException(thd, "LexerError", "unterminated string", listNew(lexerState->inputString, intNew(lexerState->pos)));
+        lexError(thd, lexerState, "unterminated string");
     }
     if (tokenType != T_NONE) {
       token->lexeme[lexemeIndex] = '\0';
