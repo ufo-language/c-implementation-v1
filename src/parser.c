@@ -20,18 +20,20 @@
 #include "lexer_obj.h"
 #include "parser.h"
 
-
 #define DEBUG_PARSE 0
 
+#define PARSE_ERROR "ParseError"
 
 /* primitives */
 Object p_spot(Object tokens, TokenType tokenType);
 Object p_spotSpecific(Object tokens, TokenType tokenType, char* word);
 Object p_spotOperator(Object tokens, char* word);
 Object p_spotReserved(Object tokens, char* word);
+Object p_spotReserved_required(Thread* thd, Object tokens, char* word);
 Object p_spotSpecial(Object tokens, char* word);
 
 /* combinators */
+Object p_fail(Thread* thd, Object tokens, char* message);
 Object p_ignore(Thread* thd, Object tokens, Parser parser);
 Object p_maybe(Thread* thd, Object tokens, Parser parser);
 Object p_oneOf(Thread* thd, Object tokens, Parser* parsers);
@@ -124,6 +126,7 @@ struct ParserEntry_struct {
   {(void*)p_do, "p_do"},
   {(void*)p_equalSign, "p_equalSign"},
   {(void*)p_expr, "p_expr"},
+  {(void*)p_fail, "p_fail"},
   {(void*)p_function, "p_function"},
   {(void*)p_funRule, "p_funRule"},
   {(void*)p_hashMark, "p_hashMark"},
@@ -152,6 +155,7 @@ struct ParserEntry_struct {
   {(void*)p_spot, "p_spot"},
   {(void*)p_spotOperator, "p_spotOperator"},
   {(void*)p_spotReserved, "p_spotReserved"},
+  {(void*)p_spotReserved_required, "p_spotReserved_required"},
   {(void*)p_spotSpecial, "p_spotSpecial"},
   {(void*)p_spotSpecific, "p_spotSpecific"},
   {(void*)p_string, "p_string"},
@@ -193,8 +197,9 @@ Object parseEntry(Thread* thd, Object tokens) {
       res = parse(thd, p_any, tokens);
       break;
     case 1:
+      fprintf(stderr, "Parser caught exception:\n");
       objShow(threadGetExn(thd), stderr);
-      printf("\n");
+      fprintf(stderr, "\n");
       res = nullObj;
       break;
   }
@@ -278,11 +283,28 @@ Object p_spotReserved(Object tokens, char* word) {
   return p_spotSpecific(tokens, T_RESERVED, word);
 }
 
+Object p_spotReserved_required(Thread* thd, Object tokens, char* word) {
+  Object res = p_spotSpecific(tokens, T_RESERVED, word);
+  if (res.a == nullObj.a) {
+    Object exn = arrayNew(3);
+    arraySet(exn, 0, symbolNew(PARSE_ERROR));
+    arraySet(exn, 1, stringNew("Keyword expected"));
+    arraySet(exn, 2, stringNew(word));
+    threadThrowExceptionObj(thd, exn);
+  }
+  return res;
+}
+
 Object p_spotSpecial(Object tokens, char* word) {
   return p_spotSpecific(tokens, T_SPECIAL, word);
 }
 
 /* Parser combinators ----------------------------------------------*/
+
+Object p_fail(Thread* thd, Object tokens, char* message) { 
+ threadThrowException(thd, PARSE_ERROR, message, tokens);
+  return nullObj;  /* suppress compiler warning */
+}
 
 Object p_ignore(Thread* thd, Object tokens, Parser parser) {
   return _ignore(parse(thd, parser, tokens));
@@ -316,7 +338,7 @@ Object p_sepBy(Thread* thd, Object tokens, Parser parser, Parser separator) {
         break;
       }
       else {
-        threadThrowException(thd, "ParseError", "object expected after separator", tokens);
+        p_fail(thd, tokens, "object expected after separator");
       }
     }
     Object obj = listGetFirst(res);
@@ -571,37 +593,34 @@ Object p_object(Thread* thd, Object tokens) {
 /* reserved words */
 Object p_DO(Thread* thd, Object tokens) {
   (void)thd;
-  return _ignore(p_spotReserved(tokens, "do"));
+  return p_spotReserved(tokens, "do");
 }
 
 Object p_ELSE(Thread* thd, Object tokens) {
-  (void)thd;
-  return _ignore(p_spotReserved(tokens, "else"));
+  return p_spotReserved_required(thd, tokens, "else");
 }
 
 Object p_END(Thread* thd, Object tokens) {
-  (void)thd;
-  return _ignore(p_spotReserved(tokens, "end"));
+  return p_spotReserved_required(thd, tokens, "end");
 }
 
 Object p_FUN(Thread* thd, Object tokens) {
   (void)thd;
-  return _ignore(p_spotReserved(tokens, "fun"));
+  return p_spotReserved(tokens, "fun");
 }
 
 Object p_IF(Thread* thd, Object tokens) {
   (void)thd;
-  return _ignore(p_spotReserved(tokens, "if"));
+  return p_spotReserved(tokens, "if");
 }
 
 Object p_LET(Thread* thd, Object tokens) {
   (void)thd;
-  return _ignore(p_spotReserved(tokens, "let"));
+  return p_spotReserved(tokens, "let");
 }
 
 Object p_THEN(Thread* thd, Object tokens) {
-  (void)thd;
-  return _ignore(p_spotReserved(tokens, "then"));
+  return p_spotReserved_required(thd, tokens, "then");
 }
 
 Object p_parenCommaList(Thread* thd, Object tokens) {
@@ -665,14 +684,11 @@ Object p_function(Thread* thd, Object tokens) {
   }
   Object rulesRes = p_sepBy(thd, tokens, p_funRule, p_bar);
   if (rulesRes.a == nullObj.a) {
-    threadThrowException(thd, "ParseError", "function rules expected", tokens);
+    p_fail(thd, tokens, "function rules expected");
   }
   Object rules = listGetFirst(rulesRes);
   tokens = listGetRest(rulesRes);
   res = p_END(thd, tokens);
-  if (res.a == nullObj.a) {
-    threadThrowException(thd, "ParseError", "keyword 'end' expected", tokens);
-  }
   tokens = listGetRest(res);
   /* build the function object */
   Object fun = nullObj;
@@ -751,7 +767,7 @@ Object p_parenExpr(Thread* thd, Object tokens) {
   tokens = listGetRest(exprRes);
   Object closeRes = p_parenClose(thd, tokens);
   if (closeRes.a == nullObj.a) {
-    threadThrowException(thd, "ParseError", "closing parenthesis expected", tokens);
+    threadThrowException(thd, PARSE_ERROR, "closing parenthesis expected", tokens);
   }
   tokens = listGetRest(closeRes);
   return listNew(expr, tokens);
