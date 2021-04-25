@@ -267,7 +267,7 @@ void test_parseSeq() {
   Object tokenQ = lex(thd, inputStr);
   Object tokens = queueAsList(tokenQ);
   Parser parsers[] = {p_int, p_string, NULL};
-  Object res = p_seq(thd, tokens, parsers);
+  Object res = p_seqOf(thd, tokens, parsers);
   ASSERT_NE(nullObj.a, res.a);
   Object resObj = listGetFirst(res);
   ASSERT_EQ(D_List, objGetType(resObj));
@@ -282,7 +282,7 @@ void test_parseSeq() {
   inputStr = stringNew(input);
   tokenQ = lex(thd, inputStr);
   tokens = queueAsList(tokenQ);
-  res = p_seq(thd, tokens, parsers);
+  res = p_seqOf(thd, tokens, parsers);
   EXPECT_EQ(nullObj.a, res.a);
 }
 
@@ -307,7 +307,7 @@ void test_parseSeqWithIgnore() {
   Object tokenQ = lex(thd, inputStr);
   Object tokens = queueAsList(tokenQ);
   Parser parsers[] = {p_ignoreInt, p_int, p_ignoreInt, NULL};
-  Object res = p_seq(thd, tokens, parsers);
+  Object res = p_seqOf(thd, tokens, parsers);
   ASSERT_NE(nullObj.a, res.a);
   Object resObj = listGetFirst(res);
   EXPECT_T(objEquals(intNew(200), resObj));

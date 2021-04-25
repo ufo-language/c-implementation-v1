@@ -22,7 +22,7 @@ Object p_spotSpecial(Object tokenList, char* word);
 Object p_ignore(Thread* thd, Object tokens, Parser parser);
 Object p_maybe(Thread* thd, Object tokens, Parser parser);
 Object p_oneOf(Thread* thd, Object tokens, Parser* parsers);
-Object p_seq(Thread* thd, Object tokens, Parser* parsers);
+Object p_seqOf(Thread* thd, Object tokens, Parser* parsers);
 Object p_some(Thread* thd, Object tokens, Parser parser, int min);
 
 /* object parsers */

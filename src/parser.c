@@ -31,6 +31,7 @@ Object p_spotOperator(Object tokens, char* word);
 Object p_spotReserved(Object tokens, char* word);
 Object p_spotReserved_required(Thread* thd, Object tokens, char* word);
 Object p_spotSpecial(Object tokens, char* word);
+Object p_spotSpecial_required(Thread* thd, Object tokens, char* word);
 
 /* combinators */
 Object p_fail(Thread* thd, Object tokens, char* message);
@@ -38,7 +39,7 @@ Object p_ignore(Thread* thd, Object tokens, Parser parser);
 Object p_maybe(Thread* thd, Object tokens, Parser parser);
 Object p_oneOf(Thread* thd, Object tokens, Parser* parsers);
 Object p_sepBy(Thread* thd, Object tokens, Parser parser, Parser separator);
-Object p_seq(Thread* thd, Object tokens, Parser* parsers);
+Object p_seqOf(Thread* thd, Object tokens, Parser* parsers);
 Object p_some(Thread* thd, Object tokens, Parser parser, int min);
 
 /* literals */
@@ -152,13 +153,14 @@ struct ParserEntry_struct {
   {(void*)p_pattern, "p_pattern"},
   {(void*)p_real, "p_real"},
   {(void*)p_sepBy, "p_sepBy"},
-  {(void*)p_seq, "p_seq"},
+  {(void*)p_seqOf, "p_seqOf"},
   {(void*)p_some, "p_some"},
   {(void*)p_spot, "p_spot"},
   {(void*)p_spotOperator, "p_spotOperator"},
   {(void*)p_spotReserved, "p_spotReserved"},
   {(void*)p_spotReserved_required, "p_spotReserved_required"},
   {(void*)p_spotSpecial, "p_spotSpecial"},
+  {(void*)p_spotSpecial_required, "p_spotSpecial_required"},
   {(void*)p_spotSpecific, "p_spotSpecific"},
   {(void*)p_string, "p_string"},
   {(void*)p_symbol, "p_symbol"},
@@ -231,7 +233,7 @@ Object parse(Thread* thd, Parser parser, Object tokens) {
 /* Utility functions -----------------------------------------------*/
 
 /* Returns `nothing` in place of the last successful token. This is
-   useful because the p_seq parser does not accumulate `nothing`
+   useful because the p_seqOf parser does not accumulate `nothing`
    tokens. */
 static Object _ignore(Object parseRes) {
   if (parseRes.a == nullObj.a) {
@@ -273,7 +275,6 @@ Object p_spotOrFail(Object tokens, TokenType tokenType) {
   return nullObj;
 }
 
-
 Object p_spotSpecific(Object tokens, TokenType tokenType, char* word) {
   Object token = listGetFirst(tokens);
   Object tokenSym = arrayGet(token, 0);
@@ -300,7 +301,7 @@ Object p_spotReserved_required(Thread* thd, Object tokens, char* word) {
   if (res.a == nullObj.a) {
     Object exn = arrayNew(3);
     arraySet(exn, 0, symbolNew(PARSE_ERROR));
-    arraySet(exn, 1, stringNew("Keyword expected"));
+    arraySet(exn, 1, stringNew("keyword expected"));
     arraySet(exn, 2, stringNew(word));
     threadThrowExceptionObj(thd, exn);
   }
@@ -309,6 +310,19 @@ Object p_spotReserved_required(Thread* thd, Object tokens, char* word) {
 
 Object p_spotSpecial(Object tokens, char* word) {
   return p_spotSpecific(tokens, T_SPECIAL, word);
+}
+
+Object p_spotSpecial_required(Thread* thd, Object tokens, char* word) {
+  Object res = p_spotSpecific(tokens, T_SPECIAL, word);
+  if (res.a == nullObj.a) {
+    Object exn = arrayNew(4);
+    arraySet(exn, 0, symbolNew(PARSE_ERROR));
+    arraySet(exn, 1, stringNew("special character expected"));
+    arraySet(exn, 2, stringNew(word));
+    arraySet(exn, 3, tokens);
+    threadThrowExceptionObj(thd, exn);
+  }
+  return res;
 }
 
 /* Parser combinators ----------------------------------------------*/
@@ -369,7 +383,7 @@ Object p_sepBy(Thread* thd, Object tokens, Parser parser, Parser separator) {
   return listNew(objs, tokens);
 }
 
-Object p_seq(Thread* thd, Object tokens, Parser* parsers) {
+Object p_seqOf(Thread* thd, Object tokens, Parser* parsers) {
   Object objQ = queueNew();
   while (*parsers) {
     Object res = parse(thd, *parsers, tokens);
@@ -460,8 +474,7 @@ Object p_braceOpen(Thread* thd, Object tokens) {
 }
 
 Object p_braceClose(Thread* thd, Object tokens) {
-  (void)thd;
-  return p_spotSpecial(tokens, "}");
+  return p_spotSpecial_required(thd, tokens, "}");
 }
 
 Object p_bracketOpen(Thread* thd, Object tokens) {
@@ -470,8 +483,7 @@ Object p_bracketOpen(Thread* thd, Object tokens) {
 }
 
 Object p_bracketClose(Thread* thd, Object tokens) {
-  (void)thd;
-  return p_spotSpecial(tokens, "]");
+  return p_spotSpecial_required(thd, tokens, "]");
 }
 
 Object p_equalSign(Thread* thd, Object tokens) {
@@ -495,8 +507,7 @@ Object p_parenOpen(Thread* thd, Object tokens) {
 }
 
 Object p_parenClose(Thread* thd, Object tokens) {
-  (void)thd;
-  return p_spotSpecial(tokens, ")");
+  return p_spotSpecial_required(thd, tokens, ")");
 }
 
 /* containers */
@@ -507,7 +518,7 @@ Object p_commaList(Thread* thd, Object tokens) {
 
 Object p_array(Thread* thd, Object tokens) {
   Parser parsers[] = {p_braceOpen, p_commaList, p_braceClose, NULL};
-  Object res = p_seq(thd, tokens, parsers);
+  Object res = p_seqOf(thd, tokens, parsers);
   if (res.a == nullObj.a) {
     return nullObj;
   }
@@ -524,13 +535,13 @@ Object p_array(Thread* thd, Object tokens) {
 
 Object p_barAny(Thread* thd, Object tokens) {
   Parser parsers[] = {p_bar, p_any, NULL};
-  return p_seq(thd, tokens, parsers);
+  return p_seqOf(thd, tokens, parsers);
 }
 
 
 Object p_hashTable(Thread* thd, Object tokens) {
   Parser parsers[] = {p_hashMark, p_braceOpen, p_commaBindings, p_braceClose, NULL};
-  Object res = p_seq(thd, tokens, parsers);
+  Object res = p_seqOf(thd, tokens, parsers);
   if (res.a == nullObj.a) {
     return nullObj;
   }
@@ -582,7 +593,7 @@ Object p_pattern(Thread* thd, Object tokens) {
 
 Object p_binding(Thread* thd, Object tokens) {
   Parser parsers[] = {p_pattern, p_equalSign, p_any, NULL};
-  Object res = p_seq(thd, tokens, parsers);
+  Object res = p_seqOf(thd, tokens, parsers);
   if (res.a == nullObj.a) {
     return nullObj;
   }
@@ -645,7 +656,7 @@ Object p_THEN(Thread* thd, Object tokens) {
 
 Object p_parenCommaList(Thread* thd, Object tokens) {
   Parser parsers[] = {p_parenOpen, p_commaList, p_parenClose, NULL};
-  return p_seq(thd, tokens, parsers);
+  return p_seqOf(thd, tokens, parsers);
 }
 
 Object p_apply(Thread* thd, Object tokens) {
@@ -673,7 +684,7 @@ Object p_apply(Thread* thd, Object tokens) {
 
 Object p_do(Thread* thd, Object tokens) {
   Parser parsers[] = {p_DO, p_listOfAny, p_END_required, NULL};
-  Object res = p_seq(thd, tokens, parsers);
+  Object res = p_seqOf(thd, tokens, parsers);
   if (res.a == nullObj.a) {
     return nullObj;
   }
@@ -685,7 +696,7 @@ Object p_do(Thread* thd, Object tokens) {
 
 Object p_funRule(Thread* thd, Object tokens) {
   Parser parsers[] = {p_parenCommaList, p_equalSign, p_listOfAny, NULL};
-  Object res = p_seq(thd, tokens, parsers);
+  Object res = p_seqOf(thd, tokens, parsers);
   printf("p_funRule res = "); objShow(res, stdout); printf("\n");
   return res;
 }
@@ -744,7 +755,7 @@ Object p_ident(Thread* thd, Object tokens) {
 
 Object p_if(Thread* thd, Object tokens) {
   Parser parsers[] = {p_IF, p_any, p_THEN, p_any, p_ELSE, p_any, p_END_required, NULL};
-  Object res = p_seq(thd, tokens, parsers);
+  Object res = p_seqOf(thd, tokens, parsers);
   if (res.a == nullObj.a) {
     return nullObj;
   }
@@ -763,7 +774,7 @@ Object p_commaBindings(Thread* thd, Object tokens) {
 
 Object p_let(Thread* thd, Object tokens) {
   Parser parsers[] = {p_LET, p_commaBindings, NULL};
-  Object res = p_seq(thd, tokens, parsers);
+  Object res = p_seqOf(thd, tokens, parsers);
   if (res.a == nullObj.a) {
     return nullObj;
   }
