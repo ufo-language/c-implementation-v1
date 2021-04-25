@@ -385,7 +385,7 @@ Object p_some(Thread* thd, Object tokens, Parser parser, int min) {
     Object obj = listGetFirst(res);
     queueEnq(objQ, obj);
     min--;
-    tokens = listGetRest(tokens);
+    tokens = listGetRest(res);
   }
   if (min <= 0) {
     Object objs = queueAsList(objQ);
@@ -668,7 +668,6 @@ Object p_do(Thread* thd, Object tokens) {
 Object p_funRule(Thread* thd, Object tokens) {
   Parser parsers[] = {p_parenCommaList, p_equalSign, p_listOfAny, NULL};
   Object res = p_seqOf(thd, tokens, parsers);
-  printf("p_funRule res = "); objShow(res, stdout); printf("\n");
   return res;
 }
 
