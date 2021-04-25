@@ -81,6 +81,7 @@ Object p_object(Thread* thd, Object tokens);
 Object p_DO(Thread* thd, Object tokens);
 Object p_ELSE(Thread* thd, Object tokens);
 Object p_END(Thread* thd, Object tokens);
+Object p_END_required(Thread* thd, Object tokens);
 Object p_FUN(Thread* thd, Object tokens);
 Object p_IF(Thread* thd, Object tokens);
 Object p_LET(Thread* thd, Object tokens);
@@ -106,6 +107,7 @@ struct ParserEntry_struct {
   {(void*)p_DO, "p_DO"},
   {(void*)p_ELSE, "p_ELSE"},
   {(void*)p_END, "p_END"},
+  {(void*)p_END_required, "p_END_required"},
   {(void*)p_FUN, "p_FUN"},
   {(void*)p_IF, "p_IF"},
   {(void*)p_LET, "p_LET"},
@@ -262,6 +264,16 @@ Object p_spot(Object tokens, TokenType tokenType) {
   return tokens;
 }
 
+Object p_spotOrFail(Object tokens, TokenType tokenType) {
+  Object res = p_spot(tokens, tokenType);
+  if (res.a != nullObj.a) {
+    return res;
+  }
+  /* TODO finish */
+  return nullObj;
+}
+
+
 Object p_spotSpecific(Object tokens, TokenType tokenType, char* word) {
   Object token = listGetFirst(tokens);
   Object tokenSym = arrayGet(token, 0);
@@ -303,7 +315,7 @@ Object p_spotSpecial(Object tokens, char* word) {
 
 Object p_fail(Thread* thd, Object tokens, char* message) { 
  threadThrowException(thd, PARSE_ERROR, message, tokens);
-  return nullObj;  /* suppress compiler warning */
+ return nullObj;  /* suppress compiler warning */
 }
 
 Object p_ignore(Thread* thd, Object tokens, Parser parser) {
@@ -604,6 +616,14 @@ Object p_END(Thread* thd, Object tokens) {
   return p_spotReserved_required(thd, tokens, "end");
 }
 
+Object p_END_required(Thread* thd, Object tokens) {
+  Object res = p_spotReserved(tokens, "end");
+  if (res.a == nullObj.a) {
+    p_fail(thd, tokens, "Keyword 'end' expected");
+  }
+  return _ignore(res);
+}
+
 Object p_FUN(Thread* thd, Object tokens) {
   (void)thd;
   return p_spotReserved(tokens, "fun");
@@ -652,7 +672,7 @@ Object p_apply(Thread* thd, Object tokens) {
 }
 
 Object p_do(Thread* thd, Object tokens) {
-  Parser parsers[] = {p_DO, p_listOfAny, p_END, NULL};
+  Parser parsers[] = {p_DO, p_listOfAny, p_END_required, NULL};
   Object res = p_seq(thd, tokens, parsers);
   if (res.a == nullObj.a) {
     return nullObj;
@@ -723,7 +743,7 @@ Object p_ident(Thread* thd, Object tokens) {
 }
 
 Object p_if(Thread* thd, Object tokens) {
-  Parser parsers[] = {p_IF, p_any, p_THEN, p_any, p_ELSE, p_any, p_END, NULL};
+  Parser parsers[] = {p_IF, p_any, p_THEN, p_any, p_ELSE, p_any, p_END_required, NULL};
   Object res = p_seq(thd, tokens, parsers);
   if (res.a == nullObj.a) {
     return nullObj;
