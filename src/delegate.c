@@ -24,6 +24,7 @@
 #include "e_if.h"
 #include "e_let.h"
 #include "e_letin.h"
+#include "e_quote.h"
 #include "e_seq.h"
 #include "e_throw.h"
 #include "gc.h"
@@ -157,6 +158,8 @@ Object objEval(Object obj, Thread* thd) {
       return letEval(obj, thd);
     case E_LetIn:
       return letInEval(obj, thd);
+    case E_Quote:
+      return quoteEval(obj, thd);
     case E_Seq:
       return seqEval(obj, thd);
     case E_Throw:
@@ -205,6 +208,9 @@ void objFreeVars(Object obj, Object freeVarSet) {
       break;
     case E_LetIn:
       letInFreeVars(obj, freeVarSet);
+      break;
+    case E_Quote:
+      quoteFreeVars(obj, freeVarSet);
       break;
     case E_Seq:
       seqFreeVars(obj, freeVarSet);
@@ -322,6 +328,9 @@ void objMark(Object obj) {
     case E_LetIn:
       objMark_generic(obj, LETIN_BINDINGS_OFS, LETIN_SIZE);
       break;
+    case E_Quote:
+      objMark_generic(obj, QUOTE_EXPR_OFS, 1);
+      break;
     case E_Seq:
       objMark_generic(obj, SEQ_EXPRS_OFS, 1);
       break;
@@ -426,6 +435,9 @@ void objShow(Object obj, FILE* stream) {
       break;
     case E_LetIn:
       letInShow(obj, stream);
+      break;
+    case E_Quote:
+      quoteShow(obj, stream);
       break;
     case E_Seq:
       seqShow(obj, stream);

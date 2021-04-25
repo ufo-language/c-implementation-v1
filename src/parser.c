@@ -15,6 +15,7 @@
 #include "e_app.h"
 #include "e_if.h"
 #include "e_let.h"
+#include "e_quote.h"
 #include "e_seq.h"
 #include "globals.h"
 #include "lexer_obj.h"
@@ -62,6 +63,7 @@ Object p_equalSign(Thread* thd, Object tokens);
 Object p_hashMark(Thread* thd, Object tokens);
 Object p_parenOpen(Thread* thd, Object tokens);
 Object p_parenClose(Thread* thd, Object tokens);
+Object p_singleQuote(Thread* thd, Object tokens);
 
 /* containers */
 Object p_array(Thread* thd, Object tokens);
@@ -96,6 +98,7 @@ Object p_ident(Thread* thd, Object tokens);
 Object p_if(Thread* thd, Object tokens);
 Object p_let(Thread* thd, Object tokens);
 Object p_parenExpr(Thread* thd, Object tokens);
+Object p_quote(Thread* thd, Object tokens);
 
 Object p_expr(Thread* thd, Object tokens);
 Object p_listOfAny(Thread* thd, Object tokens);
@@ -151,9 +154,11 @@ struct ParserEntry_struct {
   {(void*)p_parenExpr, "p_parenExpr"},
   {(void*)p_parenOpen, "p_parenOpen"},
   {(void*)p_pattern, "p_pattern"},
+  {(void*)p_quote, "p_quote"},
   {(void*)p_real, "p_real"},
   {(void*)p_sepBy, "p_sepBy"},
   {(void*)p_seqOf, "p_seqOf"},
+  {(void*)p_singleQuote, "p_singleQuote"},
   {(void*)p_some, "p_some"},
   {(void*)p_spot, "p_spot"},
   {(void*)p_spotOperator, "p_spotOperator"},
@@ -481,6 +486,11 @@ Object p_parenClose(Thread* thd, Object tokens) {
   return p_spotSpecial_required(thd, tokens, ")");
 }
 
+Object p_singleQuote(Thread* thd, Object tokens) {
+  (void)thd;
+  return p_spotSpecial(tokens, "'");
+}
+
 /* containers */
 Object p_commaList(Thread* thd, Object tokens) {
   (void)thd;
@@ -784,9 +794,29 @@ Object p_parenExpr(Thread* thd, Object tokens) {
   return listNew(expr, tokens);
 }
 
+Object p_quote(Thread* thd, Object tokens) {
+  Object res = p_singleQuote(thd, tokens);
+  if (res.a == nullObj.a) {
+    return nullObj;
+  }
+  tokens = listGetRest(res);
+  res = p_any(thd, tokens);
+  if (res.a == nullObj.a) {
+    p_fail(thd, tokens, "expression expected after open quote");
+  }
+  Object expr = listGetFirst(res);
+  tokens = listGetRest(res);
+  res = p_singleQuote(thd, tokens);
+  if (res.a == nullObj.a) {
+    p_fail(thd, tokens, "closing quote expected after expression");
+  }
+  tokens = listGetRest(res);
+  return listNew(quoteNew(expr), tokens);
+}
+
 /* any expression */
 Object p_expr(Thread* thd, Object tokens) {
-  Parser parsers[] = {p_parenExpr, p_apply, p_do, p_function, p_if, p_let, NULL};
+  Parser parsers[] = {p_parenExpr, p_apply, p_do, p_function, p_if, p_let, p_quote, NULL};
   Object res = p_oneOf(thd, tokens, parsers);
   return res;
 }

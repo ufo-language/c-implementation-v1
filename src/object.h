@@ -32,6 +32,7 @@ typedef enum {
   E_If,
   E_Let,
   E_LetIn,
+  E_Quote,
   E_Seq,
   E_Throw,
   D_Unknown /* used only during parsing */
