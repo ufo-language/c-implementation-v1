@@ -32,6 +32,7 @@ Object p_spotReserved(Object tokens, char* word);
 Object p_spotSpecial(Object tokens, char* word);
 
 /* combinators */
+Object p_fail(Thread* thd, Object tokens, char* message);
 Object p_ignore(Thread* thd, Object tokens, Parser parser);
 Object p_maybe(Thread* thd, Object tokens, Parser parser);
 Object p_oneOf(Thread* thd, Object tokens, Parser* parsers);
@@ -79,6 +80,7 @@ Object p_object(Thread* thd, Object tokens);
 Object p_DO(Thread* thd, Object tokens);
 Object p_ELSE(Thread* thd, Object tokens);
 Object p_END(Thread* thd, Object tokens);
+Object p_END_required(Thread* thd, Object tokens);
 Object p_FUN(Thread* thd, Object tokens);
 Object p_IF(Thread* thd, Object tokens);
 Object p_LET(Thread* thd, Object tokens);
@@ -104,6 +106,7 @@ struct ParserEntry_struct {
   {(void*)p_DO, "p_DO"},
   {(void*)p_ELSE, "p_ELSE"},
   {(void*)p_END, "p_END"},
+  {(void*)p_END_required, "p_END_required"},
   {(void*)p_FUN, "p_FUN"},
   {(void*)p_IF, "p_IF"},
   {(void*)p_LET, "p_LET"},
@@ -124,6 +127,7 @@ struct ParserEntry_struct {
   {(void*)p_do, "p_do"},
   {(void*)p_equalSign, "p_equalSign"},
   {(void*)p_expr, "p_expr"},
+  {(void*)p_fail, "p_fail"},
   {(void*)p_function, "p_function"},
   {(void*)p_funRule, "p_funRule"},
   {(void*)p_hashMark, "p_hashMark"},
@@ -257,6 +261,16 @@ Object p_spot(Object tokens, TokenType tokenType) {
   return tokens;
 }
 
+Object p_spotOrFail(Object tokens, TokenType tokenType) {
+  Object res = p_spot(tokens, tokenType);
+  if (res.a != nullObj.a) {
+    return res;
+  }
+  /* TODO finish */
+  return nullObj;
+}
+
+
 Object p_spotSpecific(Object tokens, TokenType tokenType, char* word) {
   Object token = listGetFirst(tokens);
   Object tokenSym = arrayGet(token, 0);
@@ -283,6 +297,11 @@ Object p_spotSpecial(Object tokens, char* word) {
 }
 
 /* Parser combinators ----------------------------------------------*/
+
+Object p_fail(Thread* thd, Object tokens, char* message) {
+  threadThrowException(thd, "ParseError", message, tokens);
+  return nullObj;  /* suppress compiler warning */
+}
 
 Object p_ignore(Thread* thd, Object tokens, Parser parser) {
   return _ignore(parse(thd, parser, tokens));
@@ -316,7 +335,7 @@ Object p_sepBy(Thread* thd, Object tokens, Parser parser, Parser separator) {
         break;
       }
       else {
-        threadThrowException(thd, "ParseError", "object expected after separator", tokens);
+        p_fail(thd, tokens, "object expected after separator");
       }
     }
     Object obj = listGetFirst(res);
@@ -584,6 +603,14 @@ Object p_END(Thread* thd, Object tokens) {
   return _ignore(p_spotReserved(tokens, "end"));
 }
 
+Object p_END_required(Thread* thd, Object tokens) {
+  Object res = p_spotReserved(tokens, "end");
+  if (res.a == nullObj.a) {
+    p_fail(thd, tokens, "Keyword 'end' expected");
+  }
+  return _ignore(res);
+}
+
 Object p_FUN(Thread* thd, Object tokens) {
   (void)thd;
   return _ignore(p_spotReserved(tokens, "fun"));
@@ -633,7 +660,7 @@ Object p_apply(Thread* thd, Object tokens) {
 }
 
 Object p_do(Thread* thd, Object tokens) {
-  Parser parsers[] = {p_DO, p_listOfAny, p_END, NULL};
+  Parser parsers[] = {p_DO, p_listOfAny, p_END_required, NULL};
   Object res = p_seq(thd, tokens, parsers);
   if (res.a == nullObj.a) {
     return nullObj;
@@ -665,14 +692,11 @@ Object p_function(Thread* thd, Object tokens) {
   }
   Object rulesRes = p_sepBy(thd, tokens, p_funRule, p_bar);
   if (rulesRes.a == nullObj.a) {
-    threadThrowException(thd, "ParseError", "function rules expected", tokens);
+    p_fail(thd, tokens, "function rules expected");
   }
   Object rules = listGetFirst(rulesRes);
   tokens = listGetRest(rulesRes);
-  res = p_END(thd, tokens);
-  if (res.a == nullObj.a) {
-    threadThrowException(thd, "ParseError", "keyword 'end' expected", tokens);
-  }
+  res = p_END_required(thd, tokens);
   tokens = listGetRest(res);
   /* build the function object */
   Object fun = nullObj;
@@ -707,7 +731,7 @@ Object p_ident(Thread* thd, Object tokens) {
 }
 
 Object p_if(Thread* thd, Object tokens) {
-  Parser parsers[] = {p_IF, p_any, p_THEN, p_any, p_ELSE, p_any, p_END, NULL};
+  Parser parsers[] = {p_IF, p_any, p_THEN, p_any, p_ELSE, p_any, p_END_required, NULL};
   Object res = p_seq(thd, tokens, parsers);
   if (res.a == nullObj.a) {
     return nullObj;
