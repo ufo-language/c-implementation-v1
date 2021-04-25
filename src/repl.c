@@ -81,7 +81,10 @@ void repl() {
           Object val = evaluate(obj, thd);
           if (val.a != nullObj.a) {
             repl.value = val;
-            objShow(val, stdout); printf(" : %s\n",ObjTypeNames[objGetType(val)]);
+            if (val.a != NOTHING.a) {
+              objShow(val, stdout);
+              printf(" : %s\n", ObjTypeNames[objGetType(val)]);
+            }
           }
         }
       }
