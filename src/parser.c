@@ -8,6 +8,7 @@
 #include "d_hash.h"
 #include "d_list.h"
 #include "d_queue.h"
+#include "d_set.h"
 #include "d_string.h"
 #include "d_symbol.h"
 #include "delegate.h"
@@ -99,6 +100,7 @@ Object p_if(Thread* thd, Object tokens);
 Object p_let(Thread* thd, Object tokens);
 Object p_parenExpr(Thread* thd, Object tokens);
 Object p_quote(Thread* thd, Object tokens);
+Object p_set(Thread* thd, Object tokens);
 
 Object p_expr(Thread* thd, Object tokens);
 Object p_listOfAny(Thread* thd, Object tokens);
@@ -158,6 +160,7 @@ struct ParserEntry_struct {
   {(void*)p_real, "p_real"},
   {(void*)p_sepBy, "p_sepBy"},
   {(void*)p_seqOf, "p_seqOf"},
+  {(void*)p_set, "p_set"},
   {(void*)p_singleQuote, "p_singleQuote"},
   {(void*)p_some, "p_some"},
   {(void*)p_spot, "p_spot"},
@@ -587,7 +590,7 @@ Object p_binding(Thread* thd, Object tokens) {
 }
 
 Object p_object(Thread* thd, Object tokens) {
-  Parser parsers[] = {p_array, p_list, p_hashTable, p_binding, p_literal, p_ident, NULL};
+  Parser parsers[] = {p_array, p_list, p_hashTable, p_set, p_binding, p_literal, p_ident, NULL};
   Object res = p_oneOf(thd, tokens, parsers);
   return res;
 }
@@ -811,7 +814,25 @@ Object p_quote(Thread* thd, Object tokens) {
     p_fail(thd, tokens, "closing quote expected after expression");
   }
   tokens = listGetRest(res);
-  return listNew(quoteNew(expr), tokens);
+  Object quote = quoteNew(expr);
+  return listNew(quote, tokens);
+}
+
+Object p_set(Thread* thd, Object tokens) {
+  Object res = p_spotSpecial(tokens, "$");
+  if (res.a == nullObj.a) {
+    return nullObj;
+  }
+  tokens = listGetRest(res);
+  res = p_array(thd, tokens);
+  if (res.a == nullObj.a) {
+    p_fail(thd, tokens, "set elements expected after '$'");
+  }
+  Object elems = listGetFirst(res);
+  tokens = listGetRest(res);
+  Object set = setNew();
+  arrayEach(elems, setAddElem, set);
+  return listNew(set, tokens);
 }
 
 /* any expression */
