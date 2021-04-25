@@ -99,6 +99,7 @@ Object p_ident(Thread* thd, Object tokens);
 Object p_if(Thread* thd, Object tokens);
 Object p_let(Thread* thd, Object tokens);
 Object p_parenExpr(Thread* thd, Object tokens);
+Object p_queue(Thread* thd, Object tokens);
 Object p_quote(Thread* thd, Object tokens);
 Object p_set(Thread* thd, Object tokens);
 
@@ -590,7 +591,7 @@ Object p_binding(Thread* thd, Object tokens) {
 }
 
 Object p_object(Thread* thd, Object tokens) {
-  Parser parsers[] = {p_array, p_list, p_hashTable, p_set, p_binding, p_literal, p_ident, NULL};
+  Parser parsers[] = {p_array, p_list, p_hashTable, p_queue, p_set, p_binding, p_literal, p_ident, NULL};
   Object res = p_oneOf(thd, tokens, parsers);
   return res;
 }
@@ -795,6 +796,23 @@ Object p_parenExpr(Thread* thd, Object tokens) {
   }
   tokens = listGetRest(closeRes);
   return listNew(expr, tokens);
+}
+
+Object p_queue(Thread* thd, Object tokens) {
+  Object res = p_spotSpecial(tokens, "~");
+  if (res.a == nullObj.a) {
+    return nullObj;
+  }
+  tokens = listGetRest(res);
+  res = p_list(thd, tokens);
+  if (res.a == nullObj.a) {
+    p_fail(thd, tokens, "queue elements expected after '~'");
+  }
+  Object elems = listGetFirst(res);
+  tokens = listGetRest(res);
+  Object q = queueNew();
+  listEach(elems, queueEnq, q);
+  return listNew(q, tokens);
 }
 
 Object p_quote(Thread* thd, Object tokens) {

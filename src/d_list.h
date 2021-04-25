@@ -14,6 +14,7 @@ Object listNew(Object first, Object rest);
 
 Word listCount(Object list);
 void listDel(Object list);
+void listEach(Object list, void (*fun)(Object data, Object elem), Object data);
 bool listEquals(Object list, Object other);
 Object listEval(Object list, Thread* thd);
 void listFreeVars(Object list, Object freeVarSet);

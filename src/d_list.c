@@ -32,6 +32,18 @@ Object listCreateEmpty() {
 }
 
 /*------------------------------------------------------------------*/
+void listEach(Object list, void (*fun)(Object data, Object elem), Object data) {
+  while (!listIsEmpty(list)) {
+    Object elem = listGetFirst(list);
+    fun(data, elem);
+    list = listGetRest(list);
+    if (objGetType(list) != D_List) {
+      list = listNew(list, EMPTY_LIST);
+    }
+  }
+}
+
+/*------------------------------------------------------------------*/
 bool listEquals(Object list, Object other) {
   if (listIsEmpty(list)) {
     return listIsEmpty(other);
