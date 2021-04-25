@@ -18,7 +18,9 @@ Object evaluate(Object obj, Thread* thd) {
         return res;
       }
     case 1:  /* caught exception */
-      printf("evaluate caught exception, payload = "); objShow(thd->exception, stdout); printf("\n");
+      fprintf(stderr, "Evaluator caught exception:\n");
+      objShow(thd->exception, stderr);
+      fprintf(stderr, "\n");
       return nullObj;
     case 2:  /* thread context switch */
       fprintf(stderr, "evaluate thread switch is not implemented\n");
