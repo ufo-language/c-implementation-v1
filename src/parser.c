@@ -668,6 +668,9 @@ Object p_do(Thread* thd, Object tokens) {
 Object p_funRule(Thread* thd, Object tokens) {
   Parser parsers[] = {p_parenCommaList, p_equalSign, p_listOfAny, NULL};
   Object res = p_seqOf(thd, tokens, parsers);
+  if (res.a == nullObj.a) {
+    p_fail(thd, tokens, "function rule expected");
+  }
   return res;
 }
 
@@ -684,10 +687,11 @@ Object p_function(Thread* thd, Object tokens) {
     tokens = listGetRest(funNameRes);
   }
   Object rulesRes = p_sepBy(thd, tokens, p_funRule, p_bar);
-  if (rulesRes.a == nullObj.a) {
+  Object rules = listGetFirst(rulesRes);
+  printf("p_function rules = "); objShow(rules, stdout); printf("\n");
+  if (listCount(rules) == 0) {
     p_fail(thd, tokens, "function rules expected");
   }
-  Object rules = listGetFirst(rulesRes);
   tokens = listGetRest(rulesRes);
   res = p_END(thd, tokens);
   tokens = listGetRest(res);
@@ -743,12 +747,19 @@ Object p_commaBindings(Thread* thd, Object tokens) {
 }
 
 Object p_let(Thread* thd, Object tokens) {
-  Parser parsers[] = {p_LET, p_commaBindings, NULL};
-  Object res = p_seqOf(thd, tokens, parsers);
+  Object res = p_LET(thd, tokens);
   if (res.a == nullObj.a) {
     return nullObj;
   }
+  tokens = listGetRest(res);
+  res = p_commaBindings(thd, tokens);
+  if (res.a == nullObj.a) {
+    p_fail(thd, tokens, "bindings expected after 'let'");
+  }
   Object bindings = listGetFirst(res);
+  if (listCount(bindings) == 0) {
+    p_fail(thd, tokens, "bindings expected after 'let'");
+  }
   tokens = listGetRest(res);
   Object let = letNew(bindings);
   return listNew(let, tokens);
@@ -768,7 +779,7 @@ Object p_parenExpr(Thread* thd, Object tokens) {
   tokens = listGetRest(exprRes);
   Object closeRes = p_parenClose(thd, tokens);
   if (closeRes.a == nullObj.a) {
-    threadThrowException(thd, PARSER_ERROR, "closing parenthesis expected", tokens);
+    p_fail(thd, tokens, "closing parenthesis expected");
   }
   tokens = listGetRest(closeRes);
   return listNew(expr, tokens);
@@ -783,7 +794,10 @@ Object p_expr(Thread* thd, Object tokens) {
 
 /* list of expressions */
 Object p_listOfAny(Thread* thd, Object tokens) {
-  Object res = p_some(thd, tokens, p_any, 0);
+  Object res = p_some(thd, tokens, p_any, 1);
+  if (res.a == nullObj.a) {
+    p_fail(thd, tokens, "expression expected");
+  }
   return res;
 }
 
