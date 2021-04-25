@@ -13,6 +13,6 @@ typedef struct Repl_struct {
   Object value;
 } ReplObj;
 
-void repl();
+void repl(void);
 
 #endif

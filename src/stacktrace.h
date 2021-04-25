@@ -1,1 +1,1 @@
-void stackTrace();
+void stackTrace(void);

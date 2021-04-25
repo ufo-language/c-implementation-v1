@@ -8,7 +8,7 @@
 #define Q_HEAD_OFS 1
 #define Q_TAIL_OFS 2
 
-Object queueNew();
+Object queueNew(void);
 
 Object queueAsList(Object q);
 Word queueCount(Object q);

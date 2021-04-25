@@ -16,15 +16,15 @@ RawBlock _gcSpinePrev;
 RawBlock _gcNew;
 
 bool _isMarked(RawBlock blk);
-void _sweep();
+void _sweep(void);
 void _unmark(RawBlock obj);
 
 long nMarkSweeps = 0;
 
-void gcDumpSpine();
+void gcDumpSpine(void);
 
 /*------------------------------------------------------------------*/
-void gcInit() {
+void gcInit(void) {
   assert(nullRawBlock.a == 0);
   _gcSpine = nullRawBlock;
   _gcSpinePrev = nullRawBlock;
@@ -38,7 +38,7 @@ bool gcIsMarked(Object obj) {
 }
 
 /*------------------------------------------------------------------*/
-void gcCommit() {
+void gcCommit(void) {
   _gcSpine = _gcNew;
   _gcSpinePrev = nullRawBlock;
 }
@@ -54,14 +54,14 @@ void gcReg(Object obj) {
 }
 
 /*------------------------------------------------------------------*/
-void gcMarkSweep() {
+void gcMarkSweep(void) {
   nMarkSweeps += 1;
   threadMarkAll();
   _sweep();
 }
 
 /*------------------------------------------------------------------*/
-void gcDumpSpine() {
+void gcDumpSpine(void) {
   printf("  +================\n");
   printf("  | gcDumpSpine:\n");
   printf("  | _gcNew   = %d\n", _gcNew.a);
@@ -99,7 +99,7 @@ bool _isMarked(RawBlock blk) {
 /*------------------------------------------------------------------*/
 /* Sweep the spine. Only blocks committed to the spine are swept.
    New/uncommitted blocks are not swept. */
-void _sweep() {
+void _sweep(void) {
   RawBlock blk = _gcNew;
   RawBlock prev = nullRawBlock;
   RawBlock next;

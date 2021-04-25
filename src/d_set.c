@@ -110,7 +110,7 @@ bool setLocate(Object set, Object elem, Word* bucketNum) {
 }
 
 /*------------------------------------------------------------------*/
-Object setNew() {
+Object setNew(void) {
   Word nBuckets = 8;
   Word loadingFactorCapacity = (nBuckets >> 1) + (nBuckets >> 2);
   Object buckets = arrayNew(nBuckets);

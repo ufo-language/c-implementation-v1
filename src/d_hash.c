@@ -137,7 +137,7 @@ Object hashLocate(Object hash, Object key, Word* bucketNum) {
 }
 
 /*------------------------------------------------------------------*/
-Object hashNew() {
+Object hashNew(void) {
   Word nBuckets = 8;
   Word loadingFactorCapacity = (nBuckets >> 1) + (nBuckets >> 2);
   Object buckets = arrayNew(nBuckets);

@@ -8,7 +8,7 @@
 #define SET_LOADINGFACTOR_OFS 1
 #define SET_BUCKETS_OFS 2
 
-Object setNew();
+Object setNew(void);
 
 void setAddElem(Object set, Object elem);
 Word setCount(Object set);

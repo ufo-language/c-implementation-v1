@@ -13,7 +13,7 @@
 Object arrayNew(Word nElems) {
   Object array = objAlloc(D_Array, nElems + 1);
   objSetData(array, ARY_NELEMS_OFS, nElems);
-  for (int n=0; n<nElems; n++) {
+  for (Word n=0; n<nElems; n++) {
     arraySet(array, n, NOTHING);
   }
   return array;
@@ -22,6 +22,15 @@ Object arrayNew(Word nElems) {
 /*------------------------------------------------------------------*/
 Word arrayCount(Object array) {
   return objGetData(array, ARY_NELEMS_OFS);
+}
+
+/*------------------------------------------------------------------*/
+void arrayEach(Object array, void (*fun)(Object data, Object elem), Object data) {
+  Word nElems = arrayCount(array);
+  for (Word n=0; n<nElems; n++) {
+    Object elem = arrayGet(array, n);
+    fun(data, elem);
+  }
 }
 
 /*------------------------------------------------------------------*/

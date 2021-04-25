@@ -14,6 +14,7 @@ Object arrayNew(Word size);
 void arrayDel(Object array);
 
 Word arrayCount(Object array);
+void arrayEach(Object array, void (*fun)(Object data, Object elem), Object data);
 bool arrayEquals(Object array, Object other);
 Object arrayEval(Object array, Thread* thd);
 void arrayFill(Object array, Object elem);

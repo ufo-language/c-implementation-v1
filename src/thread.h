@@ -14,7 +14,7 @@ typedef struct Thread_struct {
   struct Thread_struct* next;
 } Thread;
 
-Thread* threadNew();
+Thread* threadNew(void);
 void threadDelete(Thread* thd);
 
 void threadEnvBind(Thread* thd, Object var, Object val);
@@ -23,7 +23,7 @@ Object threadEval(Thread* thd, Object expr, Object bindings);
 Object threadGetEnv(Thread* thd);
 Object threadGetExn(Thread* thd);
 void threadMark(Thread* thd);
-void threadMarkAll();
+void threadMarkAll(void);
 void threadSetEnv(Thread* thd, Object env);
 void threadSetExpr(Thread* thd, Object expr);
 

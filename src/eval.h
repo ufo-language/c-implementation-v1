@@ -4,9 +4,6 @@
 #include "object.h"
 #include "thread.h"
 
-//Object envNew();
-//Object envBind(Object key, Object val, Object env);
-
 /* This is the entry point. It does a recursive evaluation of `obj`
    and after that completes it gc-commits all the new objects. */
 Object evaluate(Object obj, Thread* thd);

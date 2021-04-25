@@ -28,12 +28,12 @@ typedef uint Word;
 #define PAGEMASK(addr)   (addr / PAGE_SIZE % N_PAGES)
 #define OFFSETMASK(addr) (addr % PAGE_SIZE)
 
-FILE* vmemStart();
-void vmemStop();
+FILE* vmemStart(void);
+void vmemStop(void);
 
 Word vmemGet(Address addr);
 void vmemSet(Address addr, Word value);
-long vmemGetNWords();
+long vmemGetNWords(void);
 
 void vmemInc(Address addr);
 void vmemDec(Address addr);

@@ -13,14 +13,14 @@
 #include "repl.h"
 #include "thread.h"
 
-void intro() {
+void intro(void) {
   puts("▌▐ ▛▘▛▜ UFO version 4-rc-1");
   puts("▙▟ ▛ ▙▟ http://github.com/ufo-language");
   puts("type :? for help");
   puts("");
 }
 
-void prompt() {
+void prompt(void) {
   printf("UFO> ");
 }
 
@@ -42,7 +42,7 @@ int getLine(char* buffer, int len) {
   return i;
 }
 
-void repl() {
+void repl(void) {
   intro();
   Thread* thd = threadNew();
   ReplObj repl;

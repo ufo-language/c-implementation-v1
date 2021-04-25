@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <execinfo.h>
 
-void stackTrace() {
+void stackTrace(void) {
     char **strings;
     size_t i, size;
     enum Constexpr { MAX_SIZE = 1024 };

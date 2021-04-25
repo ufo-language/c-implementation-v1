@@ -8,7 +8,7 @@
 #define HASH_LOADINGFACTOR_OFS 1
 #define HASH_BUCKETS_OFS 2
 
-Object hashNew();
+Object hashNew(void);
 
 Word hashCount(Object hash);
 bool hashEquals(Object hash, Object other);

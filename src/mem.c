@@ -40,17 +40,17 @@ RawBlock memAddrToRawBlock(Address addr) {
 }
 
 /*------------------------------------------------------------------*/
-Word memGetNBlocks() {
+Word memGetNBlocks(void) {
   return _memNFreeBlocks;
 }
 
 /*------------------------------------------------------------------*/
-Word memGetNFreeWords() {
+Word memGetNFreeWords(void) {
   return _memNFreeWords;
 }
 
 /*------------------------------------------------------------------*/
-void memStart() {
+void memStart(void) {
   vmemStart();  /* sets all memory to 0 */
   _memFreeRoot.a = 0;
   _memNFreeBlocks = 0;
@@ -68,7 +68,7 @@ void memStart() {
 }
 
 /*------------------------------------------------------------------*/
-void memStop() {
+void memStop(void) {
   vmemStop();
 }
 
@@ -178,7 +178,7 @@ void memShowBlock(RawBlock blk) {
 }
 
 /*------------------------------------------------------------------*/
-void memDump() {
+void memDump(void) {
   printf("  +----------------\n");
   printf("  | memBlkDump:\n");
   printf("  |  blocks     %d\n", _memNFreeBlocks);

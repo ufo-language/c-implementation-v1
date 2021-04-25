@@ -21,12 +21,12 @@ bool vmemIsDirty[N_PAGES];
 /*------------------------------------------------------------------*/
 /* Returns the total number of words provided by the virtual memory
    system. */
-long vmemGetNWords() {
+long vmemGetNWords(void) {
   return PAGE_SIZE * N_PAGES * N_KEYS;
 }
 
 /*------------------------------------------------------------------*/
-FILE* vmemStart() {
+FILE* vmemStart(void) {
   if (pageFile) {
     fclose(pageFile);
   }
@@ -42,7 +42,7 @@ FILE* vmemStart() {
 }
 
 /*------------------------------------------------------------------*/
-void vmemStop() {
+void vmemStop(void) {
   fclose(pageFile);
 }
 

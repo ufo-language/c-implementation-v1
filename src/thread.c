@@ -67,7 +67,7 @@ void threadMark(Thread* thd) {
   }
 }
 
-void threadMarkAll() {
+void threadMarkAll(void) {
   Thread* thd = runningThreads;
   while (thd) {
     threadMark(thd);
@@ -75,7 +75,7 @@ void threadMarkAll() {
   }
 }
 
-Thread* threadNew() {
+Thread* threadNew(void) {
   Thread* thd;
   if (threadPool) {
     thd = threadPool;

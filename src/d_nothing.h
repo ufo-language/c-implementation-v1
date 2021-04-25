@@ -5,7 +5,7 @@
 
 #include "object.h"
 
-Object nothingNew();
+Object nothingNew(void);
 
 void nothingShow(FILE* stream);
 

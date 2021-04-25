@@ -3,7 +3,7 @@
 #include "d_nothing.h"
 #include "object.h"
 
-Object nothingNew() {
+Object nothingNew(void) {
   Object nothing = objAlloc(D_Nothing, 0);
   return nothing;
 }

@@ -50,13 +50,13 @@ void memFree(Block blk);
 Word memGetSize(RawBlock blk);
 
 /* non-user functions */
-void memStart();
-void memStop();
+void memStart(void);
+void memStop(void);
 void memShowBlock(RawBlock blk);
-void memDump();
+void memDump(void);
 
-Word memGetNBlocks();
-Word memGetNFreeWords();
+Word memGetNBlocks(void);
+Word memGetNFreeWords(void);
 
 /* should be private, but they're used by GC */
 void memFreeRaw(RawBlock blk);
