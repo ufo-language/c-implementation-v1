@@ -77,6 +77,7 @@ void repl() {
         }
         else {
           repl.parseRes = obj;
+          repl.value = nullObj;
           Object val = evaluate(obj, thd);
           if (val.a != nullObj.a) {
             repl.value = val;

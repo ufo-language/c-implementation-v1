@@ -266,15 +266,6 @@ Object p_spot(Object tokens, TokenType tokenType) {
   return tokens;
 }
 
-Object p_spotOrFail(Object tokens, TokenType tokenType) {
-  Object res = p_spot(tokens, tokenType);
-  if (res.a != nullObj.a) {
-    return res;
-  }
-  /* TODO finish */
-  return nullObj;
-}
-
 Object p_spotSpecific(Object tokens, TokenType tokenType, char* word) {
   Object token = listGetFirst(tokens);
   Object tokenSym = arrayGet(token, 0);
