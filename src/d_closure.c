@@ -28,6 +28,7 @@ Object closureApply(Object closure, Object argList, Thread* thd) {
     }
     closure.a = objGetData(closure, CLO_NEXT_OFS);
   }
+  // TODO change this to throw an exception
   fprintf(stderr, "ERROR: argument mismatch\n  function: ");
   objShow(closure, stderr);
   fprintf(stderr, "\n  arguments: ");
@@ -74,7 +75,7 @@ Object _close(Object rule, Object env) {
     Object ident = arrayGet(freeVarAry, n);
     Object binding = listLocate(env, ident);
     if (binding.a != nullObj.a) {
-      lexEnv = listNew(bindingNew(ident, bindingGetRhs(binding)), lexEnv);
+      lexEnv = listNew(binding, lexEnv);
     }
   }
   return lexEnv;
