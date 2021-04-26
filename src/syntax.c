@@ -54,6 +54,7 @@ Transition realState[] = {
 Transition wordState[] = {
   {'a', 'z',     S_WORD,  A_KEEP,      T_NONE},
   {'A', 'Z',     S_WORD,  A_KEEP,      T_NONE},
+  {'0', '9',     S_WORD,  A_KEEP,      T_NONE},
   {'_', '_',     S_WORD,  A_KEEP,      T_NONE},
   {C_ANY, C_ANY, S_I,     A_REUSE,     T_WORD}
 };
