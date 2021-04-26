@@ -12,7 +12,7 @@
 void abstrFreeVars_rule(Object rule, Object freeVarSet);
 void abstrShow_aux(Object abstr, char* prefix, FILE* stream);
 
-/* Returns a lexical environment for an abstraction rule */
+/* Returns a minimal lexical environment for an abstraction rule */
 Object _close(Object closure, Object env);
 
 /*------------------------------------------------------------------*/

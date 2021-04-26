@@ -37,11 +37,16 @@ Object seqNew(Object lst) {
 /*------------------------------------------------------------------*/
 void seqShow(Object seq, FILE* stream) {
   fputs("do ", stream);
-  Object list = {objGetData(seq, SEQ_EXPRS_OFS)};
-  while (!listIsEmpty(list)) {
-    objShow(listGetFirst(list), stream);
-    fputc(' ', stream);
-    list = listGetRest(list);
-  }
+  Object exprs = {objGetData(seq, SEQ_EXPRS_OFS)};
+  seqShowExprs(exprs, stream);
   fputs("end", stream);
+}
+
+/*------------------------------------------------------------------*/
+void seqShowExprs(Object exprList, FILE* stream) {
+  while (!listIsEmpty(exprList)) {
+    objShow(listGetFirst(exprList), stream);
+    fputc(' ', stream);
+    exprList = listGetRest(exprList);
+  }
 }
