@@ -57,6 +57,8 @@ bool objBoolValue(Object obj) {
       return setCount(obj) != 0;
     case D_String:
       return stringCount(obj) > 0;
+    case D_Tuple:
+      return tupleCount(obj) > 0;
     default:
       /* E_Ident, E_If, etc. */
       return true;
@@ -121,6 +123,8 @@ bool objEquals(Object obj1, Object obj2) {
       return stringEquals(obj1, obj2);
     case D_Symbol:
       return symbolEquals(obj1, obj2);
+    case D_Tuple:
+      return tupleEquals(obj1, obj2);
     case E_Ident:
       return identEquals(obj1, obj2);
     default:
@@ -147,6 +151,8 @@ Object objEval(Object obj, Thread* thd) {
       return queueEval(obj, thd);
     case D_Set:
       return setEval(obj, thd);
+    case D_Tuple:
+      return tupleEval(obj, thd);
     case E_Abstr:
       return abstrEval(obj, thd);
     case E_App:
@@ -193,6 +199,9 @@ void objFreeVars(Object obj, Object freeVarSet) {
       break;
     case D_Set:
       setFreeVars(obj, freeVarSet);
+      break;
+    case D_Tuple:
+      tupleFreeVars(obj, freeVarSet);
       break;
     case E_Abstr:
       abstrFreeVars(obj, freeVarSet);
@@ -319,6 +328,9 @@ void objMark(Object obj) {
         objMark(buckets);
       }
       break;
+    case D_Tuple:
+      objMark_generic(obj, TUP_ELEMS_OFS, tupleCount(obj));
+      break;
     case E_Abstr:
       objMark_generic(obj, ABSTR_PARAMS_OFS, ABSTR_SIZE);
       break;
@@ -371,6 +383,8 @@ Object objMatch(Object obj, Object other, Object bindingList) {
       return bindingMatch(obj, other, bindingList);
     case D_List:
       return listMatch(obj, other, bindingList);
+    case D_Tuple:
+      return tupleMatch(obj, other, bindingList);
     default:
       return (obj.a == other.a) ? bindingList : nullObj;
   }
