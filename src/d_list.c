@@ -144,6 +144,9 @@ Object listMatch(Object list, Object other, Object bindingList) {
   if (listIsEmpty(list)) {
     return listIsEmpty(other) ? bindingList : nullObj;
   }
+  if (listIsEmpty(other)) {
+    return nullObj;
+  }
   Object first1 = listGetFirst(list);
   Object first2 = listGetFirst(other);
   bindingList = objMatch(first1, first2, bindingList);
