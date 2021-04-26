@@ -733,11 +733,11 @@ Object p_function(Thread* thd, Object tokens) {
     prev = fun1;
     rules = listGetRest(rules);
   }
-  /* if the function has a name, convert it to a let expression */
+  /* if the function has a name, convert it to a letrec expression */
   if (funName.a != nullObj.a) {
     Object binding = bindingNew(funName, fun);
     Object bindings = listNew(binding, EMPTY_LIST);
-    fun = letNew(bindings);
+    fun = letRecNew(bindings);
   }
   return listNew(fun, tokens);
 }
