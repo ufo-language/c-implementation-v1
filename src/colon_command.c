@@ -14,8 +14,10 @@ void colonCommandHelp() {
 void colonCommandShowInput(ReplObj* replObj) {
   printf("Input string: "); objShow(replObj->inputString, stdout); printf("\n");
   printf("Tokens:       "); objShow(replObj->tokens, stdout); printf("\n");
-  printf("Parse result: "); objShow(replObj->parseRes, stdout); printf("\n");
-  printf("Value:        "); objShow(replObj->value, stdout); printf("\n");
+  printf("Parse result: "); objShow(replObj->parseRes, stdout);
+  printf(" : %s\n", ObjTypeNames[objGetType(replObj->parseRes)]);
+  printf("Value:        "); objShow(replObj->value, stdout);
+  printf(" : %s\n", ObjTypeNames[objGetType(replObj->value)]);
 }
 
 bool colonCommand(Thread* thd, ReplObj* replObj) {
