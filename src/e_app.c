@@ -17,7 +17,7 @@ Object appEval(Object app, Thread* thd) {
   Object abstrVal = eval(abstr, thd);
   Object argsVal = eval(args, thd);
   if (objGetType(abstrVal) != D_Closure) {
-    threadThrowException(thd, "Error", "object is not an exception", abstrVal);
+    threadThrowException(thd, "Error", "object is not an abstraction", abstrVal);
   }
   Object res = closureApply(abstrVal, argsVal, thd);
   return res;
