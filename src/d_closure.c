@@ -17,6 +17,8 @@ Object _close(Object closure, Object env);
 
 /*------------------------------------------------------------------*/
 Object closureApply(Object closure, Object argList, Thread* thd) {
+  Object origClosure = closure;
+  /* iterate over the rules until one matches */
   while (closure.a != nullObj.a) {
     Object paramList = {objGetData(closure, CLO_PARAMS_OFS)};
     Object body = {objGetData(closure, CLO_BODY_OFS)};
@@ -28,12 +30,8 @@ Object closureApply(Object closure, Object argList, Thread* thd) {
     }
     closure.a = objGetData(closure, CLO_NEXT_OFS);
   }
-  // TODO change this to throw an exception
-  fprintf(stderr, "ERROR: argument mismatch\n  function: ");
-  objShow(closure, stderr);
-  fprintf(stderr, "\n  arguments: ");
-  listShowWith(argList, "(", ", ", ")", stderr);
-  fprintf(stderr, "\n");
+  Object obj = listNew(origClosure, argList);
+  threadThrowException(thd, "ArgumentMismatch", "arguments do not match any rule in function", obj);
   return nullObj;
 }
 
