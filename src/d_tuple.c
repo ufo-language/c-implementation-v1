@@ -174,12 +174,14 @@ Object tupleMatch(Object tuple, Object other, Object bindingList) {
 
 /*------------------------------------------------------------------*/
 void tupleShow(Object tuple, FILE* stream) {
+  fputc('<', stream);
   Word size = tupleCount(tuple);
   for (uint n=0; n<size; n++) {
     if (n > 0) {
-      fprintf(stream, ":");
+      fprintf(stream, ", ");
     }
     Object elem = tupleGet(tuple, n);
     objShow(elem, stream);
   }
+  fputc('>', stream);
 }

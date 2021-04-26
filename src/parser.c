@@ -11,6 +11,7 @@
 #include "d_set.h"
 #include "d_string.h"
 #include "d_symbol.h"
+#include "d_tuple.h"
 #include "delegate.h"
 #include "e_abstr.h"
 #include "e_app.h"
@@ -55,6 +56,8 @@ Object p_symbol(Thread* thd, Object tokens);
 Object p_literal(Thread* thd, Object tokens);
 
 /* punctuation */
+Object p_angleOpen(Thread* thd, Object tokens);
+Object p_angleClose(Thread* thd, Object tokens);
 Object p_bar(Thread* thd, Object tokens);
 Object p_braceOpen(Thread* thd, Object tokens);
 Object p_braceClose(Thread* thd, Object tokens);
@@ -72,6 +75,7 @@ Object p_array(Thread* thd, Object tokens);
 Object p_binding(Thread* thd, Object tokens);
 Object p_hashTable(Thread* thd, Object tokens);
 Object p_list(Thread* thd, Object tokens);
+Object p_tuple(Thread* thd, Object tokens);
 
 /* container & expression support */
 Object p_commaBindings(Thread* thd, Object tokens);
@@ -122,6 +126,8 @@ struct ParserEntry_struct {
   {(void*)p_IF, "p_IF"},
   {(void*)p_LET, "p_LET"},
   {(void*)p_THEN, "p_THEN"},
+  {(void*)p_angleClose, "p_angleClose"},
+  {(void*)p_angleOpen, "p_angleOpen"},
   {(void*)p_any, "p_any"},
   {(void*)p_apply, "p_apply"},
   {(void*)p_array, "p_array"},
@@ -176,6 +182,7 @@ struct ParserEntry_struct {
   {(void*)p_spotSpecific, "p_spotSpecific"},
   {(void*)p_string, "p_string"},
   {(void*)p_symbol, "p_symbol"},
+  {(void*)p_tuple, "p_tuple"},
   {NULL, NULL}
 };
 
@@ -275,6 +282,19 @@ Object p_spotOperator(Object tokens, char* word) {
   return p_spotSpecific(tokens, T_OPER, word);
 }
 
+Object p_spotOperator_required(Thread* thd, Object tokens, char* word) {
+  Object res = p_spotSpecific(tokens, T_OPER, word);
+  if (res.a == nullObj.a) {
+    Object exn = arrayNew(4);
+    arraySet(exn, 0, symbolNew(PARSER_ERROR));
+    arraySet(exn, 1, stringNew("character expected"));
+    arraySet(exn, 2, stringNew(word));
+    arraySet(exn, 3, tokens);
+    threadThrowExceptionObj(thd, exn);
+  }
+  return res;
+}
+
 Object p_spotReserved(Object tokens, char* word) {
   return p_spotSpecific(tokens, T_RESERVED, word);
 }
@@ -300,7 +320,7 @@ Object p_spotSpecial_required(Thread* thd, Object tokens, char* word) {
   if (res.a == nullObj.a) {
     Object exn = arrayNew(4);
     arraySet(exn, 0, symbolNew(PARSER_ERROR));
-    arraySet(exn, 1, stringNew("special character expected"));
+    arraySet(exn, 1, stringNew("character expected"));
     arraySet(exn, 2, stringNew(word));
     arraySet(exn, 3, tokens);
     threadThrowExceptionObj(thd, exn);
@@ -446,6 +466,16 @@ Object p_literal(Thread* thd, Object tokens) {
 }
 
 /* punctuation */
+
+Object p_angleOpen(Thread* thd, Object tokens) {
+  (void)thd;
+  return p_spotOperator(tokens, "<");
+}
+
+Object p_angleClose(Thread* thd, Object tokens) {
+  return p_spotOperator_required(thd, tokens, ">");
+}
+
 Object p_bar(Thread* thd, Object tokens) {
   (void)thd;
   return p_spotSpecial(tokens, "|");
@@ -572,6 +602,24 @@ Object p_list(Thread* thd, Object tokens) {
   return listNew(elems, tokens);
 }
 
+Object p_tuple(Thread* thd, Object tokens) {
+  Parser parsers[] = {p_angleOpen, p_commaList, p_angleClose, NULL};
+  Object res = p_seqOf(thd, tokens, parsers);
+  if (res.a == nullObj.a) {
+    return nullObj;
+  }
+  Object elems = listGetFirst(res);
+  Word nElems = listCount(elems);
+  Object ary = arrayNew(nElems);
+  for (Word n=0; n<nElems; n++) {
+    arraySet(ary, n, listGetFirst(elems));
+    elems = listGetRest(elems);
+  }
+  tokens = listGetRest(res);
+  Object tuple = tupleFromArray(ary);
+  return listNew(tuple, tokens);
+}
+
 /* a pattern is the left-hand-side of a binding */
 Object p_pattern(Thread* thd, Object tokens) {
   Parser parsers[] = {p_ident, p_literal, NULL};
@@ -594,7 +642,7 @@ Object p_binding(Thread* thd, Object tokens) {
 }
 
 Object p_object(Thread* thd, Object tokens) {
-  Parser parsers[] = {p_array, p_list, p_hashTable, p_queue, p_set, p_binding, p_literal, p_ident, NULL};
+  Parser parsers[] = {p_array, p_list, p_hashTable, p_queue, p_set, p_tuple, p_binding, p_literal, p_ident, NULL};
   Object res = p_oneOf(thd, tokens, parsers);
   return res;
 }
