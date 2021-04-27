@@ -6,9 +6,10 @@
 #include "thread.h"
 
 void colonCommandHelp() {
-  puts("  :?  Shows this help message");
-  puts("  :i  Shows last input");
-  puts("  :q  Quits UFO");
+  puts("  :?    Shows this help message");
+  puts("  :env  Shows current dynamic environment");
+  puts("  :i    Shows last input");
+  puts("  :q    Quits UFO");
 }
 
 void colonCommandShowInput(ReplObj* replObj) {
@@ -24,7 +25,11 @@ bool colonCommand(Thread* thd, ReplObj* replObj) {
   (void)thd;
   char* input = replObj->inputBuffer;
   bool contin = true;
-  if (!strcmp(":i", input)) {
+  if (!strcmp(":env", input)) {
+    objShow(threadGetEnv(thd), stdout);
+    printf("\n");
+  }
+  else if (!strcmp(":i", input)) {
     colonCommandShowInput(replObj);
   }
   else if (!strcmp(":q", input)) {
