@@ -44,7 +44,7 @@ char* ObjTypeNames[] = {
   "Quote",
   "Seq",
   "Throw",
-  "Unknown"
+  "Trampoline"
 };
 
 /* Raw block memory:

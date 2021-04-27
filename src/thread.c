@@ -48,7 +48,7 @@ void threadEnvRebind(Thread* thd, Object var, Object val) {
     }
     env = listGetRest(env);
   }
-  threadThrowException(thd, "ThreadEnvError", "unable to rebind identifier (not found)", var);
+  threadThrowException(thd, "ThreadEnvError", "identifier not found, unable to rebind", var);
 }
 
 Object threadEval(Thread* thd, Object expr, Object bindings) {

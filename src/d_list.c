@@ -226,3 +226,14 @@ void listShowWith(Object list, char* start, char* sep, char* end, FILE* stream) 
   }
   fputs(end, stream);
 }
+
+/*------------------------------------------------------------------*/
+Object listSplitLast(Object list) {
+  if (listIsEmpty(list)) {
+    return NOTHING;
+  }
+  Object revList = listReverse(list);
+  Object lastElem = listGetFirst(revList);
+  list = listReverse(listGetRest(revList));
+  return listNew(list, lastElem);
+}

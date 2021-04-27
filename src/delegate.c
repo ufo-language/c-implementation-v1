@@ -31,6 +31,7 @@
 #include "gc.h"
 #include "globals.h"
 #include "object.h"
+#include "trampoline.h"
 #include "vmem.h"
 
 /*------------------------------------------------------------------*/
@@ -136,46 +137,54 @@ bool objEquals(Object obj1, Object obj2) {
 
 /*------------------------------------------------------------------*/
 Object objEval(Object obj, Thread* thd) {
-  switch (objGetType(obj)) {
-    case D_Array:
-      return arrayEval(obj, thd);
-    case D_Binding:
-      return bindingEval(obj, thd);
-    case D_Exn:
-      return exnEval(obj, thd);
-    case D_Hash:
-      return hashEval(obj, thd);
-    case D_List:
-      return listEval(obj, thd);
-    case D_Queue:
-      return queueEval(obj, thd);
-    case D_Set:
-      return setEval(obj, thd);
-    case D_Tuple:
-      return tupleEval(obj, thd);
-    case E_Abstr:
-      return abstrEval(obj, thd);
-    case E_App:
-      return appEval(obj, thd);
-    case E_Ident:
-      return identEval(obj, thd);
-    case E_If:
-      return ifEval(obj, thd);
-    case E_Let:
-      return letEval(obj, thd);
-    case E_LetIn:
-      return letInEval(obj, thd);
-    case E_LetRec:
-      return letRecEval(obj, thd);
-    case E_Quote:
-      return quoteEval(obj, thd);
-    case E_Seq:
-      return seqEval(obj, thd);
-    case E_Throw:
-      return throwEval(obj, thd);
-    default:
-      /* return the object unevaluated */
-      return obj;
+  while (true) {
+    switch (objGetType(obj)) {
+      case D_Array:
+        return arrayEval(obj, thd);
+      case D_Binding:
+        return bindingEval(obj, thd);
+      case D_Exn:
+        return exnEval(obj, thd);
+      case D_Hash:
+        return hashEval(obj, thd);
+      case D_List:
+        return listEval(obj, thd);
+      case D_Queue:
+        return queueEval(obj, thd);
+      case D_Set:
+        return setEval(obj, thd);
+      case D_Tuple:
+        return tupleEval(obj, thd);
+      case E_Abstr:
+        return abstrEval(obj, thd);
+      case E_App:
+        return appEval(obj, thd);
+      case E_Ident:
+        return identEval(obj, thd);
+      case E_If:
+        return ifEval(obj, thd);
+      case E_Let:
+        return letEval(obj, thd);
+      case E_LetIn:
+        return letInEval(obj, thd);
+      case E_LetRec:
+        return letRecEval(obj, thd);
+      case E_Quote:
+        return quoteEval(obj, thd);
+      case E_Seq:
+        obj = seqEval(obj, thd);
+        if (objGetType(obj) != S_Trampoline) {
+           return obj;
+        }
+        break;
+      case E_Throw:
+        return throwEval(obj, thd);
+      case S_Trampoline:
+        return trampEval(obj, thd);
+      default:
+        /* return the object unevaluated */
+        return obj;
+    }
   }
 }
 
@@ -232,6 +241,11 @@ void objFreeVars(Object obj, Object freeVarSet) {
       break;
     case E_Throw:
       throwFreeVars(obj, freeVarSet);
+      break;
+    case S_Trampoline: {
+        Object obj1 = {objGetData(obj, 0)};
+        objFreeVars(obj1, freeVarSet);
+      }
       break;
     default:
       ;
@@ -358,6 +372,11 @@ void objMark(Object obj) {
     case E_Throw:
       objMark_generic(obj, THR_PAYLOAD_OFS, 1);
       break;
+    case S_Trampoline: {
+        Object obj1 = {objGetData(obj, 0)};
+        objMark(obj1);
+      }
+      break;
     default:
       ;  /* do nothing */
   }
@@ -473,6 +492,13 @@ void objShow(Object obj, FILE* stream) {
       break;
     case D_Null:
       fprintf(stream, "NULL-OBJECT");
+      break;
+    case S_Trampoline: {
+        fprintf(stream, "Trampoline{");
+        Object obj1 = {objGetData(obj, 0)};
+        objShow(obj1, stream);
+        fputc('}', stream);
+      }
       break;
     default:
       fprintf(stream, "SHOW:UNHANDLED-OBJECT(%s)@%d", ObjTypeNames[objGetType(obj)], obj.a);

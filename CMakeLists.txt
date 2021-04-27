@@ -64,6 +64,7 @@ set(LIB_SRC_FILES
   src/stacktrace.c
   src/syntax.c
   src/thread.c
+  src/trampoline.c
   src/vmem.c
 )
 

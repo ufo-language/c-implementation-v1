@@ -34,5 +34,6 @@ void listSetFirst(Object list, Object obj);
 void listSetRest(Object list, Object obj);
 void listShow(Object list, FILE* stream);
 void listShowWith(Object list, char* start, char* sep, char* end, FILE* stream);
+Object listSplitLast(Object list);
 
 #endif

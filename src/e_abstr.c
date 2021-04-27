@@ -85,9 +85,8 @@ void abstrShow_aux(Object abstr, char* prefix, FILE* stream) {
     }
     Object params = {objGetData(abstr, ABSTR_PARAMS_OFS)};
     Object body = {objGetData(abstr, ABSTR_BODY_OFS)};
-    Object exprs = {objGetData(body, SEQ_EXPRS_OFS)};
     listShowWith(params, "(", ", ", ") = ", stream);
-    seqShowExprs(exprs, stream);
+    seqShowExprs(body, stream);
     abstr.a = objGetData(abstr, ABSTR_NEXT_OFS);
   }
   fputs("end", stream);
