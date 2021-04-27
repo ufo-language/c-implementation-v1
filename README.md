@@ -20,7 +20,7 @@ Features:
   * variable
   * if/then/else
   * do/end (sequence)
-  * let (variable definition)
+  * let (variable definition, dynamic scope)
   * let/in (local scope)
   * abstraction & application (function with lexical binding & function call)
   * exception throwing (exception catching not yet implemented)
