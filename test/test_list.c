@@ -61,7 +61,7 @@ void test_listEmptyGet() {
 }
 
 void test_listEmptySet() {
-  Object obj = objAlloc(D_Unknown, 0);
+  Object obj = intNew(100);
   ASSERT_NE(0, obj.a);
   listSetFirst(EMPTY_LIST, obj);
   EXPECT_EQ(NOTHING.a, listGetFirst(EMPTY_LIST).a);
@@ -91,8 +91,8 @@ void test_listEquals() {
 }
 
 void test_listGet() {
-  Object obj1 = objAlloc(D_Unknown, 0);
-  Object obj2 = objAlloc(D_Unknown, 0);
+  Object obj1 = intNew(100);
+  Object obj2 = intNew(200);
   Object list = listNew(obj1, obj2);
   EXPECT_EQ(obj1.a, listGetFirst(list).a);
   EXPECT_EQ(obj2.a, listGetRest(list).a);
@@ -100,8 +100,8 @@ void test_listGet() {
 
 void test_listIsEmpty() {
   EXPECT_T(listIsEmpty(EMPTY_LIST));
-  Object obj1 = objAlloc(D_Unknown, 0);
-  Object obj2 = objAlloc(D_Unknown, 0);
+  Object obj1 = intNew(100);
+  Object obj2 = intNew(200);
   Object list = listNew(obj1, obj2);
   EXPECT_T(!listIsEmpty(list));
 }
@@ -126,12 +126,12 @@ void test_listMatch() {
 }
 
 void test_listSet() {
-  Object obj1 = objAlloc(D_Unknown, 0);
-  Object obj2 = objAlloc(D_Unknown, 0);
+  Object obj1 = intNew(100);
+  Object obj2 = intNew(200);
   Object list = listNew(obj1, obj2);
 
-  Object obj3 = objAlloc(D_Unknown, 0);
-  Object obj4 = objAlloc(D_Unknown, 0);
+  Object obj3 = intNew(300);
+  Object obj4 = intNew(400);
   listSetFirst(list, obj3);
   listSetRest(list, obj4);
   EXPECT_EQ(obj3.a, listGetFirst(list).a);

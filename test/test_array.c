@@ -67,9 +67,9 @@ void test_arrayGet() {
 void test_arraySet() {
   Object ary1 = arrayNew(3);
   ASSERT_NE(0, ary1.a);
-  Object obj0 = objAlloc(D_Unknown, 0);
-  Object obj1 = objAlloc(D_Unknown, 0);
-  Object obj2 = objAlloc(D_Unknown, 0);
+  Object obj0 = intNew(100);
+  Object obj1 = intNew(200);
+  Object obj2 = intNew(300);
   arraySet(ary1, 0, obj0);
   arraySet(ary1, 1, obj1);
   arraySet(ary1, 2, obj2);

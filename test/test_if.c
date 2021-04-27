@@ -40,9 +40,9 @@ void test_if() {
 /* Unit tests ------------------------------------------------------*/
 
 void test_ifNew() {
-  Object obj1 = objAlloc(D_Unknown, 0);
-  Object obj2 = objAlloc(D_Unknown, 0);
-  Object obj3 = objAlloc(D_Unknown, 0);
+  Object obj1 = intNew(100);
+  Object obj2 = intNew(200);
+  Object obj3 = intNew(300);
   Object ifThen = ifNew(obj1, obj2, obj3);
   EXPECT_EQ(obj1.a, objGetData(ifThen, 0));
   EXPECT_EQ(obj2.a, objGetData(ifThen, 1));

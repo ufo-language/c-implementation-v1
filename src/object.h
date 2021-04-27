@@ -36,7 +36,7 @@ typedef enum {
   E_Quote,
   E_Seq,
   E_Throw,
-  D_Unknown /* used only during parsing */
+  S_Trampoline
 } ObjType;
 
 extern char* ObjTypeNames[];
