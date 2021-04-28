@@ -295,7 +295,6 @@ Word objHashCode(Object obj) {
 }
 
 /*------------------------------------------------------------------*/
-static int depth = 0;
 void objMark_generic(Object obj, Word start, Word count) {
   Word to = start + count;
   for (Word n=start; n<to; n++) {

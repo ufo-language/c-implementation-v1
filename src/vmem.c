@@ -1,8 +1,10 @@
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "blockfile.h"
+#include "stacktrace.h"
 #include "vmem.h"
 
 #define PAGE_FILE_NAME "pagefile.dat"
@@ -100,9 +102,11 @@ Word vmemGet(Address addr) {
 /* Sets the value of a word in memory. The address must fall within
    the range of all of virtual memory. */
 void vmemSet(Address addr, Word value) {
-  /* TODO remove this `if` after debugging? */
+  /* TODO remove this after debugging? */
   if (addr == 0) {
     fprintf(stderr, "vmemSet ERROR: attempt to write to address 0, value = %d\n", value);
+    stackTrace();
+    exit(1);
   }
   uint pageIndex = pageGet(addr / PAGE_SIZE);
   vmemIsDirty[pageIndex] = true;

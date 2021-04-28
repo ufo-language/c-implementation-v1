@@ -87,6 +87,7 @@ void checkForCycle(char* message) {
     for (int n=0; n<index; n++) {
       if (addresses[n] == blk.a) {
         printf("\nmem.c %s: [%s] found %d-block cycle at block %d\n", __func__, message, index, blk.a);
+        printf("here's the stack trace:\n");
         stackTrace();
         printf("there have been %d mark-sweep cycles\n", nMarkSweeps);
         memDump();
