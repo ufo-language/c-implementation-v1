@@ -36,6 +36,16 @@ Object closureApply(Object closure, Object argList, Thread* thd) {
 }
 
 /*------------------------------------------------------------------*/
+void closureMark(Object closure) {
+  for (Word n=0; n<CLO_SIZE; n++) {
+    Object member = {objGetData(closure, n)};
+    if (member.a != nullObj.a) {
+      objMark(member);
+    }
+  }
+}
+
+/*------------------------------------------------------------------*/
 Object closureNew(Object abstr, Object env) {
   Object firstRule = nullObj;
   Object prevRule = nullObj;

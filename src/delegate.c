@@ -295,6 +295,7 @@ Word objHashCode(Object obj) {
 }
 
 /*------------------------------------------------------------------*/
+static int depth = 0;
 void objMark_generic(Object obj, Word start, Word count) {
   Word to = start + count;
   for (Word n=start; n<to; n++) {
@@ -317,7 +318,8 @@ void objMark(Object obj) {
       objMark_generic(obj, BND_LHS_OFS, 2);
       break;
     case D_Closure:
-      objMark_generic(obj, CLO_PARAMS_OFS, CLO_SIZE);
+      //objMark_generic(obj, CLO_PARAMS_OFS, CLO_SIZE);
+      closureMark(obj);
       break;
     case D_Exn: {
         Object payload = {objGetData(obj, EXN_PAYLOAD_OFS)};
@@ -367,7 +369,7 @@ void objMark(Object obj) {
       objMark_generic(obj, QUOTE_EXPR_OFS, 1);
       break;
     case E_Seq:
-      objMark_generic(obj, SEQ_EXPRS_OFS, 1);
+      objMark_generic(obj, SEQ_EXPRS_OFS, 2);
       break;
     case E_Throw:
       objMark_generic(obj, THR_PAYLOAD_OFS, 1);

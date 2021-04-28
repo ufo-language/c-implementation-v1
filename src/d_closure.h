@@ -18,6 +18,7 @@
 Object closureNew(Object abstr, Object lexEnv);
 
 Object closureApply(Object closure, Object argList, Thread* thd);
+void closureMark(Object closure);
 void closureShow(Object closure, FILE* stream);
 
 #endif
