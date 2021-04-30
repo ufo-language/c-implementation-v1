@@ -179,8 +179,12 @@ Object objEval(Object obj, Thread* thd) {
         break;
       case E_Throw:
         return throwEval(obj, thd);
-      case S_Trampoline:
-        return trampEval(obj, thd);
+      case S_Trampoline: {
+          Object env = trampGetEnv(obj);
+          threadSetEnv(thd, env);
+          obj = trampGetExpr(obj);
+        }
+        break;
       default:
         /* return the object unevaluated */
         return obj;
@@ -317,7 +321,6 @@ void objMark(Object obj) {
       objMark_generic(obj, BND_LHS_OFS, 2);
       break;
     case D_Closure:
-      //objMark_generic(obj, CLO_PARAMS_OFS, CLO_SIZE);
       closureMark(obj);
       break;
     case D_Exn: {

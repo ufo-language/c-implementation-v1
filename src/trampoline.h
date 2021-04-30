@@ -1,6 +1,9 @@
 #ifndef TRAMPOLINE_H
 #define TRAMPOLINE_H
 
+#include "object.h"
+#include "thread.h"
+
 #define TRAMP_EXPR_OFS 0
 #define TRAMP_ENV_OFS 1
 

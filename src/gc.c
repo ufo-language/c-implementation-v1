@@ -2,6 +2,7 @@
 
 #include "delegate.h"
 #include "gc.h"
+#include "globals.h"
 #include "mem.h"
 #include "object.h"
 
@@ -56,6 +57,7 @@ void gcReg(Object obj) {
 /*------------------------------------------------------------------*/
 void gcMarkSweep(void) {
   nMarkSweeps += 1;
+  globalsMark();
   threadMarkAll();
   _sweep();
 }
