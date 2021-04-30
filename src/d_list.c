@@ -26,6 +26,8 @@ Word listCount(Object list) {
 /*------------------------------------------------------------------*/
 Object listCreateEmpty() {
   Object list = listNew(nullObj, nullObj);
+  /* first = nothing
+     rest = self */
   objSetData(list, LST_FIRST_OFS, NOTHING.a);
   objSetData(list, LST_REST_OFS, list.a);
   return list;
