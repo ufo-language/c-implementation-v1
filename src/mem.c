@@ -181,7 +181,7 @@ void memShowBlock(RawBlock blk) {
 /*------------------------------------------------------------------*/
 void memDump(void) {
   printf("  +----------------\n");
-  printf("  | memBlkDump:\n");
+  printf("  | memDump:\n");
   printf("  |  blocks     %d\n", _memNFreeBlocks);
   printf("  |  free words %d\n", _memNFreeWords);
   int n = 0;
