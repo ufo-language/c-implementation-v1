@@ -7,7 +7,6 @@
 
 extern Object NOTHING;
 extern Object EMPTY_LIST;
-extern Object TRAMPOLINE;
 
 void globalsMark();
 void globalsSetup();

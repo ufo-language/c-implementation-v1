@@ -87,6 +87,7 @@ Object objAlloc(ObjType type, Word nWords) {
     fprintf(stderr, "ERROR: Out of usable memory\n");
     exit(1);
   }
+  //printf("objAlloc returning new object type = %s, size = %d\n", ObjTypeNames[type], nWords);
   return obj;
 }
 

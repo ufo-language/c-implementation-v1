@@ -8,6 +8,7 @@
 typedef struct Thread_struct {
   Object env;
   Object expr;
+  Object trampoline;
   jmp_buf jumpBuf;
   Object exception;
   struct Thread_struct* prev;
@@ -23,8 +24,9 @@ Object threadEnvLocate(Thread* thd, Object key);
 Object threadEval(Thread* thd, Object expr, Object bindings);
 Object threadGetEnv(Thread* thd);
 Object threadGetExn(Thread* thd);
+Object threadGetTramp(Thread* thd);
 void threadMark(Thread* thd);
-void threadMarkAll(void);
+void threadMarkAllThreads(void);
 void threadSetEnv(Thread* thd, Object env);
 void threadSetExpr(Thread* thd, Object expr);
 

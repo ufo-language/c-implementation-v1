@@ -136,73 +136,72 @@ bool objEquals(Object obj1, Object obj2) {
 }
 
 /*------------------------------------------------------------------*/
-static int nIters = 0;
-static int depth = 0;
-Object objEval_aux(Object obj, Thread* thd);
-
 Object objEval(Object obj, Thread* thd) {
-  depth++;
-  Object res = objEval_aux(obj, thd);
-  depth--;
-  return res;
-}
-
-Object objEval_aux(Object obj, Thread* thd) {
-  Object res = NOTHING;
-  while (objGetType(res) != S_Trampoline) {
-    printf("objEval %d / %d evaluating ", nIters++, depth); objShow(obj, stdout); printf(" : %s\n", ObjTypeNames[objGetType(obj)]);
-    switch (objGetType(obj)) {
+  ObjType objType = objGetType(obj);
+  bool contin = true;
+  while (contin) {
+    switch (objType) {
       case D_Array:
-        return arrayEval(obj, thd);
+        obj = arrayEval(obj, thd);
+        break;
       case D_Binding:
-        return bindingEval(obj, thd);
+        obj =  bindingEval(obj, thd);
+        break;
       case D_Exn:
-        return exnEval(obj, thd);
+        obj = exnEval(obj, thd);
+        break;
       case D_Hash:
-        return hashEval(obj, thd);
+        obj = hashEval(obj, thd);
+        break;
       case D_List:
-        return listEval(obj, thd);
+        obj = listEval(obj, thd);
+        break;
       case D_Queue:
-        return queueEval(obj, thd);
+        obj = queueEval(obj, thd);
+        break;
       case D_Set:
-        return setEval(obj, thd);
+        obj = setEval(obj, thd);
+        break;
       case D_Tuple:
-        return tupleEval(obj, thd);
+        obj = tupleEval(obj, thd);
+        break;
       case E_Abstr:
-        return abstrEval(obj, thd);
+        obj = abstrEval(obj, thd);
+        break;
       case E_App:
-        return appEval(obj, thd);
+        obj = appEval(obj, thd);
+        break;
       case E_Ident:
-        return identEval(obj, thd);
+        obj = identEval(obj, thd);
+        break;
       case E_If:
-        return ifEval(obj, thd);
+        obj = ifEval(obj, thd);
+        break;
       case E_Let:
-        return letEval(obj, thd);
+        obj = letEval(obj, thd);
+        break;
       case E_LetIn:
-        return letInEval(obj, thd);
+        obj = letInEval(obj, thd);
+        break;
       case E_LetRec:
-        return letRecEval(obj, thd);
+        obj = letRecEval(obj, thd);
+        break;
       case E_Quote:
-        return quoteEval(obj, thd);
+        obj = quoteEval(obj, thd);
+        break;
       case E_Seq:
         obj = seqEval(obj, thd);
-        if (objGetType(obj) != S_Trampoline) {
-           return obj;
-        }
         break;
       case E_Throw:
-        return throwEval(obj, thd);
-      case S_Trampoline: {
-          Object env = trampGetEnv(obj);
-          threadSetEnv(thd, env);
-          obj = trampGetExpr(obj);
-        }
+        obj = throwEval(obj, thd);
         break;
       default:
-        /* return the object unevaluated */
-        return obj;
-    }
-  }
+        /* use the object unevaluated */
+        ;
+    }  /* end switch */
+    objType = objGetType(obj);
+    contin = objType == S_Trampoline;
+  }  /* end whilte */
   return obj;
 }
 

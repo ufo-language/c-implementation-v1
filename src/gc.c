@@ -58,7 +58,7 @@ void gcReg(Object obj) {
 void gcMarkSweep(void) {
   nMarkSweeps += 1;
   globalsMark();
-  threadMarkAll();
+  threadMarkAllThreads();
   _sweep();
 }
 

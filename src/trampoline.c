@@ -27,3 +27,8 @@ Object trampGetEnv(Object tramp) {
   Object env = {objGetData(tramp, TRAMP_ENV_OFS)};
   return env;
 }
+
+void trampSet(Object tramp, Object expr, Object env) {
+  objSetData(tramp, TRAMP_EXPR_OFS, expr.a);
+  objSetData(tramp, TRAMP_ENV_OFS, env.a);  
+}

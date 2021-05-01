@@ -12,9 +12,12 @@
 #include "gc.h"
 #include "globals.h"
 #include "thread.h"
+#include "trampoline.h"
 
-Thread* runningThreads = 0;
-Thread* threadPool = 0;
+static Thread* runningThreads = NULL;
+static Thread* threadPool = NULL;
+
+Object trampNew(Object expr, Object env);
 
 void threadDelete(Thread* thd) {
   if (thd->prev) {
@@ -52,6 +55,7 @@ void threadEnvRebind(Thread* thd, Object var, Object val) {
 }
 
 Object threadEval(Thread* thd, Object expr, Object bindings) {
+/*
   Object savedEnv = thd->env;
   thd->env = bindings;
   thd->expr = expr;
@@ -59,6 +63,9 @@ Object threadEval(Thread* thd, Object expr, Object bindings) {
   thd->expr = nullObj;
   thd->env = savedEnv;
   return res;
+*/
+  trampSet(thd->trampoline, expr, bindings);
+  return thd->trampoline;
 }
 
 Object threadEnvLocate(Thread* thd, Object key) {
@@ -74,14 +81,19 @@ Object threadGetExn(Thread* thd) {
   return thd->exception;
 }
 
+Object threadGetTramp(Thread* thd) {
+  return thd->trampoline;
+}
+
 void threadMark(Thread* thd) {
   objMark(thd->env);
   if (thd->expr.a != nullObj.a) {
     objMark(thd->expr);
   }
+  objMark(thd->trampoline);
 }
 
-void threadMarkAll(void) {
+void threadMarkAllThreads(void) {
   Thread* thd = runningThreads;
   while (thd) {
     threadMark(thd);
@@ -100,6 +112,7 @@ Thread* threadNew(void) {
   }
   thd->env = EMPTY_LIST;
   thd->next = runningThreads;
+  thd->trampoline = trampNew(NOTHING, EMPTY_LIST);
   runningThreads = thd;
   return thd;
 }
