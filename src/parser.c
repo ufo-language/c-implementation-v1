@@ -622,7 +622,7 @@ Object p_tuple(Thread* thd, Object tokens) {
 
 /* a pattern is the left-hand-side of a binding */
 Object p_pattern(Thread* thd, Object tokens) {
-  Parser parsers[] = {p_ident, p_literal, NULL};
+  Parser parsers[] = {p_array, p_list, p_queue, p_set, p_tuple, p_literal, p_ident, NULL};
   Object res = p_oneOf(thd, tokens, parsers);
   return res;
 }
