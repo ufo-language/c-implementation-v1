@@ -1,12 +1,16 @@
 # UFO C implementation
 
-Plain-vanilla C implementation of UFO. (Currently it uses the C99 standard. I kind of want to make it ANSI C, but crikey C99 is so much easier to program in than ANSI C. And every day the C99 codebase grows...)
+This is a plain-vanilla C implementation of UFO. Currently it uses the C99 standard. I kind of want to make it ANSI C, but *crikey* C99 is so much easier to program in than ANSI C. And every day the C99 codebase grows. Rest assured, the entire codebase is in C, despite Github reporting that some small percentage of it is in C++ (see rant at bottom of page).
 
 Why plain-vanilla C?
 
-Because what's become interesting to me is not what you can build using a language that gives you everything, but with a language that gives you very little.
+* Because what I find interesting is not what you can build using a bloated language that tries to give you everything, but with a small and clean language that gives you only what you need. And also there's a small SBC I would love to port it to.
 
-See https://github.com/ufo-language/reference-implementation/tree/master/doc (download the file in order to view it) for the complete UFO documentation. Caveat emptor: this version is not up to that spec.
+Why not C++?
+
+* Because C++ has become a Frankenstein's monster of a programming language and it really needs to die a horrible death. *With fire.* (That, and I've done it already in C++, also Java, Ada, Modula-3, Erlang, Scheme.)
+
+You prolly want docs, right? We got docs: see https://github.com/ufo-language/reference-implementation/tree/master/doc for the complete UFO documentation (download the file, save it, and *then* open it in your web browser in order to view it). *Caveat programmator*: this version is not yet compliant with that spec, and I think it also diverges a bit from it.
 
 ----
 
@@ -15,14 +19,14 @@ Current status: there's a REPL that lets you enter many of the data structures a
 Features:
 * Virtual memory
 * Automatic memory management with memory block defragmentation
-* Recursive evaluator
+* Recursive evaluator, but provides proper tail call elimination (impressed? *you should be*) ;)
 * Expressions:
   * variable
   * if/then/else
   * do/end (sequence)
-  * let (variable definition, dynamic scope)
+  * let (dynamic scope)
   * let/in (local scope)
-  * abstraction & application (function with lexical binding & function call)
+  * abstraction & application (lexical scope)
   * exception throwing (exception catching not yet implemented)
 * Data types:
   * integer, real, boolean, string
@@ -34,6 +38,12 @@ Features:
   * queue
   * tuple (immutable array)
 
-CS quiz: Why is an immuatable array useful? No fair peeking at my source code before you answer it.
+CS quiz: Why is an immuatable array useful? No fair peeking at my source code before you answer it. (hint: I said "CS quiz" and not "software engineering quiz")
 
-Also, I'm thinking about combining the linked list & queue types into a single doubly-linked list type. I can think of reasons to do it, and reasons not to do it.
+Also, I'm thinking about combining the linked list & queue types into a doubly-linked list type. I can think of reasons to do it, and reasons not to do it.
+
+----
+
+The rant I promised you:
+
+Apparently this problem of Github mis-reporting C code as C++ code is a problem that's been plaguing Github users since at least 2014, from all the complaints I've seen. Since the solution is simple but Github refuses to fix the problem, then I can only conclude that the issue is political and not technical: leaving it this way, Github gets to over-report how much C++ code it hosts. My guess is that there's a financial incentive for them to do this.
