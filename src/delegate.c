@@ -136,8 +136,21 @@ bool objEquals(Object obj1, Object obj2) {
 }
 
 /*------------------------------------------------------------------*/
+static int nIters = 0;
+static int depth = 0;
+Object objEval_aux(Object obj, Thread* thd);
+
 Object objEval(Object obj, Thread* thd) {
-  while (true) {
+  depth++;
+  Object res = objEval_aux(obj, thd);
+  depth--;
+  return res;
+}
+
+Object objEval_aux(Object obj, Thread* thd) {
+  Object res = NOTHING;
+  while (objGetType(res) != S_Trampoline) {
+    printf("objEval %d / %d evaluating ", nIters++, depth); objShow(obj, stdout); printf(" : %s\n", ObjTypeNames[objGetType(obj)]);
     switch (objGetType(obj)) {
       case D_Array:
         return arrayEval(obj, thd);
@@ -190,6 +203,7 @@ Object objEval(Object obj, Thread* thd) {
         return obj;
     }
   }
+  return obj;
 }
 
 /*------------------------------------------------------------------*/
