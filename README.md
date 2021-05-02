@@ -26,7 +26,7 @@ Features:
   * do/end (sequence)
   * let (dynamic scope)
   * let/in (local scope)
-  * abstraction & application (lexical scope)
+  * abstraction & application (lexical scope, recursion, tail call elimination)
   * exception throwing (exception catching not yet implemented)
 * Data types:
   * integer, real, boolean, string
@@ -37,6 +37,7 @@ Features:
   * set
   * queue
   * tuple (immutable array)
+* Plenty of undocumented features! (i.e., bugs)
 
 CS quiz: Why is an immuatable array useful? No fair peeking at my source code before you answer it. (hint: I said "CS quiz" and not "software engineering quiz")
 
