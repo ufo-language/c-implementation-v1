@@ -55,7 +55,7 @@ Word stringHash_aux(Object str) {
 /*------------------------------------------------------------------*/
 Object stringNew(char* str) {
   int len = strlen(str);
-  Word nWords = (len + 1) / sizeof(Word);
+  Word nWords = len / sizeof(Word) + 1;
   Object string = objAlloc(D_String, nWords);
   objSetData(string, 0, len);
   /* going <= len includes the null terminator */
