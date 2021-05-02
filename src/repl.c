@@ -88,6 +88,9 @@ void repl(void) {
           }
         }
       }
+      else {
+        fprintf(stderr, "REPL: parse error\n");
+      }
     }
   }
 }
