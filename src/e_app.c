@@ -30,8 +30,15 @@ void appFreeVars(Object app, Object freeVarSet) {
   objFreeVars(args, freeVarSet);
 }
 
+void appMark(Object app) {
+  Object abstr = {objGetData(app, APP_ABSTR_OFS)};
+  Object args = {objGetData(app, APP_ARGS_OFS)};
+  objMark(abstr);
+  objMark(args);
+}
+
 Object appNew(Object abstr, Object args) {
-  Object app = objAlloc(E_App, 2);
+  Object app = objAlloc(E_App, APP_OBJ_SIZE);
   objSetData(app, APP_ABSTR_OFS, abstr.a);
   objSetData(app, APP_ARGS_OFS, args.a);
   return app;

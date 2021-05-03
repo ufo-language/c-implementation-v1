@@ -4,7 +4,7 @@
 #include "object.h"
 
 Object nothingNew(void) {
-  Object nothing = objAlloc(D_Nothing, 0);
+  Object nothing = objAlloc(D_Nothing, NTH_OBJ_SIZE);
   return nothing;
 }
 

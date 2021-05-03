@@ -7,6 +7,7 @@
 #define Q_NELEMS_OFS 0
 #define Q_HEAD_OFS 1
 #define Q_TAIL_OFS 2
+#define Q_OBJ_SIZE 3
 
 Object queueNew(void);
 
@@ -17,6 +18,7 @@ Word queueCount(Object q);
 bool queueEquals(Object q, Object other);
 Object queueEval(Object q, Thread* thd);
 void queueFreeVars(Object q, Object freeVarSet);
+void queueMark(Object q);
 Object queueDeq(Object q);
 void queueShow(Object q, FILE* stream);
 

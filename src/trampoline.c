@@ -12,7 +12,7 @@ Object trampEval(Object tramp, Thread* thd) {
 }
 
 Object trampNew(Object expr, Object env) {
-  Object tramp = objAlloc(S_Trampoline, 2);
+  Object tramp = objAlloc(S_Trampoline, TRAMP_OBJ_SIZE);
   objSetData(tramp, TRAMP_EXPR_OFS, expr.a);
   objSetData(tramp, TRAMP_ENV_OFS, env.a);
   return tramp;
@@ -26,6 +26,13 @@ Object trampGetExpr(Object tramp) {
 Object trampGetEnv(Object tramp) {
   Object env = {objGetData(tramp, TRAMP_ENV_OFS)};
   return env;
+}
+
+void trampMark(Object tramp) {
+  Object expr = {objGetData(tramp, TRAMP_EXPR_OFS)};
+  Object env = {objGetData(tramp, TRAMP_ENV_OFS)};
+  objMark(expr);
+  objMark(env);
 }
 
 void trampSet(Object tramp, Object expr, Object env) {

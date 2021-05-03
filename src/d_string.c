@@ -53,12 +53,13 @@ Word stringHash_aux(Object str) {
 }
 
 /*------------------------------------------------------------------*/
+#include "delegate.h"
 Object stringNew(char* str) {
   int len = strlen(str);
-  Word nWords = len / sizeof(Word) + 1;
+  Word nWords = len / sizeof(Word) + 2;
   Object string = objAlloc(D_String, nWords);
   objSetData(string, 0, len);
-  /* going <= len includes the null terminator */
+  /* going '<= len' includes the null terminator */
   for (int n=0; n<=len; n++) {
     stringSetChar(string, n, str[n]);
   }
@@ -67,7 +68,7 @@ Object stringNew(char* str) {
 
 /*------------------------------------------------------------------*/
 char stringGetChar(Object string, Word offset) {
-  Word word = objGetData(string, 1 + offset / 2);
+  Word word = objGetData(string, offset / 2 + 1);
   if (offset % 2 == 0) {
     return word & 0xFF;
   }
@@ -76,14 +77,15 @@ char stringGetChar(Object string, Word offset) {
 
 /*------------------------------------------------------------------*/
 void stringSetChar(Object string, Word offset, char c) {
-  Word word = objGetData(string, 1 + offset / 2);
+  Word addr = offset / 2 + 1;
+  Word word = objGetData(string, addr);
   if (offset % 2 == 0) {
     word = (word & 0xFF00) | c;
   }
   else {
     word = (word & 0xFF) | (c << 8);
   }
-  objSetData(string, 1 + offset / 2, word);
+  objSetData(string, addr, word);
 }
 
 /*------------------------------------------------------------------*/

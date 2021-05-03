@@ -23,8 +23,14 @@ void quoteFreeVars(Object quote, Object freeVarSet) {
 }
 
 /*------------------------------------------------------------------*/
+void quoteMark(Object quote) {
+  Object expr = {objGetData(quote, QUOTE_EXPR_OFS)};
+  objMark(expr);
+}
+
+/*------------------------------------------------------------------*/
 Object quoteNew(Object lst) {
-  Object quote = objAlloc(E_Quote, 1);
+  Object quote = objAlloc(E_Quote, QUOTE_OBJ_SIZE);
   objSetData(quote, QUOTE_EXPR_OFS, lst.a);
   return quote;
 }

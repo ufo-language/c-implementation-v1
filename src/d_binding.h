@@ -9,6 +9,7 @@
 
 #define BND_LHS_OFS 0
 #define BND_RHS_OFS 1
+#define BND_OBJ_SIZE 2
 
 Object bindingNew(Object lhs, Object rhs);
 
@@ -18,6 +19,7 @@ Object bindingEval(Object binding, Thread* thd);
 void bindingFreeVars(Object binding, Object freeVarSet);
 Object bindingGetLhs(Object binding);
 Object bindingGetRhs(Object binding);
+void bindingMark(Object binding);
 Object bindingMatch(Object binding, Object other, Object bindingList);
 void bindingSetRhs(Object binding, Object rhs);
 void bindingShow(Object binding, FILE* stream);

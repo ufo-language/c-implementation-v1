@@ -142,6 +142,14 @@ Object listLocate(Object list, Object key) {
 }
 
 /*------------------------------------------------------------------*/
+void listMark(Object list) {
+  Object first = {objGetData(list, LST_FIRST_OFS)};
+  Object rest = {objGetData(list, LST_REST_OFS)};
+  objMark(first);
+  objMark(rest);
+}
+
+/*------------------------------------------------------------------*/
 Object listMatch(Object list, Object other, Object bindingList) {
   if (listIsEmpty(list)) {
     return listIsEmpty(other) ? bindingList : nullObj;
@@ -162,7 +170,7 @@ Object listMatch(Object list, Object other, Object bindingList) {
 
 /*------------------------------------------------------------------*/
 Object listNew(Object first, Object rest) {
-  Object list = objAlloc(D_List, 2);
+  Object list = objAlloc(D_List, LST_OBJ_SIZE);
   objSetData(list, LST_FIRST_OFS, first.a);
   objSetData(list, LST_REST_OFS, rest.a);
   return list;

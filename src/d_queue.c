@@ -81,8 +81,14 @@ void queueFreeVars(Object q, Object freeVarSet) {
 }
 
 /*------------------------------------------------------------------*/
+void queueMark(Object q) {
+  Object elems = {objGetData(q, Q_HEAD_OFS)};
+  objMark(elems);
+}
+
+/*------------------------------------------------------------------*/
 Object queueNew(void) {
-  Object q = objAlloc(D_Queue, 2);
+  Object q = objAlloc(D_Queue, Q_OBJ_SIZE);
   objSetData(q, Q_NELEMS_OFS, 0);
   objSetData(q, Q_HEAD_OFS, EMPTY_LIST.a);
   objSetData(q, Q_TAIL_OFS, EMPTY_LIST.a);

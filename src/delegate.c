@@ -328,71 +328,61 @@ void objMark(Object obj) {
   gcSetObjMarkedFlag(obj);
   switch (objGetType(obj)) {
     case D_Array:
-      objMark_generic(obj, ARY_ELEMS_OFS, arrayCount(obj));
+      arrayMark(obj);
       break;
     case D_Binding:
-      objMark_generic(obj, BND_LHS_OFS, 2);
+      bindingMark(obj);
       break;
     case D_Closure:
       closureMark(obj);
       break;
-    case D_Exn: {
-        Object payload = {objGetData(obj, EXN_PAYLOAD_OFS)};
-        objMark(payload);
-      }
+    case D_Exn:
+      exnMark(obj);
       break;
-    case D_Hash: {
-        Object buckets = {objGetData(obj, HASH_BUCKETS_OFS)};
-        objMark(buckets);
-      }
+    case D_Hash:
+      hashMark(obj);
       break;
     case D_List:
-      objMark_generic(obj, LST_FIRST_OFS, 2);
+      listMark(obj);
       break;
-    case D_Queue: {
-        Object head = {objGetData(obj, Q_HEAD_OFS)};
-        objMark(head);
-      }
+    case D_Queue:
+      queueMark(obj);
       break;
-    case D_Set: {
-        Object buckets = {objGetData(obj, SET_BUCKETS_OFS)};
-        objMark(buckets);
-      }
+    case D_Set:
+      setMark(obj);
       break;
     case D_Tuple:
-      objMark_generic(obj, TUP_ELEMS_OFS, tupleCount(obj));
+      tupleMark(obj);
       break;
     case E_Abstr:
-      objMark_generic(obj, ABSTR_PARAMS_OFS, ABSTR_SIZE);
+      abstrMark(obj);
       break;
     case E_App:
-      objMark_generic(obj, APP_ABSTR_OFS, APP_SIZE);
+      appMark(obj);
       break;
     case E_If:
-      objMark_generic(obj, IF_COND_OFS, IF_SIZE);
+      ifMark(obj);
       break;
     case E_Let:
-      objMark_generic(obj, LET_BINDINGS_OFS, 1);
+      letMark(obj);
       break;
     case E_LetIn:
-      objMark_generic(obj, LETIN_BINDINGS_OFS, LETIN_SIZE);
+      letInMark(obj);
       break;
     case E_LetRec:
-      objMark_generic(obj, LETREC_BINDINGS_OFS, 1);
+      letRecMark(obj);
       break;
     case E_Quote:
-      objMark_generic(obj, QUOTE_EXPR_OFS, 1);
+      quoteMark(obj);
       break;
     case E_Seq:
-      objMark_generic(obj, SEQ_EXPRS_OFS, 2);
+      seqMark(obj);
       break;
     case E_Throw:
-      objMark_generic(obj, THR_PAYLOAD_OFS, 1);
+      throwMark(obj);
       break;
-    case S_Trampoline: {
-        Object obj1 = {objGetData(obj, 0)};
-        objMark(obj1);
-      }
+    case S_Trampoline:
+      trampMark(obj);
       break;
     default:
       ;  /* do nothing */

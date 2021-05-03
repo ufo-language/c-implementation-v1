@@ -6,7 +6,7 @@
 
 /*------------------------------------------------------------------*/
 Object intNew(int i) {
-  Object integer = objAlloc(D_Int, 1);
+  Object integer = objAlloc(D_Int, INT_OBJ_SIZE);
   objSetData(integer, 0, i);
   return integer;
 }

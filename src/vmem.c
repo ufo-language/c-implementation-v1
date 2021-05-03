@@ -102,8 +102,7 @@ Word vmemGet(Address addr) {
 /* Sets the value of a word in memory. The address must fall within
    the range of all of virtual memory. */
 void vmemSet(Address addr, Word value) {
-  /* TODO remove this after debugging? */
-  if (addr == 0) {
+  if (addr == 0) {  /* TODO remove this after debugging? */
     fprintf(stderr, "vmemSet ERROR: attempt to write to address 0, value = %d\n", value);
     stackTrace();
     exit(1);

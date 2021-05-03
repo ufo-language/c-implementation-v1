@@ -9,7 +9,7 @@
 #define ABSTR_PARAMS_OFS 0
 #define ABSTR_BODY_OFS 1
 #define ABSTR_NEXT_OFS 2
-#define ABSTR_SIZE 3
+#define ABSTR_OBJ_SIZE 3
 
 Object abstrNew(Object params, Object body);
 
@@ -18,6 +18,7 @@ void abstrFreeVars(Object abstr, Object freeVarSet);
 Object abstrGetBody(Object abstr);
 Object abstrGetNext(Object abstr);
 Object abstrGetParams(Object abstr);
+void abstrMark(Object abstr);
 void abstrSetNext(Object abstr, Object nextRule);
 void abstrShow(Object abstr, FILE* stream);
 

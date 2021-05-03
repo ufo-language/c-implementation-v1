@@ -120,6 +120,12 @@ Object hashGet(Object hash, Object key) {
 }
 
 /*------------------------------------------------------------------*/
+void hashMark(Object hash) {
+  Object buckets = {objGetData(hash, HASH_BUCKETS_OFS)};
+  objMark(buckets);
+}
+
+/*------------------------------------------------------------------*/
 Object hashLocate(Object hash, Object key, Word* bucketNum) {
   Word hashCode = objHashCode(key);
   Object buckets = {objGetData(hash, HASH_BUCKETS_OFS)};
@@ -142,7 +148,7 @@ Object hashNew(void) {
   Word loadingFactorCapacity = (nBuckets >> 1) + (nBuckets >> 2);
   Object buckets = arrayNew(nBuckets);
   arrayFill(buckets, EMPTY_LIST);
-  Object hash = objAlloc(D_Hash, 3);
+  Object hash = objAlloc(D_Hash, HASH_OBJ_SIZE);
   objSetData(hash, HASH_NBINDINGS_OFS, 0);
   objSetData(hash, HASH_LOADINGFACTOR_OFS, loadingFactorCapacity);
   objSetData(hash, HASH_BUCKETS_OFS, buckets.a);

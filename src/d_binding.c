@@ -9,7 +9,7 @@
 
 /*------------------------------------------------------------------*/
 Object bindingNew(Object lhs, Object rhs) {
-  Object binding = objAlloc(D_Binding, 2);
+  Object binding = objAlloc(D_Binding, BND_OBJ_SIZE);
   objSetData(binding, BND_LHS_OFS, lhs.a);
   objSetData(binding, BND_RHS_OFS, rhs.a);
   return binding;
@@ -50,6 +50,12 @@ Object bindingGetLhs(Object binding) {
 Object bindingGetRhs(Object binding) {
   Object obj = {objGetData(binding, BND_RHS_OFS)};
   return obj;
+}
+
+/*------------------------------------------------------------------*/
+void bindingMark(Object binding) {
+  objMark(bindingGetLhs(binding));
+  objMark(bindingGetRhs(binding));
 }
 
 /*------------------------------------------------------------------*/

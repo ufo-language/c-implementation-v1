@@ -37,11 +37,15 @@ Object closureApply(Object closure, Object argList, Thread* thd) {
 
 /*------------------------------------------------------------------*/
 void closureMark(Object closure) {
-  for (Word n=0; n<CLO_SIZE; n++) {
-    Object member = {objGetData(closure, n)};
-    if (member.a != nullObj.a) {
-      objMark(member);
-    }
+  Object paramList = {objGetData(closure, CLO_PARAMS_OFS)};
+  Object body = {objGetData(closure, CLO_BODY_OFS)};
+  Object next = {objGetData(closure, CLO_NEXT_OFS)};
+  Object lexEnv = {objGetData(closure, CLO_LEXENV_OFS)};
+  objMark(paramList);
+  objMark(body);
+  objMark(lexEnv);
+  if (next.a != nullObj.a) {
+    objMark(next);
   }
 }
 

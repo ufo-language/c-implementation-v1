@@ -7,6 +7,7 @@
 #define SET_NELEMS_OFS 0
 #define SET_LOADINGFACTOR_OFS 1
 #define SET_BUCKETS_OFS 2
+#define SET_OBJ_SIZE 3
 
 Object setNew(void);
 
@@ -16,6 +17,7 @@ bool setEquals(Object set, Object other);
 Object setEval(Object set, Thread* thd);
 void setFreeVars(Object set, Object freeVarSet);
 bool setHas(Object set, Object elem);
+void setMark(Object set);
 bool setRemoveElem(Object set, Object elem);
 void setRemoveSet(Object set, Object otherSet);
 void setShow(Object set, FILE* stream);

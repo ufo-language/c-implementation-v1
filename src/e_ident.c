@@ -47,6 +47,7 @@ Object identMatch(Object ident, Object other, Object bindingList) {
 
 /*------------------------------------------------------------------*/
 Object identNew(char* str) {
+  /* an identifier is a string with its ObjType set to E_Ident */
   Object ident = stringNew(str);
   objSetType(ident, E_Ident);
   return ident;

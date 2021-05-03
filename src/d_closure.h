@@ -11,9 +11,8 @@
 #define CLO_PARAMS_OFS 0
 #define CLO_BODY_OFS 1
 #define CLO_NEXT_OFS 2
-
 #define CLO_LEXENV_OFS 3
-#define CLO_SIZE 4
+#define CLO_OBJ_SIZE 4
 
 Object closureNew(Object abstr, Object lexEnv);
 

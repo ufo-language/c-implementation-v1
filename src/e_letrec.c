@@ -70,8 +70,14 @@ void letRecFreeVars(Object letRec, Object freeVarSet) {
 }
 
 /*------------------------------------------------------------------*/
+void letRecMark(Object letRec) { 
+  Object bindings = {objGetData(letRec, LETREC_BINDINGS_OFS)};
+  objMark(bindings);
+}
+
+/*------------------------------------------------------------------*/
 Object letRecNew(Object bindings) {
-  Object letRec = objAlloc(E_LetRec, 1);
+  Object letRec = objAlloc(E_LetRec, LETREC_OBJ_SIZE);
   objSetData(letRec, LETREC_BINDINGS_OFS, bindings.a);
   return letRec;
 }

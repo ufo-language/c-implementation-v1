@@ -6,6 +6,8 @@
 #include "defines.h"
 #include "object.h"
 
+#define REAL_OBJ_SIZE 2
+
 Object realNew(float i);
 bool realEquals(Object real, Object other);
 float realGet(Object real);

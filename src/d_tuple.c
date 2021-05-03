@@ -16,7 +16,7 @@ Word tupleHash_aux(Object tuple);
 /*------------------------------------------------------------------*/
 Object tuple1(Object elem0) {
   Word nElems = 1;
-  Object tup = objAlloc(D_Tuple, TUP_ELEMS_OFS + nElems);
+  Object tup = objAlloc(D_Tuple, TUP_OBJ_SIZE + nElems);
   objSetData(tup, TUP_NELEMS_OFS, nElems);
   objSetData(tup, TUP_ELEMS_OFS, elem0.a);
   Word hashCode = tupleHash_aux(tup);
@@ -27,7 +27,7 @@ Object tuple1(Object elem0) {
 /*------------------------------------------------------------------*/
 Object tuple2(Object elem0, Object elem1) {
   Word nElems = 2;
-  Object tup = objAlloc(D_Tuple, TUP_ELEMS_OFS + nElems);
+  Object tup = objAlloc(D_Tuple, TUP_OBJ_SIZE + nElems);
   objSetData(tup, TUP_NELEMS_OFS, nElems);
   objSetData(tup, TUP_ELEMS_OFS, elem0.a);
   objSetData(tup, TUP_ELEMS_OFS + 1, elem1.a);
@@ -39,7 +39,7 @@ Object tuple2(Object elem0, Object elem1) {
 /*------------------------------------------------------------------*/
 Object tuple3(Object elem0, Object elem1, Object elem2) {
   Word nElems = 3;
-  Object tup = objAlloc(D_Tuple, TUP_ELEMS_OFS + nElems);
+  Object tup = objAlloc(D_Tuple, TUP_OBJ_SIZE + nElems);
   objSetData(tup, TUP_NELEMS_OFS, nElems);
   objSetData(tup, TUP_ELEMS_OFS, elem0.a);
   objSetData(tup, TUP_ELEMS_OFS + 1, elem1.a);
@@ -52,7 +52,7 @@ Object tuple3(Object elem0, Object elem1, Object elem2) {
 /*------------------------------------------------------------------*/
 Object tuple4(Object elem0, Object elem1, Object elem2, Object elem3) {
   Word nElems = 3;
-  Object tup = objAlloc(D_Tuple, TUP_ELEMS_OFS + nElems);
+  Object tup = objAlloc(D_Tuple, TUP_OBJ_SIZE + nElems);
   objSetData(tup, TUP_NELEMS_OFS, nElems);
   objSetData(tup, TUP_ELEMS_OFS, elem0.a);
   objSetData(tup, TUP_ELEMS_OFS + 1, elem1.a);
@@ -66,7 +66,7 @@ Object tuple4(Object elem0, Object elem1, Object elem2, Object elem3) {
 /*------------------------------------------------------------------*/
 Object tupleFromArray(Object array) {
   Word nElems = arrayCount(array);
-  Object tup = objAlloc(D_Tuple, TUP_ELEMS_OFS + nElems);
+  Object tup = objAlloc(D_Tuple, TUP_OBJ_SIZE + nElems);
   objSetData(tup, TUP_NELEMS_OFS, nElems);
   for (Word n=0; n<nElems; n++) {
     objSetData(tup, TUP_ELEMS_OFS + n, arrayGet(array, n).a);
@@ -152,6 +152,12 @@ Word tupleHash_aux(Object tuple) {
     hashCode = hashRotateLeft(hashCode) ^ elem.a;
   }
   return hashCode ^ hashPrimes(objGetType(tuple));
+}
+
+/*------------------------------------------------------------------*/
+void tupleMark(Object tuple) {
+  Object elems = {objGetData(tuple, TUP_ELEMS_OFS)};
+  objMark(elems);
 }
 
 /*------------------------------------------------------------------*/

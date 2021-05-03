@@ -5,7 +5,7 @@
 
 /*------------------------------------------------------------------*/
 Object boolNew(bool b) {
-  Object bln = objAlloc(D_Bool, 1);
+  Object bln = objAlloc(D_Bool, BOOL_OBJ_SIZE);
   objSetData(bln, 0, b);
   return bln;
 }

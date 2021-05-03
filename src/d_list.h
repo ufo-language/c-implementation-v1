@@ -9,6 +9,7 @@
 
 #define LST_FIRST_OFS 0
 #define LST_REST_OFS 1
+#define LST_OBJ_SIZE 2
 
 Object listNew(Object first, Object rest);
 
@@ -28,6 +29,7 @@ bool listIsEmpty(Object list);
 /* This expects the list to be a list of bindings */
 Object listLocate(Object list, Object key);
 
+void listMark(Object list);
 Object listMatch(Object list, Object other, Object bindingList);
 Object listReverse(Object list);
 void listSetFirst(Object list, Object obj);

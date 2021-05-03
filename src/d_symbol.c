@@ -33,7 +33,7 @@ bool symbolHasName(Object symbol, char* name) {
 
 /*------------------------------------------------------------------*/
 Object symbolNew(char* str) {
-  /* a symbol is a string with a different ObjType */
+  /* a symbol is a string with its ObjType set to D_Symbol */
   Object symbol = stringNew(str);
   objSetType(symbol, D_Symbol);
   return symbol;

@@ -9,9 +9,8 @@ RawBlock _memFreeRoot;
 int _memNFreeBlocks;
 int _memNFreeWords;
 
-RawBlock _prevAdjacent(RawBlock blk);
-RawBlock _nextAdjacent(RawBlock blk);
-bool _isFree(RawBlock blk);
+RawBlock _prevAdjacentFreeBlock(RawBlock blk);
+RawBlock _nextAdjacentFreeBlock(RawBlock blk);
 void _remove(RawBlock blk);
 
 void _setSize(RawBlock blk, Word size);
@@ -137,8 +136,8 @@ void memFreeRaw(RawBlock blk) {
   checkForCycle("memFree(1)");
   Word blkOrigSize = memGetSize(blk);
   int nJoins = 0;
-  RawBlock prevBlk = _prevAdjacent(blk);
-  if (_isFree(prevBlk)) {
+  RawBlock prevBlk = _prevAdjacentFreeBlock(blk);
+  if (prevBlk.a != nullRawBlock.a) {
     Word joinedSize = memGetSize(blk) + memGetSize(prevBlk) + MEMBLK_OVERHEAD;
     if (joinedSize < MEMBLK_GC_MARK) {
       blk = prevBlk;
@@ -146,8 +145,8 @@ void memFreeRaw(RawBlock blk) {
       nJoins++;
     }
   }
-  RawBlock nextBlk = _nextAdjacent(blk);
-  if (_isFree(nextBlk)) {
+  RawBlock nextBlk = _nextAdjacentFreeBlock(blk);
+  if (nextBlk.a != nullRawBlock.a) {
     Word joinedSize = memGetSize(blk) + memGetSize(nextBlk) + MEMBLK_OVERHEAD;
     if (joinedSize < MEMBLK_GC_MARK) {
       _remove(nextBlk);
@@ -169,7 +168,7 @@ void memFreeRaw(RawBlock blk) {
 
 /*------------------------------------------------------------------*/
 void memShowBlock(RawBlock blk) {
-  printf("@=%d, Sz=%d, P=%d, N=%d, Status=%d, nextAdj=%d\n",
+  printf("@=%d, Sz=%d, Prv=%d, Nxt=%d, Status=%d, nextAdj=%d\n",
     blk.a,
     memGetSize(blk),
     _getPrev(blk).a,
@@ -206,29 +205,32 @@ void _remove(RawBlock blk) {
 
 /*------------------------------------------------------------------*/
 /* Returns the previous adjacent block, but only if it is a free block. */
-RawBlock _prevAdjacent(RawBlock blk) {
-  Word prevAdjStatus = vmemGet(blk.a - 1);
-  RawBlock prevBlk = nullRawBlock;
-  if (prevAdjStatus > 0 && prevAdjStatus < MEMBLK_GC_MARK) {
-    prevBlk = memAddrToRawBlock(blk.a - prevAdjStatus - MEMBLK_OVERHEAD);
+RawBlock _prevAdjacentFreeBlock(RawBlock blk) {
+  /* the status word of the previously adjacent block is just the current
+     block's address - 1 */
+  Word prevBlkStatus = vmemGet(blk.a - 1);
+  if (prevBlkStatus > 0 && prevBlkStatus < MEMBLK_GC_MARK) {
+    return memAddrToRawBlock(blk.a - prevBlkStatus - MEMBLK_OVERHEAD);
   }
-  return prevBlk;
+  return nullRawBlock;
 }
 
 /*------------------------------------------------------------------*/
 /* Returns the next adjacent block, but only if it is a free block. */
-RawBlock _nextAdjacent(RawBlock blk) {
+RawBlock _nextAdjacentFreeBlock(RawBlock blk) {
   RawBlock nextBlk = memAddrToRawBlock(blk.a + memGetSize(blk) + MEMBLK_OVERHEAD);
   if (nextBlk.a > MAX_ADDRESS - MEMBLK_OVERHEAD) {
     return nullRawBlock;
   }
-  if (!_isFree(nextBlk)) {
-    return nullRawBlock;
+  Word nextBlkStatus = memGetStatus(nextBlk);
+  if (nextBlkStatus > 0 && nextBlkStatus < MEMBLK_GC_MARK) {
+    return nextBlk;
   }
-  return nextBlk;
+  return nullRawBlock;
 }
 
 /*------------------------------------------------------------------*/
+extern bool globalDebug;
 Word memGetStatus(RawBlock blk) {
   Word size = vmemGet(blk.a + MEMBLK_SIZE_OFFSET);
   Address statusAddr = blk.a + MEMBLK_DATA_OFFSET + size;
@@ -241,13 +243,6 @@ void memSetStatus(RawBlock blk, Word status) {
   Word size = vmemGet(blk.a + MEMBLK_SIZE_OFFSET);
   Address statusAddr = blk.a + MEMBLK_DATA_OFFSET + size;
   vmemSet(statusAddr, status);
-}
-
-/*------------------------------------------------------------------*/
-bool _isFree(RawBlock blk) {
-  if (!blk.a) return false;
-  Word status = memGetStatus(blk);
-  return status > 0 && status < MEMBLK_GC_MARK;
 }
 
 /*------------------------------------------------------------------*/

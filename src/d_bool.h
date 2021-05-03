@@ -6,6 +6,8 @@
 #include "defines.h"
 #include "object.h"
 
+#define BOOL_OBJ_SIZE 1
+
 #define BOOL_TRUE_STRING "true"
 #define BOOL_FALSE_STRING "false"
 

@@ -11,7 +11,7 @@
 
 /*------------------------------------------------------------------*/
 Object arrayNew(Word nElems) {
-  Object array = objAlloc(D_Array, nElems + 1);
+  Object array = objAlloc(D_Array, ARY_OBJ_SIZE + nElems);
   objSetData(array, ARY_NELEMS_OFS, nElems);
   for (Word n=0; n<nElems; n++) {
     arraySet(array, n, NOTHING);
@@ -92,6 +92,15 @@ Object arrayGet(Object array, Word index) {
   fprintf(stderr, "\n  size: %d\n", arrayCount(array));
   fprintf(stderr, "  index requested: %d\n", index);
   return nullObj;
+}
+
+/*------------------------------------------------------------------*/
+void arrayMark(Object array) {
+  Word nElems = arrayCount(array);
+  for (int n=0; n<nElems; n++) {
+    Object elem = arrayGet(array, n);
+    objMark(elem);
+  }
 }
 
 /*------------------------------------------------------------------*/

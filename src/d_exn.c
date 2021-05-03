@@ -10,7 +10,7 @@
 
 /*------------------------------------------------------------------*/
 Object exnNew(Object payload) {
-  Object exn = objAlloc(D_Exn, 1);
+  Object exn = objAlloc(D_Exn, EXN_OBJ_SIZE);
   objSetData(exn, 0, payload.a);
   return exn;
 }
@@ -28,8 +28,14 @@ Object exnEval(Object exn, Thread* thd) {
 
 /*------------------------------------------------------------------*/
 Object exnGetPayload(Object exn) {
-  Object payload = {objGetData(exn, 0)};
+  Object payload = {objGetData(exn, EXN_PAYLOAD_OFS)};
   return payload;
+}
+
+/*------------------------------------------------------------------*/
+void exnMark(Object exn) {
+  Object payload = {objGetData(exn, EXN_PAYLOAD_OFS)};
+  objMark(payload);
 }
 
 /*------------------------------------------------------------------*/

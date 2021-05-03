@@ -44,8 +44,14 @@ void letFreeVars(Object let, Object freeVarSet) {
 }
 
 /*------------------------------------------------------------------*/
+void letMark(Object let) {
+  Object bindings = {objGetData(let, LET_BINDINGS_OFS)};
+  objMark(bindings);
+}
+
+/*------------------------------------------------------------------*/
 Object letNew(Object bindings) {
-  Object let = objAlloc(E_Let, 1);
+  Object let = objAlloc(E_Let, LET_OBJ_SIZE);
   objSetData(let, LET_BINDINGS_OFS, bindings.a);
   return let;
 }

@@ -43,7 +43,7 @@ Object abstrNew(Object params, Object body) {
   /* the body is a list of expressions, convert it to a do/end
      expression */
   body = seqNew(body);
-  Object abstr = objAlloc(E_Abstr, 3);
+  Object abstr = objAlloc(E_Abstr, ABSTR_OBJ_SIZE);
   objSetData(abstr, ABSTR_PARAMS_OFS, params.a);
   objSetData(abstr, ABSTR_BODY_OFS, body.a);
   objSetData(abstr, ABSTR_NEXT_OFS, nullObj.a);
@@ -63,6 +63,17 @@ Object abstrGetNext(Object abstr) {
 Object abstrGetParams(Object abstr) {
   Object params = {objGetData(abstr, ABSTR_PARAMS_OFS)};
   return params;
+}
+
+void abstrMark(Object abstr) {
+  Object params = {objGetData(abstr, ABSTR_PARAMS_OFS)};
+  Object body = {objGetData(abstr, ABSTR_BODY_OFS)};
+  Object next = {objGetData(abstr, ABSTR_NEXT_OFS)};
+  objMark(params);
+  objMark(body);
+  if (next.a != nullObj.a) {
+    objMark(next);
+  }
 }
 
 void abstrSetNext(Object abstr, Object nextRule) {

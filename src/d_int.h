@@ -6,6 +6,8 @@
 #include "defines.h"
 #include "object.h"
 
+#define INT_OBJ_SIZE 1
+
 Object intNew(int i);
 
 bool intEquals(Object integer, Object other);

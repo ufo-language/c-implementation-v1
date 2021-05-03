@@ -110,12 +110,18 @@ bool setLocate(Object set, Object elem, Word* bucketNum) {
 }
 
 /*------------------------------------------------------------------*/
+void setMark(Object set) {
+  Object buckets = {objGetData(set, SET_BUCKETS_OFS)};
+  objMark(buckets);
+}
+
+/*------------------------------------------------------------------*/
 Object setNew(void) {
   Word nBuckets = 8;
   Word loadingFactorCapacity = (nBuckets >> 1) + (nBuckets >> 2);
   Object buckets = arrayNew(nBuckets);
   arrayFill(buckets, EMPTY_LIST);
-  Object set = objAlloc(D_Set, 3);
+  Object set = objAlloc(D_Set, SET_OBJ_SIZE);
   objSetData(set, SET_NELEMS_OFS, 0);
   objSetData(set, SET_LOADINGFACTOR_OFS, loadingFactorCapacity);
   objSetData(set, SET_BUCKETS_OFS, buckets.a);

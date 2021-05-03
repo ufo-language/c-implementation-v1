@@ -6,7 +6,7 @@
 
 /*------------------------------------------------------------------*/
 Object realNew(float f) {
-  Object real = objAlloc(D_Real, 2);
+  Object real = objAlloc(D_Real, REAL_OBJ_SIZE);
   union {
     Word w[2];
     float f;

@@ -11,25 +11,31 @@
 
 /*------------------------------------------------------------------*/
 Object seqEval(Object seq, Thread* thd) {
-  Object list = {objGetData(seq, SEQ_EXPRS_OFS)};
+  Object exprs = {objGetData(seq, SEQ_EXPRS_OFS)};
   Object res = NOTHING;
-  while (!listIsEmpty(list)) {
-    Object expr = listGetFirst(list);
+  while (!listIsEmpty(exprs)) {
+    Object expr = listGetFirst(exprs);
     res = eval(expr, thd);
-    list = listGetRest(list);
+    exprs = listGetRest(exprs);
   }
   return res;
 }
 
 /*------------------------------------------------------------------*/
 void seqFreeVars(Object seq, Object freeVarSet) {
-  Object list = {objGetData(seq, SEQ_EXPRS_OFS)};
-  listFreeVars(list, freeVarSet);
+  Object exprs = {objGetData(seq, SEQ_EXPRS_OFS)};
+  listFreeVars(exprs, freeVarSet);
+}
+
+/*------------------------------------------------------------------*/
+void seqMark(Object seq) {
+  Object exprs = {objGetData(seq, SEQ_EXPRS_OFS)};
+  objMark(exprs);
 }
 
 /*------------------------------------------------------------------*/
 Object seqNew(Object lst) {
-  Object seq = objAlloc(E_Seq, 1);
+  Object seq = objAlloc(E_Seq, SEQ_OBJ_SIZE);
   objSetData(seq, SEQ_EXPRS_OFS, lst.a);
   return seq;
 }
