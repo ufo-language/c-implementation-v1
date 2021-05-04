@@ -107,11 +107,11 @@ void test_appEval() {
   Object i300 = intNew(300);
   Object params1 = EMPTY_LIST;
   Object body1 = i100;
-  Object abstr1 = abstrNew(params1, body1);
+  Object abstr1 = abstrNew(params1, listNew(body1, EMPTY_LIST));
 
   Object params2 = listNew(x, EMPTY_LIST);
   Object body2 = i200;
-  Object abstr2 = abstrNew(params2, body2);
+  Object abstr2 = abstrNew(params2, listNew(body2, EMPTY_LIST));
   abstrSetNext(abstr1, abstr2);
 
   Object params3 = listNew(x, listNew(y, EMPTY_LIST));
@@ -119,7 +119,7 @@ void test_appEval() {
   arraySet(body3, 0, x);
   arraySet(body3, 1, y);
   arraySet(body3, 2, z);
-  Object abstr3 = abstrNew(params3, body3);
+  Object abstr3 = abstrNew(params3, listNew(body3, EMPTY_LIST));
   abstrSetNext(abstr2, abstr3);
 
   Thread* thd = threadNew();
