@@ -92,7 +92,7 @@ void abstrShow_aux(Object abstr, char* prefix, FILE* stream) {
       firstIter = false;
     }
     else {
-      fputs(" | ", stream);
+      fputs("| ", stream);
     }
     Object params = {objGetData(abstr, ABSTR_PARAMS_OFS)};
     Object body = {objGetData(abstr, ABSTR_BODY_OFS)};
