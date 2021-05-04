@@ -249,7 +249,6 @@ static Object _extract(Object parseRes) {
   }
   Object resObj = listGetFirst(parseRes);
   Object tokens = listGetRest(parseRes);
-  printf("_extract resObj = "); objShow(resObj, stdout); printf("\n");
   Object obj = arrayGet(resObj, 1);
   tokens = listGetRest(parseRes);
   return listNew(obj, tokens);
