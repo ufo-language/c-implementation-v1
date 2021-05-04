@@ -13,6 +13,7 @@
 #include "../src/globals.h"
 #include "../src/object.h"
 #include "../src/thread.h"
+#include "../src/trampoline.h"
 
 static void test_closureApply();
 static void test_closureClose();
@@ -67,20 +68,13 @@ void test_closureNew() {
   abstrSetNext(abstr1, abstr2);
   Object closure = closureNew(abstr1, EMPTY_LIST);
 
-  const Word PARAMS_OFS = 0;
-  const Word BODY_OFS = 1;
-  const Word NEXT_OFS = 2;
   Object rule1 = closure;
-  Object params1a = {objGetData(rule1, PARAMS_OFS)};
+  Object params1a = {objGetData(rule1, CLO_PARAMS_OFS)};
   EXPECT_EQ(params1.a, params1a.a);
-  Object body1a = {objGetData(rule1, BODY_OFS)};
-  EXPECT_EQ(body1.a, body1a.a);
-  Object rule2 = {objGetData(rule1, NEXT_OFS)};
+  Object rule2 = {objGetData(rule1, CLO_NEXT_OFS)};
   ASSERT_NE(nullObj.a, rule2.a);
-  Object params2a = {objGetData(rule2, PARAMS_OFS)};
+  Object params2a = {objGetData(rule2, CLO_PARAMS_OFS)};
   EXPECT_EQ(params2.a, params2a.a);
-  Object body2a = {objGetData(rule2, BODY_OFS)};
-  EXPECT_EQ(body2.a, body2a.a);
 }
 
 void test_closureClose() {
@@ -179,11 +173,11 @@ void test_closureApply() {
   Object i200 = intNew(200);
   Object i300 = intNew(300);
   Object params1 = EMPTY_LIST;
-  Object body1 = i100;
+  Object body1 = listNew(i100, EMPTY_LIST);
   Object abstr1 = abstrNew(params1, body1);
 
   Object params2 = listNew(x, EMPTY_LIST);
-  Object body2 = i200;
+  Object body2 = listNew(i200, EMPTY_LIST);
   Object abstr2 = abstrNew(params2, body2);
   abstrSetNext(abstr1, abstr2);
 
@@ -192,6 +186,7 @@ void test_closureApply() {
   arraySet(body3, 0, x);
   arraySet(body3, 1, y);
   arraySet(body3, 2, z);
+  body3 = listNew(body3, EMPTY_LIST);
   Object abstr3 = abstrNew(params3, body3);
   abstrSetNext(abstr2, abstr3);
 
@@ -204,22 +199,22 @@ void test_closureApply() {
 
   Object args1 = EMPTY_LIST;
   Object res1 = closureApply(closure, args1, thd);
-  EXPECT_EQ(i100.a, res1.a);
+  ASSERT_EQ(S_Trampoline, objGetType(res1));
+  res1 = trampGetExpr(res1);
+  EXPECT_EQ(E_Seq, objGetType(res1));
 
   Object args2 = listNew(NOTHING, EMPTY_LIST);
   Object res2 = closureApply(closure, args2, thd);
-  EXPECT_EQ(i200.a, res2.a);
+  ASSERT_EQ(S_Trampoline, objGetType(res2));
+  res2 = trampGetExpr(res2);
+  EXPECT_EQ(E_Seq, objGetType(res2));
 
   Object i400 = intNew(400);
   Object i500 = intNew(500);
   Object args3 = listNew(i400, listNew(i500, EMPTY_LIST));
   Object res3 = closureApply(closure, args3, thd);
 
-  ASSERT_EQ(D_Array, objGetType(res3));
-  ASSERT_EQ(3, arrayCount(res3));
-  EXPECT_EQ(i400.a, arrayGet(res3, 0).a);
-  EXPECT_EQ(i500.a, arrayGet(res3, 1).a);
-  EXPECT_EQ(i300.a, arrayGet(res3, 2).a);
+  ASSERT_EQ(S_Trampoline, objGetType(res3));
 
   threadDelete(thd);
 }
