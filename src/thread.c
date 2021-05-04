@@ -9,7 +9,6 @@
 #include "d_symbol.h"
 #include "delegate.h"
 #include "eval.h"
-#include "gc.h"
 #include "globals.h"
 #include "thread.h"
 #include "trampoline.h"
@@ -55,15 +54,6 @@ void threadEnvRebind(Thread* thd, Object var, Object val) {
 }
 
 Object threadEval(Thread* thd, Object expr, Object bindings) {
-/*
-  Object savedEnv = thd->env;
-  thd->env = bindings;
-  thd->expr = expr;
-  Object res = evaluate(expr, thd);
-  thd->expr = nullObj;
-  thd->env = savedEnv;
-  return res;
-*/
   trampSet(thd->trampoline, expr, bindings);
   return thd->trampoline;
 }

@@ -3,7 +3,6 @@
 #include "d_binding.h"
 #include "delegate.h"
 #include "eval.h"
-#include "gc.h"
 #include "object.h"
 #include "thread.h"
 

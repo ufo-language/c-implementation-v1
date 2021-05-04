@@ -2,7 +2,6 @@
 #include "d_queue.h"
 #include "delegate.h"
 #include "eval.h"
-#include "gc.h"
 #include "globals.h"
 #include "object.h"
 

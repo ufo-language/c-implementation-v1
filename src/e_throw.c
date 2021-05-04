@@ -1,6 +1,5 @@
 #include "delegate.h"
 #include "e_throw.h"
-#include "gc.h"
 #include "object.h"
 
 /*------------------------------------------------------------------*/

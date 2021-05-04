@@ -7,8 +7,6 @@
 #include "delegate.h"
 #include "e_letrec.h"
 #include "eval.h"
-#include "gc.h"
-#include "globals.h"
 #include "globals.h"
 #include "object.h"
 #include "thread.h"
