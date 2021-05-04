@@ -19,14 +19,14 @@ Current status: there's a REPL that lets you enter many of the data structures a
 Features:
 * Virtual memory
 * Automatic memory management with memory block defragmentation
-* Recursive evaluator, but provides proper tail call elimination (impressed? *you should be*) ;)
+* Recursive evaluator that also provides proper tail call elimination (impressed? *you should be*) ;)
 * Expressions:
   * variable
   * if/then/else
   * do/end (sequence)
   * let (dynamic scope)
   * let/in (local scope)
-  * abstraction & application (lexical scope, recursion, tail call elimination)
+  * abstraction & application (lexical scope, recursion, tail call elimination, a.k.a. tail recursion)
   * exception throwing (exception catching not yet implemented)
 * Data types:
   * integer, real, boolean, string
