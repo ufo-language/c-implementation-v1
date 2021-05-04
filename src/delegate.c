@@ -137,9 +137,9 @@ bool objEquals(Object obj1, Object obj2) {
 
 /*------------------------------------------------------------------*/
 Object objEval(Object obj, Thread* thd) {
-  ObjType objType = objGetType(obj);
   bool contin = true;
   while (contin) {
+    ObjType objType = objGetType(obj);
     switch (objType) {
       case D_Array:
         obj = arrayEval(obj, thd);
@@ -200,7 +200,15 @@ Object objEval(Object obj, Thread* thd) {
         ;
     }  /* end switch */
     objType = objGetType(obj);
-    contin = objType == S_Trampoline;
+    if (objType == S_Trampoline) {
+      contin = true;
+      obj = trampGetExpr(obj);
+      Object env = trampGetEnv(obj);
+      threadSetEnv(thd, env);
+    }
+    else {
+      contin = false;
+    }
   }  /* end whilte */
   return obj;
 }
