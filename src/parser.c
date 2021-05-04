@@ -249,9 +249,10 @@ static Object _extract(Object parseRes) {
   }
   Object resObj = listGetFirst(parseRes);
   Object tokens = listGetRest(parseRes);
-  Object ident = arrayGet(resObj, 1);
+  printf("_extract resObj = "); objShow(resObj, stdout); printf("\n");
+  Object obj = arrayGet(resObj, 1);
   tokens = listGetRest(parseRes);
-  return listNew(ident, tokens);
+  return listNew(obj, tokens);
 }
 
 /* Primitive 'spot' parsers ----------------------------------------*/
@@ -441,6 +442,11 @@ Object p_int(Thread* thd, Object tokens) {
   return _extract(res);
 }
 
+Object p_nothing(Thread* thd, Object tokens) {
+  (void)thd;
+  return p_spotReserved(tokens, "nothing");
+}
+
 Object p_real(Thread* thd, Object tokens) {
   (void)thd;
   Object res = p_spot(tokens, T_REAL);
@@ -460,7 +466,7 @@ Object p_symbol(Thread* thd, Object tokens) {
 }
 
 Object p_literal(Thread* thd, Object tokens) {
-  Parser parsers[] = {p_bool, p_int, p_real, p_string, p_symbol, NULL};
+  Parser parsers[] = {p_bool, p_int, p_nothing, p_real, p_string, p_symbol, NULL};
   Object res = p_oneOf(thd, tokens, parsers);
   return res;
 }
