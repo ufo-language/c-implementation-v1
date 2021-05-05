@@ -5,6 +5,7 @@
 
 #include "defines.h"
 #include "object.h"
+#include "thread.h"
 
 Object stringNew(char* str);
 
@@ -15,8 +16,10 @@ bool stringEqualsChars(Object string, char* chars);
 void stringEscapify(Object string, FILE* stream);
 Word stringHash(Object string);
 Word stringHash_aux(Object string);
-char stringGetChar(Object string, Word offset);
-void stringSetChar(Object string, Word offset, char c);
+char stringGetChar(Object string, Word offset, Thread* thd);
+char stringGetChar_unsafe(Object string, Word offset);
+void stringSetChar(Object string, Word offset, char c, Thread* thd);
+void stringSetChar_unsafe(Object string, Word offset, char c);
 void stringShow(Object string, FILE* stream);
 void stringUnescapify(Object string, FILE* stream);
 

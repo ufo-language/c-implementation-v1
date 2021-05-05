@@ -1,3 +1,5 @@
+#include "d_array.h"
+#include "d_int.h"
 #include "d_list.h"
 #include "d_queue.h"
 #include "delegate.h"
@@ -17,21 +19,28 @@ Word queueCount(Object q) {
 }
 
 /*------------------------------------------------------------------*/
-Object queueDeq(Object q) {
-  Word nElems = objGetData(q, Q_NELEMS_OFS);
-  if (nElems > 0) {
-    Object head = {objGetData(q, Q_HEAD_OFS)};
-    Object elem = listGetFirst(head);
-    Object rest = listGetRest(head);
-    objSetData(q, Q_HEAD_OFS, rest.a);
-    objDecData(q, Q_NELEMS_OFS);
-    if (listIsEmpty(rest)) {
-      objSetData(q, Q_TAIL_OFS, rest.a);
-    }
-    return elem;
+Object queueDeq(Object q, Thread* thd) {
+  Object elem = queueDeq_unsafe(q);
+  if (elem.a == nullObj.a) {
+    threadThrowException(thd, "Error", "Queue empty", q);
   }
-  fprintf(stderr, "ERROR: queueDeq queue is empty\n");
-  return nullObj;
+  return elem;
+}
+
+/*------------------------------------------------------------------*/
+Object queueDeq_unsafe(Object q) {
+  Word nElems = objGetData(q, Q_NELEMS_OFS);
+  if (nElems == 0) {
+  }
+  Object head = {objGetData(q, Q_HEAD_OFS)};
+  Object elem = listGetFirst(head);
+  Object rest = listGetRest(head);
+  objSetData(q, Q_HEAD_OFS, rest.a);
+  objDecData(q, Q_NELEMS_OFS);
+  if (listIsEmpty(rest)) {
+    objSetData(q, Q_TAIL_OFS, rest.a);
+  }
+  return elem;
 }
 
 /*------------------------------------------------------------------*/

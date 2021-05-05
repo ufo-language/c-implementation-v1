@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "d_array.h"
+#include "d_int.h"
 #include "d_string.h"
 #include "defines.h"
 #include "hash.h"
 #include "object.h"
+#include "thread.h"
 
 /*------------------------------------------------------------------*/
 Word stringCount(Object string) {
@@ -19,7 +22,7 @@ bool stringEquals(Object string, Object other) {
     return false;
   }
   for (Word n=0; n<len1; n++) {
-    if (stringGetChar(string, n) != stringGetChar(other, n)) {
+    if (stringGetChar_unsafe(string, n) != stringGetChar_unsafe(other, n)) {
       return false;
     }
   }
@@ -30,7 +33,7 @@ bool stringEquals(Object string, Object other) {
 bool stringEqualsChars(Object string, char* chars) {
   Word len = stringCount(string);
   for (Word n=0; n<len; n++) {
-    if (stringGetChar(string, n) != chars[n]) {
+    if (stringGetChar_unsafe(string, n) != chars[n]) {
       return false;
     }
   }
@@ -47,13 +50,12 @@ Word stringHash_aux(Object str) {
   Word hashCode = 0;
   Word strLen = stringCount(str);
   for (Word n=0; n<strLen; n++) {
-    hashCode = hashRotateLeft(hashCode) ^ stringGetChar(str, n);
+    hashCode = hashRotateLeft(hashCode) ^ stringGetChar_unsafe(str, n);
   }
   return hashCode;
 }
 
 /*------------------------------------------------------------------*/
-#include "delegate.h"
 Object stringNew(char* str) {
   int len = strlen(str);
   Word nWords = len / sizeof(Word) + 2;
@@ -61,25 +63,51 @@ Object stringNew(char* str) {
   objSetData(string, 0, len);
   /* going '<= len' includes the null terminator */
   for (int n=0; n<=len; n++) {
-    stringSetChar(string, n, str[n]);
+    stringSetChar_unsafe(string, n, str[n]);
   }
   return string;
 }
 
 /*------------------------------------------------------------------*/
-char stringGetChar(Object string, Word offset) {
-  Word word = objGetData(string, offset / 2 + 1);
-  if (offset % 2 == 0) {
+char stringGetChar(Object string, Word index, Thread* thd) {
+  int nChars = stringCount(string);
+  if (index >= nChars) {
+    Object exn = arrayNew(3);
+    arraySet_unsafe(exn, 0, intNew(index));
+    arraySet_unsafe(exn, 1, intNew(stringCount(string)));
+    arraySet_unsafe(exn, 2, string);
+    threadThrowException(thd, "Error", "String index out of bounds", exn);
+  }
+  return stringGetChar_unsafe(string, index);
+}
+
+/*------------------------------------------------------------------*/
+char stringGetChar_unsafe(Object string, Word index) {
+  Word word = objGetData(string, index / 2 + 1);
+  if (index % 2 == 0) {
     return word & 0xFF;
   }
   return (word >> 8);
 }
 
 /*------------------------------------------------------------------*/
-void stringSetChar(Object string, Word offset, char c) {
-  Word addr = offset / 2 + 1;
+void stringSetChar(Object string, Word index, char c, Thread* thd) {
+  int nChars = stringCount(string);
+  if (index >= nChars) {
+    Object exn = arrayNew(3);
+    arraySet_unsafe(exn, 0, intNew(index));
+    arraySet_unsafe(exn, 1, intNew(stringCount(string)));
+    arraySet_unsafe(exn, 2, string);
+    threadThrowException(thd, "Error", "String index out of bounds", exn);
+  }
+  stringSetChar_unsafe(string, index, c);
+}
+
+/*------------------------------------------------------------------*/
+void stringSetChar_unsafe(Object string, Word index, char c) {
+  Word addr = index / 2 + 1;
   Word word = objGetData(string, addr);
-  if (offset % 2 == 0) {
+  if (index % 2 == 0) {
     word = (word & 0xFF00) | c;
   }
   else {
@@ -92,7 +120,7 @@ void stringSetChar(Object string, Word offset, char c) {
 void stringDisp(Object string, FILE* stream) {
   Word len = stringCount(string);
   for (Word n=0; n<len; n++) {
-    char c = stringGetChar(string, n);
+    char c = stringGetChar_unsafe(string, n);
     fputc(c, stream);
   }
 }
@@ -109,7 +137,7 @@ void stringShow(Object string, FILE* stream) {
 void stringEscapify(Object string, FILE* stream) {
   Word len = stringCount(string);
   for (Word n=0; n<len; n++) {
-    char c = stringGetChar(string, n);
+    char c = stringGetChar_unsafe(string, n);
     switch (c) {
       case '"' : fprintf(stream, "\\\""); break;
       case '\\': fprintf(stream, "\\\\"); break;
@@ -129,7 +157,7 @@ void stringUnescapify(Object string, FILE* stream) {
   bool escaped = false;
   Word len = stringCount(string);
   for (Word n=0; n<len; n++) {
-    char c = stringGetChar(string, n);
+    char c = stringGetChar_unsafe(string, n);
     if (escaped) {
       switch(c) {
         //case '\'': fprintf(stream, '\''); break;

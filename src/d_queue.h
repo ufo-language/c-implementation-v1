@@ -13,13 +13,14 @@ Object queueNew(void);
 
 Object queueAsList(Object q);
 Word queueCount(Object q);
+Object queueDeq(Object q, Thread* thd);
+Object queueDeq_unsafe(Object q);
 void queueEnq(Object q, Object elem);
 Word queueCount(Object q);
 bool queueEquals(Object q, Object other);
 Object queueEval(Object q, Thread* thd);
 void queueFreeVars(Object q, Object freeVarSet);
 void queueMark(Object q);
-Object queueDeq(Object q);
 void queueShow(Object q, FILE* stream);
 
 #endif

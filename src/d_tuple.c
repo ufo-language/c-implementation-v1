@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "d_array.h"
+#include "d_int.h"
 #include "d_tuple.h"
 #include "defines.h"
 #include "delegate.h"
@@ -88,8 +89,8 @@ bool tupleEquals(Object tuple, Object other) {
     return false;
   }
   for (Word n=0; n<len1; n++) {
-    Object elem1 = tupleGet(tuple, n);
-    Object elem2 = tupleGet(other, n);
+    Object elem1 = tupleGet_unsafe(tuple, n);
+    Object elem2 = tupleGet_unsafe(other, n);
     if (!objEquals(elem1, elem2)) {
       return false;
     }
@@ -102,7 +103,7 @@ Object tupleEval(Object tuple, Thread* thd) {
   Word nElems = tupleCount(tuple);
   Object ary = arrayNew(tupleCount(tuple));
   for (Word n=0; n<nElems; n++) {
-    Object elem = tupleGet(tuple, n);
+    Object elem = tupleGet_unsafe(tuple, n);
     Object newElem = eval(elem, thd);
     arraySet_unsafe(ary, n, newElem);
   }
@@ -114,24 +115,32 @@ Object tupleEval(Object tuple, Thread* thd) {
 void tupleFreeVars(Object tuple, Object freeVarSet) {
   Word nElems = tupleCount(tuple);
   for (Word n=0; n<nElems; n++) {
-    Object elem = tupleGet(tuple, n);
+    Object elem = tupleGet_unsafe(tuple, n);
     objFreeVars(elem, freeVarSet);
   }
 }
 
 /*------------------------------------------------------------------*/
-Object tupleGet(Object tuple, Word index) {
-  Word nElems = tupleCount(tuple);
-  if (index < nElems) {
-    Object obj = {objGetData(tuple, TUP_ELEMS_OFS + index)};
-    return obj;
+Object tupleGet(Object tuple, Word index, Thread* thd) {
+  Object elem = tupleGet_unsafe(tuple, index);
+  if (elem.a == nullObj.a) {
+    Object exn = arrayNew(3);
+    arraySet_unsafe(exn, 0, intNew(index));
+    arraySet_unsafe(exn, 1, intNew(tupleCount(tuple)));
+    arraySet_unsafe(exn, 2, tuple);
+    threadThrowException(thd, "Error", "Tuple index out of bounds", exn);
   }
-  fprintf(stderr, "ERROR: Tuple access violation\n");
-  fprintf(stderr, "  tuple: ");
-  objShow(tuple, stderr);
-  fprintf(stderr, "\n  size: %d\n", tupleCount(tuple));
-  fprintf(stderr, "  index requested: %d\n", index);
-  return nullObj;
+  return elem;
+}
+
+/*------------------------------------------------------------------*/
+Object tupleGet_unsafe(Object tuple, Word index) {
+  Word nElems = tupleCount(tuple);
+  if (index >= nElems) {
+    return nullObj;
+  }
+  Object obj = {objGetData(tuple, TUP_ELEMS_OFS + index)};
+  return obj;
 }
 
 /*------------------------------------------------------------------*/
@@ -147,7 +156,7 @@ Word tupleHash_aux(Object tuple) {
   Word hashCode = 0;
   Word nElems = tupleCount(tuple);
   for (Word n=0; n<nElems; n++) {
-    Object elem = tupleGet(tuple, n);
+    Object elem = tupleGet_unsafe(tuple, n);
     hashCode = hashRotateLeft(hashCode) ^ elem.a;
   }
   return hashCode ^ hashPrimes(objGetType(tuple));
@@ -167,8 +176,8 @@ Object tupleMatch(Object tuple, Object other, Object bindingList) {
     return nullObj;
   }
   for (int n=0; n<nElems1; n++) {
-    Object elem1 = tupleGet(tuple, n);
-    Object elem2 = tupleGet(other, n);
+    Object elem1 = tupleGet_unsafe(tuple, n);
+    Object elem2 = tupleGet_unsafe(other, n);
     bindingList = objMatch(elem1, elem2, bindingList);
     if (bindingList.a == nullObj.a) {
       return nullObj;
@@ -185,7 +194,7 @@ void tupleShow(Object tuple, FILE* stream) {
     if (n > 0) {
       fprintf(stream, ", ");
     }
-    Object elem = tupleGet(tuple, n);
+    Object elem = tupleGet_unsafe(tuple, n);
     objShow(elem, stream);
   }
   fputc('>', stream);

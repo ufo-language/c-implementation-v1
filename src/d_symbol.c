@@ -22,7 +22,7 @@ bool symbolHasName(Object symbol, char* name) {
   Word nChars = stringCount(symbol);
   int n = 0;
   while (name && n < nChars) {
-    if (stringGetChar(symbol, n) != *name) {
+    if (stringGetChar_unsafe(symbol, n) != *name) {
       return false;
     }
     n++;

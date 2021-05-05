@@ -89,7 +89,7 @@ bool lexToken(Thread* thd, LexerState* lexerState, Token* token) {
   bool contin = true;
   while (contin && (lexerState->pos <= lexerState->inputLen)) {
     Object inputString = lexerState->inputString;
-    char c = stringGetChar(inputString, (Word)lexerState->pos);
+    char c = stringGetChar_unsafe(inputString, (Word)lexerState->pos);
     Transition* transition = findTransition(lexerState->syntax, stateName, c);
     stateName = transition->nextState;
     Action action = transition->action;

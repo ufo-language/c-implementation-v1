@@ -66,13 +66,13 @@ void test_queueEnqDeq() {
   queueEnq(q, i300);
   EXPECT_EQ(3, queueCount(q));
 
-  Object elem = queueDeq(q);
+  Object elem = queueDeq_unsafe(q);
   EXPECT_EQ(i100.a, elem.a);
   EXPECT_EQ(2, queueCount(q));
-  elem = queueDeq(q);
+  elem = queueDeq_unsafe(q);
   EXPECT_EQ(i200.a, elem.a);
   EXPECT_EQ(1, queueCount(q));
-  elem = queueDeq(q);
+  elem = queueDeq_unsafe(q);
   EXPECT_EQ(i300.a, elem.a);
   EXPECT_EQ(0, queueCount(q));
 
@@ -110,7 +110,7 @@ void test_queueEval() {
   Object q1 = objEval(q, thd);
 
   EXPECT_EQ(2, queueCount(q1));
-  EXPECT_EQ(i100.a, queueDeq(q1).a);
-  EXPECT_EQ(i200.a, queueDeq(q1).a);
+  EXPECT_EQ(i100.a, queueDeq_unsafe(q1).a);
+  EXPECT_EQ(i200.a, queueDeq_unsafe(q1).a);
   threadDelete(thd);
 }

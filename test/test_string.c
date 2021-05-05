@@ -44,7 +44,7 @@ void test_stringNew() {
   Word nChars = stringCount(string);
   EXPECT_EQ((int)strlen(str), nChars);
   for (Word n=0; n<nChars; n++) {
-    EXPECT_EQ(str[n], stringGetChar(string, n));
+    EXPECT_EQ(str[n], stringGetChar_unsafe(string, n));
   }
 }
 
@@ -75,7 +75,7 @@ void test_stringBounds() {
   Object str = stringNew(s);
   int nChars = strlen(s);
   for (int n=0; n<nChars; n++) {
-    EXPECT_EQ(s[n], stringGetChar(str, n));
+    EXPECT_EQ(s[n], stringGetChar_unsafe(str, n));
   }
-  EXPECT_EQ(0, stringGetChar(str, nChars));
+  EXPECT_EQ(0, stringGetChar_unsafe(str, nChars));
 }

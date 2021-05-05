@@ -50,7 +50,7 @@ void test_tuple1() {
   Object i100 = intNew(100);
   Object tup = tuple1(i100);
   ASSERT_EQ(1, tupleCount(tup));
-  EXPECT_EQ(i100.a, tupleGet(tup, 0).a);
+  EXPECT_EQ(i100.a, tupleGet_unsafe(tup, 0).a);
 }
 
 void test_tuple2() {
@@ -58,8 +58,8 @@ void test_tuple2() {
   Object i200 = intNew(200);
   Object tup = tuple2(i100, i200);
   ASSERT_EQ(2, tupleCount(tup));
-  EXPECT_EQ(i100.a, tupleGet(tup, 0).a);
-  EXPECT_EQ(i200.a, tupleGet(tup, 1).a);
+  EXPECT_EQ(i100.a, tupleGet_unsafe(tup, 0).a);
+  EXPECT_EQ(i200.a, tupleGet_unsafe(tup, 1).a);
 }
 
 void test_tuple3() {
@@ -68,9 +68,9 @@ void test_tuple3() {
   Object i300 = intNew(300);
   Object tup = tuple3(i100, i200, i300);
   ASSERT_EQ(3, tupleCount(tup));
-  EXPECT_EQ(i100.a, tupleGet(tup, 0).a);
-  EXPECT_EQ(i200.a, tupleGet(tup, 1).a);
-  EXPECT_EQ(i300.a, tupleGet(tup, 2).a);
+  EXPECT_EQ(i100.a, tupleGet_unsafe(tup, 0).a);
+  EXPECT_EQ(i200.a, tupleGet_unsafe(tup, 1).a);
+  EXPECT_EQ(i300.a, tupleGet_unsafe(tup, 2).a);
 }
 
 void test_tupleFromArray() {
@@ -84,7 +84,7 @@ void test_tupleFromArray() {
   Object tup = tupleFromArray(ary);
   ASSERT_EQ(3, tupleCount(tup));
   for (int n=0; n<tupleCount(tup); n++) {
-    EXPECT_EQ(arrayGet_unsafe(ary, n).a, tupleGet(tup, n).a);
+    EXPECT_EQ(arrayGet_unsafe(ary, n).a, tupleGet_unsafe(tup, n).a);
   }
 }
 

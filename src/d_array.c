@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "d_array.h"
+#include "d_int.h"
 #include "defines.h"
 #include "delegate.h"
 #include "eval.h"
@@ -82,23 +83,23 @@ void arrayFreeVars(Object array, Object freeVarSet) {
 Object arrayGet(Object array, Word index, Thread* thd) {
   Object elem = arrayGet_unsafe(array, index);
   if (elem.a == nullObj.a) {
-    (void)thd;
-    fprintf(stderr, "ERROR: Array access violation\n");
-    fprintf(stderr, "  array: ");
-    objShow(array, stderr);
-    fprintf(stderr, "\n  size: %d\n", arrayCount(array));
-    fprintf(stderr, "  index requested: %d\n", index);
+    Object exn = arrayNew(3);
+    arraySet_unsafe(exn, 0, intNew(index));
+    arraySet_unsafe(exn, 1, intNew(arrayCount(array)));
+    arraySet_unsafe(exn, 2, array);
+    threadThrowException(thd, "Error", "Array index out of bounds", exn);
   }
   return elem;
 }
 
+/*------------------------------------------------------------------*/
 Object arrayGet_unsafe(Object array, Word index) {
   Word nElems = arrayCount(array);
-  if (index < nElems) {
-    Object obj = {objGetData(array, ARY_ELEMS_OFS + index)};
-    return obj;
+  if (index >= nElems) {
+    return nullObj;
   }
-  return nullObj;
+  Object obj = {objGetData(array, ARY_ELEMS_OFS + index)};
+  return obj;
 }
 
 /*------------------------------------------------------------------*/
@@ -132,22 +133,22 @@ Object arrayMatch(Object array, Object other, Object bindingList) {
 void arraySet(Object array, Word index, Object obj, Thread* thd) {
   bool res = arraySet_unsafe(array, index, obj);
   if (!res) {
-    (void)thd;
-    fprintf(stderr, "ERROR: Array access violation\n");
-    fprintf(stderr, "  array: ");
-    objShow(array, stderr);
-    fprintf(stderr, "\n  size: %d\n", arrayCount(array));
-    fprintf(stderr, "  index requested: %d\n", index);
+    Object exn = arrayNew(3);
+    arraySet_unsafe(exn, 0, intNew(index));
+    arraySet_unsafe(exn, 1, intNew(arrayCount(array)));
+    arraySet_unsafe(exn, 2, array);
+    threadThrowException(thd, "Error", "Array index out of bounds", exn);
   }
 }
 
+/*------------------------------------------------------------------*/
 bool arraySet_unsafe(Object array, Word index, Object obj) {
   Word nElems = arrayCount(array);
-  if (index < nElems) {
-    objSetData(array, ARY_ELEMS_OFS + index, obj.a);
-    return true;
+  if (index >= nElems) {
+    return false;
   }
-  return false;
+  objSetData(array, ARY_ELEMS_OFS + index, obj.a);
+  return true;
 }
 
 /*------------------------------------------------------------------*/
