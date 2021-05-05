@@ -84,7 +84,7 @@ Object _close(Object rule, Object env) {
   Word nElems = arrayCount(freeVarAry);
   Object lexEnv = EMPTY_LIST;
   for (Word n=0; n<nElems; n++) {
-    Object ident = arrayGet(freeVarAry, n);
+    Object ident = arrayGet_unsafe(freeVarAry, n);
     Object binding = listLocate(env, ident);
     if (binding.a != nullObj.a) {
       lexEnv = listNew(binding, lexEnv);

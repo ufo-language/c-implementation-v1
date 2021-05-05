@@ -90,8 +90,8 @@ void test_objMarkArray() {
   Object i100 = intNew(100);
   Object i200 = intNew(200);
   Object ary = arrayNew(2);
-  arraySet(ary, 0, i100);
-  arraySet(ary, 1, i200);
+  arraySet_unsafe(ary, 0, i100);
+  arraySet_unsafe(ary, 1, i200);
 
   EXPECT_F(gcIsMarked(i100));
   EXPECT_F(gcIsMarked(i200));
@@ -364,9 +364,9 @@ void test_objCopy() {
   Object i200 = intNew(200);
   Object i300 = intNew(300);
   Object ary0 = arrayNew(3);
-  arraySet(ary0, 0, i100);
-  arraySet(ary0, 1, i200);
-  arraySet(ary0, 2, i300);
+  arraySet_unsafe(ary0, 0, i100);
+  arraySet_unsafe(ary0, 1, i200);
+  arraySet_unsafe(ary0, 2, i300);
   Object ary1 = objCopy(ary0);
   EXPECT_NE(ary0.a, ary1.a);
   EXPECT_T(objEquals(ary0, ary1));

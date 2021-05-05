@@ -21,7 +21,7 @@ Object hashFold(Object hash, Object data, Object (*fun)(Object data, Object key,
   Object buckets = {objGetData(hash, HASH_BUCKETS_OFS)};
   Word nBuckets = arrayCount(buckets);
   for (Word n=0; n<nBuckets; n++) {
-    Object bucket = arrayGet(buckets, n);
+    Object bucket = arrayGet_unsafe(buckets, n);
     while (!listIsEmpty(bucket)) {
       Object binding = listGetFirst(bucket);
       Object key = bindingGetLhs(binding);
@@ -45,7 +45,7 @@ bool hashEquals(Object hash, Object other) {
   Object buckets = {objGetData(hash, HASH_BUCKETS_OFS)};
   Word nBuckets = arrayCount(buckets);
   for (Word n=0; n<nBuckets; n++) {
-    Object bucket = arrayGet(buckets, n);
+    Object bucket = arrayGet_unsafe(buckets, n);
     while (!listIsEmpty(bucket)) {
       Object binding = listGetFirst(bucket);
       Object key = bindingGetLhs(binding);
@@ -65,7 +65,7 @@ Object hashEval(Object hash, Thread* thd) {
   Object buckets = {objGetData(hash, HASH_BUCKETS_OFS)};
   Word nBuckets = arrayCount(buckets);
   for (Word n=0; n<nBuckets; n++) {
-    Object bucket = arrayGet(buckets, n);
+    Object bucket = arrayGet_unsafe(buckets, n);
     while (!listIsEmpty(bucket)) {
       Object binding = listGetFirst(bucket);
       Object key = bindingGetLhs(binding);
@@ -95,7 +95,7 @@ void hashFreeVars(Object hash, Object freeVarSet) {
   Object buckets = {objGetData(hash, HASH_BUCKETS_OFS)};
   Word nBuckets = arrayCount(buckets);
   for (Word n=0; n<nBuckets; n++) {
-    Object bucket = arrayGet(buckets, n);
+    Object bucket = arrayGet_unsafe(buckets, n);
     while (!listIsEmpty(bucket)) {
       Object binding = listGetFirst(bucket);
       Object key = bindingGetLhs(binding);
@@ -130,7 +130,7 @@ Object hashLocate(Object hash, Object key, Word* bucketNum) {
   Object buckets = {objGetData(hash, HASH_BUCKETS_OFS)};
   Word nBuckets = arrayCount(buckets);
   *bucketNum = hashCode % nBuckets;
-  Object bucket = arrayGet(buckets, *bucketNum);
+  Object bucket = arrayGet_unsafe(buckets, *bucketNum);
   while (!listIsEmpty(bucket)) {
     Object binding = listGetFirst(bucket);
     if (objEquals(key, bindingGetLhs(binding))) {
@@ -170,9 +170,9 @@ void hashPut(Object hash, Object key, Object val) {
     }
     else {
       Object buckets = {objGetData(hash, HASH_BUCKETS_OFS)};
-      Object bucket = arrayGet(buckets, bucketNum);
+      Object bucket = arrayGet_unsafe(buckets, bucketNum);
       binding = bindingNew(key, val);
-      arraySet(buckets, bucketNum, listNew(binding, bucket));
+      arraySet_unsafe(buckets, bucketNum, listNew(binding, bucket));
       objIncData(hash, HASH_NBINDINGS_OFS);
     }
   }
@@ -185,7 +185,7 @@ void hashShow(Object hash, FILE* stream) {
   Word nBuckets = arrayCount(buckets);
   bool firstIter = true;
   for (Word n=0; n<nBuckets; n++) {
-    Object bucket = arrayGet(buckets, n);
+    Object bucket = arrayGet_unsafe(buckets, n);
     while (!listIsEmpty(bucket)) {
       if (firstIter) {
         firstIter = false;
@@ -217,7 +217,7 @@ static void _resize(Object hash) {
   objSetData(hash, HASH_BUCKETS_OFS, bucketsNew.a);
   /* copy bindings to new hash table */
   for (Word n=0; n<nBuckets; n++) {
-    Object bucket = arrayGet(buckets, n);
+    Object bucket = arrayGet_unsafe(buckets, n);
     while (!listIsEmpty(bucket)) {
       Object binding = listGetFirst(bucket);
       hashPut(hash, bindingGetLhs(binding), bindingGetRhs(binding));

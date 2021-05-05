@@ -26,7 +26,7 @@ Object letRecEval(Object letRec, Thread* thd) {
   Object varAry = setToArray(varSet);
   Word nVars = arrayCount(varAry);
   for (Word n=0; n<nVars; n++) {
-    Object var = arrayGet(varAry, n);
+    Object var = arrayGet_unsafe(varAry, n);
     threadEnvBind(thd, var, NOTHING);
   }
   /* evaluate all bindings, rebind lhs vars as necessary */

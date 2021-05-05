@@ -66,8 +66,8 @@ Object lex(Thread* thd, Object string) {
     }
     /* build a token object (array) from the lexer token information */
     Object tokenAry = arrayNew(2);
-    arraySet(tokenAry, 0, tokenTypeSym);
-    arraySet(tokenAry, 1, lexeme);
+    arraySet_unsafe(tokenAry, 0, tokenTypeSym);
+    arraySet_unsafe(tokenAry, 1, lexeme);
     queueEnq(tokenQ, tokenAry);
     if (!res) {
       break;

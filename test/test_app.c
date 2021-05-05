@@ -72,9 +72,9 @@ void test_appNew() {
 
   Object params3 = listNew(x, listNew(y, EMPTY_LIST));
   Object body3 = arrayNew(3);
-  arraySet(body3, 0, x);
-  arraySet(body3, 1, y);
-  arraySet(body3, 2, z);
+  arraySet_unsafe(body3, 0, x);
+  arraySet_unsafe(body3, 1, y);
+  arraySet_unsafe(body3, 2, z);
   Object abstr3 = abstrNew(params3, body3);
   abstrSetNext(abstr2, abstr3);
 
@@ -116,9 +116,9 @@ void test_appEval() {
 
   Object params3 = listNew(x, listNew(y, EMPTY_LIST));
   Object body3 = arrayNew(3);
-  arraySet(body3, 0, x);
-  arraySet(body3, 1, y);
-  arraySet(body3, 2, z);
+  arraySet_unsafe(body3, 0, x);
+  arraySet_unsafe(body3, 1, y);
+  arraySet_unsafe(body3, 2, z);
   Object abstr3 = abstrNew(params3, listNew(body3, EMPTY_LIST));
   abstrSetNext(abstr2, abstr3);
 

@@ -78,13 +78,13 @@ void test_tupleFromArray() {
   Object i200 = intNew(200);
   Object i300 = intNew(300);
   Object ary = arrayNew(3);
-  arraySet(ary, 0, i100);
-  arraySet(ary, 1, i200);
-  arraySet(ary, 2, i300);
+  arraySet_unsafe(ary, 0, i100);
+  arraySet_unsafe(ary, 1, i200);
+  arraySet_unsafe(ary, 2, i300);
   Object tup = tupleFromArray(ary);
   ASSERT_EQ(3, tupleCount(tup));
   for (int n=0; n<tupleCount(tup); n++) {
-    EXPECT_EQ(arrayGet(ary, n).a, tupleGet(tup, n).a);
+    EXPECT_EQ(arrayGet_unsafe(ary, n).a, tupleGet(tup, n).a);
   }
 }
 

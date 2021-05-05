@@ -103,11 +103,11 @@ void test_evalArray() {
 
   /* build the array */
   Object ary1 = arrayNew(2);
-  arraySet(ary1, 0, x);
-  arraySet(ary1, 1, y);
+  arraySet_unsafe(ary1, 0, x);
+  arraySet_unsafe(ary1, 1, y);
   Object res1 = eval(ary1, thd);
-  EXPECT_T(objEquals(i100, arrayGet(res1, 0)));
-  EXPECT_T(objEquals(i200, arrayGet(res1, 1)));
+  EXPECT_T(objEquals(i100, arrayGet_unsafe(res1, 0)));
+  EXPECT_T(objEquals(i200, arrayGet_unsafe(res1, 1)));
   threadDelete(thd);
 }
 

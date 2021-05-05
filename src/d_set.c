@@ -23,8 +23,8 @@ void setAddElem(Object set, Object elem) {
     }
     else {
       Object buckets = {objGetData(set, SET_BUCKETS_OFS)};
-      Object bucket = arrayGet(buckets, bucketNum);
-      arraySet(buckets, bucketNum, listNew(elem, bucket));
+      Object bucket = arrayGet_unsafe(buckets, bucketNum);
+      arraySet_unsafe(buckets, bucketNum, listNew(elem, bucket));
       objIncData(set, SET_NELEMS_OFS);
     }
   }
@@ -43,7 +43,7 @@ bool setEquals(Object set, Object other) {
   Object buckets = {objGetData(set, SET_BUCKETS_OFS)};
   Word nBuckets = arrayCount(buckets);
   for (Word n=0; n<nBuckets; n++) {
-    Object bucket = arrayGet(buckets, n);
+    Object bucket = arrayGet_unsafe(buckets, n);
     while (!listIsEmpty(bucket)) {
       Object elem = listGetFirst(bucket);
       if (!setHas(other, elem)) {
@@ -61,7 +61,7 @@ Object setEval(Object set, Thread* thd) {
   Object buckets = {objGetData(set, SET_BUCKETS_OFS)};
   Word nBuckets = arrayCount(buckets);
   for (Word n=0; n<nBuckets; n++) {
-    Object bucket = arrayGet(buckets, n);
+    Object bucket = arrayGet_unsafe(buckets, n);
     while (!listIsEmpty(bucket)) {
       Object elem = listGetFirst(bucket);
       Object elemVal = eval(elem, thd);
@@ -77,7 +77,7 @@ void setFreeVars(Object set, Object freeVarSet) {
   Object buckets = {objGetData(set, SET_BUCKETS_OFS)};
   Word nBuckets = arrayCount(buckets);
   for (Word n=0; n<nBuckets; n++) {
-    Object bucket = arrayGet(buckets, n);
+    Object bucket = arrayGet_unsafe(buckets, n);
     while (!listIsEmpty(bucket)) {
       Object elem = listGetFirst(bucket);
       objFreeVars(elem, freeVarSet);
@@ -98,7 +98,7 @@ bool setLocate(Object set, Object elem, Word* bucketNum) {
   Object buckets = {objGetData(set, SET_BUCKETS_OFS)};
   Word nBuckets = arrayCount(buckets);
   *bucketNum = hashCode % nBuckets;
-  Object bucket = arrayGet(buckets, *bucketNum);
+  Object bucket = arrayGet_unsafe(buckets, *bucketNum);
   while (!listIsEmpty(bucket)) {
     if (objEquals(elem, listGetFirst(bucket))) {
       return true;
@@ -132,7 +132,7 @@ bool setRemoveElem(Object set, Object elem) {
   Word bucketNum;
   if (setLocate(set, elem, &bucketNum)) {
     Object buckets = {objGetData(set, SET_BUCKETS_OFS)};
-    Object bucket = arrayGet(buckets, bucketNum);
+    Object bucket = arrayGet_unsafe(buckets, bucketNum);
     Object newBucket = EMPTY_LIST;
     while (!listIsEmpty(bucket)) {
       Object elem1 = listGetFirst(bucket);
@@ -141,7 +141,7 @@ bool setRemoveElem(Object set, Object elem) {
       }
       bucket = listGetRest(bucket);
     }
-    arraySet(buckets, bucketNum, newBucket);
+    arraySet_unsafe(buckets, bucketNum, newBucket);
     objDecData(set, SET_NELEMS_OFS);
     return true;
   }
@@ -153,7 +153,7 @@ void setRemoveSet(Object set, Object otherSet) {
   Object buckets = {objGetData(otherSet, SET_BUCKETS_OFS)};
   Word nBuckets = arrayCount(buckets);
   for (Word n=0; n<nBuckets; n++) {
-    Object bucket = arrayGet(buckets, n);
+    Object bucket = arrayGet_unsafe(buckets, n);
     while (!listIsEmpty(bucket)) {
       Object elem = listGetFirst(bucket);
       setRemoveElem(set, elem);
@@ -169,7 +169,7 @@ void setShow(Object set, FILE* stream) {
   Word nBuckets = arrayCount(buckets);
   bool firstIter = true;
   for (Word n=0; n<nBuckets; n++) {
-    Object bucket = arrayGet(buckets, n);
+    Object bucket = arrayGet_unsafe(buckets, n);
     while (!listIsEmpty(bucket)) {
       if (firstIter) {
         firstIter = false;
@@ -193,10 +193,10 @@ Object setToArray(Object set) {
   Word nBuckets = arrayCount(buckets);
   Word elemN = 0;
   for (Word n=0; n<nBuckets; n++) {
-    Object bucket = arrayGet(buckets, n);
+    Object bucket = arrayGet_unsafe(buckets, n);
     while (!listIsEmpty(bucket)) {
       Object elem = listGetFirst(bucket);
-      arraySet(array, elemN++, elem);
+      arraySet_unsafe(array, elemN++, elem);
       bucket = listGetRest(bucket);
     }
   }
@@ -208,7 +208,7 @@ void setUnion(Object set, Object otherSet) {
   Object buckets = {objGetData(otherSet, SET_BUCKETS_OFS)};
   Word nBuckets = arrayCount(buckets);
   for (Word n=0; n<nBuckets; n++) {
-    Object bucket = arrayGet(buckets, n);
+    Object bucket = arrayGet_unsafe(buckets, n);
     while (!listIsEmpty(bucket)) {
       Object elem = listGetFirst(bucket);
       setAddElem(set, elem);
@@ -232,7 +232,7 @@ static void _resize(Object set) {
   objSetData(set, SET_BUCKETS_OFS, bucketsNew.a);
   /* copy bindings to new set table */
   for (Word n=0; n<nBuckets; n++) {
-    Object bucket = arrayGet(buckets, n);
+    Object bucket = arrayGet_unsafe(buckets, n);
     while (!listIsEmpty(bucket)) {
       Object elem = listGetFirst(bucket);
       setAddElem(set, elem);

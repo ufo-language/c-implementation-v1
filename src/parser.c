@@ -249,7 +249,7 @@ static Object _extract(Object parseRes) {
   }
   Object resObj = listGetFirst(parseRes);
   Object tokens = listGetRest(parseRes);
-  Object obj = arrayGet(resObj, 1);
+  Object obj = arrayGet_unsafe(resObj, 1);
   tokens = listGetRest(parseRes);
   return listNew(obj, tokens);
 }
@@ -258,7 +258,7 @@ static Object _extract(Object parseRes) {
 
 Object p_spot(Object tokens, TokenType tokenType) {
   Object token = listGetFirst(tokens);
-  Object tokenSym = arrayGet(token, 0);
+  Object tokenSym = arrayGet_unsafe(token, 0);
   if (!symbolHasName(tokenSym, T_NAMES[tokenType])) {
     return nullObj;
   }
@@ -267,11 +267,11 @@ Object p_spot(Object tokens, TokenType tokenType) {
 
 Object p_spotSpecific(Object tokens, TokenType tokenType, char* word) {
   Object token = listGetFirst(tokens);
-  Object tokenSym = arrayGet(token, 0);
+  Object tokenSym = arrayGet_unsafe(token, 0);
   if (!symbolHasName(tokenSym, T_NAMES[tokenType])) {
     return nullObj;
   }
-  Object tokenStr = arrayGet(token, 1);
+  Object tokenStr = arrayGet_unsafe(token, 1);
   if (!stringEqualsChars(tokenStr, word)) {
     return nullObj;
   }
@@ -286,10 +286,10 @@ Object p_spotOperator_required(Thread* thd, Object tokens, char* word) {
   Object res = p_spotSpecific(tokens, T_OPER, word);
   if (res.a == nullObj.a) {
     Object exn = arrayNew(4);
-    arraySet(exn, 0, symbolNew(PARSER_ERROR));
-    arraySet(exn, 1, stringNew("character expected"));
-    arraySet(exn, 2, stringNew(word));
-    arraySet(exn, 3, tokens);
+    arraySet_unsafe(exn, 0, symbolNew(PARSER_ERROR));
+    arraySet_unsafe(exn, 1, stringNew("character expected"));
+    arraySet_unsafe(exn, 2, stringNew(word));
+    arraySet_unsafe(exn, 3, tokens);
     threadThrowExceptionObj(thd, exn);
   }
   return res;
@@ -303,9 +303,9 @@ Object p_spotReserved_required(Thread* thd, Object tokens, char* word) {
   Object res = p_spotSpecific(tokens, T_RESERVED, word);
   if (res.a == nullObj.a) {
     Object exn = arrayNew(3);
-    arraySet(exn, 0, symbolNew(PARSER_ERROR));
-    arraySet(exn, 1, stringNew("keyword expected"));
-    arraySet(exn, 2, stringNew(word));
+    arraySet_unsafe(exn, 0, symbolNew(PARSER_ERROR));
+    arraySet_unsafe(exn, 1, stringNew("keyword expected"));
+    arraySet_unsafe(exn, 2, stringNew(word));
     threadThrowExceptionObj(thd, exn);
   }
   return res;
@@ -319,10 +319,10 @@ Object p_spotSpecial_required(Thread* thd, Object tokens, char* word) {
   Object res = p_spotSpecific(tokens, T_SPECIAL, word);
   if (res.a == nullObj.a) {
     Object exn = arrayNew(4);
-    arraySet(exn, 0, symbolNew(PARSER_ERROR));
-    arraySet(exn, 1, stringNew("character expected"));
-    arraySet(exn, 2, stringNew(word));
-    arraySet(exn, 3, tokens);
+    arraySet_unsafe(exn, 0, symbolNew(PARSER_ERROR));
+    arraySet_unsafe(exn, 1, stringNew("character expected"));
+    arraySet_unsafe(exn, 2, stringNew(word));
+    arraySet_unsafe(exn, 3, tokens);
     threadThrowExceptionObj(thd, exn);
   }
   return res;
@@ -549,7 +549,7 @@ Object p_array(Thread* thd, Object tokens) {
   Word nElems = listCount(elems);
   Object ary = arrayNew(nElems);
   for (Word n=0; n<nElems; n++) {
-    arraySet(ary, n, listGetFirst(elems));
+    arraySet_unsafe(ary, n, listGetFirst(elems));
     elems = listGetRest(elems);
   }
   tokens = listGetRest(res);
@@ -617,7 +617,7 @@ Object p_tuple(Thread* thd, Object tokens) {
   Word nElems = listCount(elems);
   Object ary = arrayNew(nElems);
   for (Word n=0; n<nElems; n++) {
-    arraySet(ary, n, listGetFirst(elems));
+    arraySet_unsafe(ary, n, listGetFirst(elems));
     elems = listGetRest(elems);
   }
   tokens = listGetRest(res);

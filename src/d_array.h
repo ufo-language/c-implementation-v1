@@ -20,10 +20,12 @@ bool arrayEquals(Object array, Object other);
 Object arrayEval(Object array, Thread* thd);
 void arrayFill(Object array, Object elem);
 void arrayFreeVars(Object array, Object freeVarSet);
-Object arrayGet(Object array, Word index);
+Object arrayGet(Object array, Word index, Thread* thd);
+Object arrayGet_unsafe(Object array, Word index);
 void arrayMark(Object array);
 Object arrayMatch(Object array, Object other, Object bindingList);
-void arraySet(Object array, Word index, Object obj);
+void arraySet(Object array, Word index, Object obj, Thread* thd);
+bool arraySet_unsafe(Object array, Word index, Object obj);
 void arrayShow(Object array, FILE* stream);
 
 #endif

@@ -68,7 +68,7 @@ Object tupleFromArray(Object array) {
   Object tup = objAlloc(D_Tuple, TUP_OBJ_SIZE + nElems);
   objSetData(tup, TUP_NELEMS_OFS, nElems);
   for (Word n=0; n<nElems; n++) {
-    objSetData(tup, TUP_ELEMS_OFS + n, arrayGet(array, n).a);
+    objSetData(tup, TUP_ELEMS_OFS + n, arrayGet_unsafe(array, n).a);
   }
   Word hashCode = tupleHash_aux(tup);
   objSetData(tup, TUP_HASHCODE_OFS, hashCode);
@@ -104,7 +104,7 @@ Object tupleEval(Object tuple, Thread* thd) {
   for (Word n=0; n<nElems; n++) {
     Object elem = tupleGet(tuple, n);
     Object newElem = eval(elem, thd);
-    arraySet(ary, n, newElem);
+    arraySet_unsafe(ary, n, newElem);
   }
   Object newTuple = tupleFromArray(ary);
   return newTuple;

@@ -133,9 +133,9 @@ void test_gcMarkUnmark_array() {
   //RawBlock int3_raw = objToRawBlock(int3_obj);
 
   Object ary1_obj = arrayNew(3);
-  arraySet(ary1_obj, 0, int1_obj);
-  arraySet(ary1_obj, 1, int2_obj);
-  arraySet(ary1_obj, 2, int3_obj);
+  arraySet_unsafe(ary1_obj, 0, int1_obj);
+  arraySet_unsafe(ary1_obj, 1, int2_obj);
+  arraySet_unsafe(ary1_obj, 2, int3_obj);
   //RawBlock ary1_raw = objToRawBlock(ary1_obj);
 
   EXPECT_F(gcIsMarked(int1_obj));
