@@ -39,7 +39,7 @@ Features:
   * tuple (immutable array)
 * Plenty of undocumented features! (i.e., bugs)
 
-CS quiz: Why is an immuatable array useful? No fair peeking at my source code before you answer it. (hint: I said "CS quiz" and not "software engineering quiz")
+CS quiz: What's so useful about an immuatable array (or any immutable data type, for that matter)? No fair peeking at my source code before you answer it. Hint: I said "CS quiz" and not "software engineering quiz".
 
 Also, I'm thinking about combining the linked list & queue types into a doubly-linked list type. I can think of reasons to do it, and reasons not to do it.
 
