@@ -16,6 +16,7 @@ typedef struct Thread_struct {
 } Thread;
 
 Thread* threadNew(void);
+Thread* threadNew_aux(Object env);
 void threadDelete(Thread* thd);
 
 void threadEnvBind(Thread* thd, Object var, Object val);

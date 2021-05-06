@@ -11,6 +11,7 @@
 #include "d_int.h"
 #include "d_nothing.h"
 #include "d_list.h"
+#include "d_prim.h"
 #include "d_queue.h"
 #include "d_real.h"
 #include "d_set.h"
@@ -425,9 +426,6 @@ Object objMatch(Object obj, Object other, Object bindingList) {
 }
 
 /*------------------------------------------------------------------*/
-Word _getSize(RawBlock blk);
-RawBlock objToRawBlock(Object obj);
-
 void objShow(Object obj, FILE* stream) {
   switch (objGetType(obj)) {
     case D_Nothing:
@@ -456,6 +454,9 @@ void objShow(Object obj, FILE* stream) {
       break;
     case D_List:
       listShow(obj, stream);
+      break;
+    case D_Prim:
+      primShow(obj, stream);
       break;
     case D_Queue:
       queueShow(obj, stream);

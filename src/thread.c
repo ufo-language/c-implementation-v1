@@ -10,6 +10,7 @@
 #include "delegate.h"
 #include "eval.h"
 #include "globals.h"
+#include "namespace.h"
 #include "thread.h"
 #include "trampoline.h"
 
@@ -17,7 +18,7 @@ static Thread* runningThreads = NULL;
 static Thread* threadPool = NULL;
 
 /* trampNew is not a public function in trampoline.h. This is the only
-   place it's used. */
+   file that uses it. */
 Object trampNew(Object expr, Object env);
 
 /*------------------------------------------------------------------*/
@@ -105,6 +106,11 @@ void threadMarkAllThreads(void) {
 
 /*------------------------------------------------------------------*/
 Thread* threadNew(void) {
+  return threadNew_aux(STANDARD_ENV);
+}
+
+/*------------------------------------------------------------------*/
+Thread* threadNew_aux(Object env) {
   Thread* thd;
   if (threadPool) {
     thd = threadPool;
@@ -113,7 +119,7 @@ Thread* threadNew(void) {
   else {
     thd = malloc(sizeof(Thread));
   }
-  thd->env = EMPTY_LIST;
+  thd->env = env;
   thd->next = runningThreads;
   thd->trampoline = trampNew(NOTHING, EMPTY_LIST);
   runningThreads = thd;

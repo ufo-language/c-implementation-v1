@@ -31,6 +31,7 @@ set(LIB_SRC_FILES
   src/d_int.c
   src/d_list.c
   src/d_nothing.c
+  src/d_prim.c
   src/d_queue.c
   src/d_real.c
   src/d_set.c
@@ -58,6 +59,8 @@ set(LIB_SRC_FILES
   src/lexer_obj.c
   src/main.c
   src/mem.c
+  src/namespace.c
+  src/ns_io.c
   src/object.c
   src/parser.c
   src/repl.c

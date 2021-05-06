@@ -18,6 +18,7 @@ typedef enum {
   D_Int,
   D_List,
   D_Nothing,
+  D_Prim,
   D_Queue,
   D_Real,
   D_Set,

@@ -25,6 +25,7 @@ char* ObjTypeNames[] = {
   "Integer",
   "List",
   "Nothing",
+  "Primitive",
   "Queue",
   "Real",
   "Set",
