@@ -9,6 +9,7 @@ typedef Object (*PrimFunc)(Thread* thd, Object args);
 #define PRIM_OBJ_SIZE (sizeof(PrimFunc) / sizeof(Word))
 
 Object primNew(PrimFunc func);
+Object primMacroNew(PrimFunc func);
 
 Object primApply(Object closure, Object argList, Thread* thd);
 PrimFunc primGet(Object prim);

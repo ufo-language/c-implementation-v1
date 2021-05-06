@@ -20,6 +20,7 @@ Object io_defineAll(Object env) {
 }
 
 Object io_print(Thread* thd, Object args) {
+  (void)thd;
   printf("io_print args = "); objShow(args, stdout); printf("\n");
   return NOTHING;
 }

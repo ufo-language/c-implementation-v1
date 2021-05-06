@@ -466,6 +466,7 @@ void objShow(Object obj, FILE* stream) {
       listShow(obj, stream);
       break;
     case D_Prim:
+    case D_PrimMacro:
       primShow(obj, stream);
       break;
     case D_Queue:

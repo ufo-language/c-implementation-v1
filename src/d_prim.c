@@ -25,6 +25,20 @@ Object primNew(PrimFunc func) {
 }
 
 /*------------------------------------------------------------------*/
+Object primMacroNew(PrimFunc func) {
+  Object prim = objAlloc(D_PrimMacro, PRIM_OBJ_SIZE);
+  union {
+    Word w[PRIM_OBJ_SIZE];
+    PrimFunc f;
+  } u;
+  u.f = func;
+  for (int n=0; n<(int)PRIM_OBJ_SIZE; n++) {
+    objSetData(prim, n, u.w[n]);
+  }
+  return prim;
+}
+
+/*------------------------------------------------------------------*/
 PrimFunc primGet(Object prim) {
   union {
     Word w[PRIM_OBJ_SIZE];
