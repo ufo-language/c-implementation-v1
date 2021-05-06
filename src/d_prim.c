@@ -1,29 +1,38 @@
-#include <stdio.h>
-
 #include "d_prim.h"
 #include "defines.h"
+#include "delegate.h"
+#include "thread.h"
+
+/*------------------------------------------------------------------*/
+Object primApply(Object prim, Object argList, Thread* thd) {
+  PrimFunc primFunc = primGet(prim);
+  Object res = primFunc(thd, argList);
+  return res;
+}
 
 /*------------------------------------------------------------------*/
 Object primNew(PrimFunc func) {
   Object prim = objAlloc(D_Prim, PRIM_OBJ_SIZE);
   union {
-    Word w[2];
+    Word w[PRIM_OBJ_SIZE];
     PrimFunc f;
   } u;
   u.f = func;
-  objSetData(prim, 0, u.w[0]);
-  objSetData(prim, 1, u.w[1]);
+  for (int n=0; n<(int)PRIM_OBJ_SIZE; n++) {
+    objSetData(prim, n, u.w[n]);
+  }
   return prim;
 }
 
 /*------------------------------------------------------------------*/
 PrimFunc primGet(Object prim) {
   union {
-    Word w[2];
+    Word w[PRIM_OBJ_SIZE];
     PrimFunc f;
   } u;
-  u.w[0] = objGetData(prim, 0);
-  u.w[1] = objGetData(prim, 1);
+  for (int n=0; n<(int)PRIM_OBJ_SIZE; n++) {
+    u.w[n] = objGetData(prim, n);
+  }
   return u.f;
 }
 

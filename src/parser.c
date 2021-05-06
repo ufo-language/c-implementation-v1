@@ -15,6 +15,8 @@
 #include "delegate.h"
 #include "e_abstr.h"
 #include "e_app.h"
+#include "e_binop.h"
+#include "e_ident.h"
 #include "e_if.h"
 #include "e_let.h"
 #include "e_letrec.h"
@@ -99,6 +101,7 @@ Object p_THEN(Thread* thd, Object tokens);
 
 /* expressions */
 Object p_apply(Thread* thd, Object tokens);
+Object p_binop(Thread* thd, Object tokens);
 Object p_do(Thread* thd, Object tokens);
 Object p_function(Thread* thd, Object tokens);
 Object p_ident(Thread* thd, Object tokens);
@@ -110,6 +113,7 @@ Object p_queue(Thread* thd, Object tokens);
 Object p_quote(Thread* thd, Object tokens);
 Object p_set(Thread* thd, Object tokens);
 
+Object p_anyBinaryOperator(Thread* thd, Object tokens);
 Object p_expr(Thread* thd, Object tokens);
 Object p_listOfAny(Thread* thd, Object tokens);
 Object p_any(Thread* thd, Object tokens);
@@ -129,7 +133,9 @@ struct ParserEntry_struct {
   {(void*)p_angleClose, "p_angleClose"},
   {(void*)p_angleOpen, "p_angleOpen"},
   {(void*)p_any, "p_any"},
+  {(void*)p_anyBinaryOperator, "p_anyBinaryOperator"},
   {(void*)p_apply, "p_apply"},
+  {(void*)p_binop, "p_binop"},
   {(void*)p_array, "p_array"},
   {(void*)p_binding, "p_binding"},
   {(void*)p_bool, "p_bool"},
@@ -728,6 +734,29 @@ Object p_apply(Thread* thd, Object tokens) {
   return listNew(apply, tokens);
 }
 
+Object p_anyBinaryOperator(Thread* thd, Object tokens) {
+  (void)thd;
+  Object res = p_spotSpecial(tokens, ":");
+  if (res.a == nullObj.a) {
+    return nullObj;
+  }
+  return res;
+}
+
+Object p_binop(Thread* thd, Object tokens) {
+  Parser parsers[] = {p_object, p_anyBinaryOperator, p_any, NULL};
+  Object res = p_seqOf(thd, tokens, parsers);
+  if (res.a == nullObj.a) {
+    return nullObj;
+  }
+  Object exprs = listGetFirst(res);
+  tokens = listGetRest(res);
+  Object lhs = listGetFirst(exprs);
+  Object rhs = listGetSecond(exprs);
+  Object binopExpr = binopNew(lhs, identNew(":"), rhs);
+  return listNew(binopExpr, tokens);
+}
+
 Object p_do(Thread* thd, Object tokens) {
   Parser parsers[] = {p_DO, p_listOfAny, p_END_required, NULL};
   Object res = p_seqOf(thd, tokens, parsers);
@@ -935,7 +964,7 @@ Object p_set(Thread* thd, Object tokens) {
 
 /* any expression */
 Object p_expr(Thread* thd, Object tokens) {
-  Parser parsers[] = {p_parenExpr, p_apply, p_do, p_function, p_if, p_let, p_letRec, p_quote, NULL};
+  Parser parsers[] = {p_binop, p_parenExpr, p_apply, p_do, p_function, p_if, p_let, p_letRec, p_quote, NULL};
   Object res = p_oneOf(thd, tokens, parsers);
   return res;
 }

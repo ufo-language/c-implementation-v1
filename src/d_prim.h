@@ -1,15 +1,16 @@
 #ifndef D_PRIM_H
 #define D_PRIM_H
 
-#include <stdio.h>
-
 #include "object.h"
+#include "thread.h"
 
-typedef Object (*PrimFunc)(Object args);
+typedef Object (*PrimFunc)(Thread* thd, Object args);
 
-#define PRIM_OBJ_SIZE sizeof(PrimFunc)
+#define PRIM_OBJ_SIZE (sizeof(PrimFunc) / sizeof(Word))
 
 Object primNew(PrimFunc func);
+
+Object primApply(Object closure, Object argList, Thread* thd);
 PrimFunc primGet(Object prim);
 void primShow(Object prim, FILE* stream);
 

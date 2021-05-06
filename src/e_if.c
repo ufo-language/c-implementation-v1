@@ -26,21 +26,21 @@ bool ifEqual(Object ifThen, Object other) {
 
 /*------------------------------------------------------------------*/
 Object ifEval(Object ifThen, Thread* thd) {
-  Object cond = {objGetData(ifThen, 0)};
+  Object cond = {objGetData(ifThen, IF_COND_OFS)};
   Object condVal = eval(cond, thd);
   if (objBoolValue(condVal)) {
-    Object conseq = {objGetData(ifThen, 1)};
+    Object conseq = {objGetData(ifThen, IF_CONSEQ_OFS)};
     return eval(conseq, thd);
   }
-  Object alt = {objGetData(ifThen, 2)};
+  Object alt = {objGetData(ifThen, IF_ALT_OFS)};
   return eval(alt, thd);
 }
 
 /*------------------------------------------------------------------*/
 void ifFreeVars(Object ifThen, Object freeVarSet) {
-  Object cond = {objGetData(ifThen, 0)};
-  Object conseq = {objGetData(ifThen, 1)};
-  Object alt = {objGetData(ifThen, 2)};
+  Object cond = {objGetData(ifThen, IF_COND_OFS)};
+  Object conseq = {objGetData(ifThen, IF_CONSEQ_OFS)};
+  Object alt = {objGetData(ifThen, IF_ALT_OFS)};
   objFreeVars(cond, freeVarSet);
   objFreeVars(conseq, freeVarSet);
   objFreeVars(alt, freeVarSet);
@@ -48,9 +48,9 @@ void ifFreeVars(Object ifThen, Object freeVarSet) {
 
 /*------------------------------------------------------------------*/
 void ifMark(Object ifThen) {
-  Object cond = {objGetData(ifThen, 0)};
-  Object conseq = {objGetData(ifThen, 1)};
-  Object alt = {objGetData(ifThen, 2)};
+  Object cond = {objGetData(ifThen, IF_COND_OFS)};
+  Object conseq = {objGetData(ifThen, IF_CONSEQ_OFS)};
+  Object alt = {objGetData(ifThen, IF_ALT_OFS)};
   objMark(cond);
   objMark(conseq);
   objMark(alt);
@@ -59,17 +59,17 @@ void ifMark(Object ifThen) {
 /*------------------------------------------------------------------*/
 Object ifNew(Object cond, Object conseq, Object alt) {
   Object ifThen = objAlloc(E_If, IF_OBJ_SIZE);
-  objSetData(ifThen, 0, cond.a);
-  objSetData(ifThen, 1, conseq.a);
-  objSetData(ifThen, 2, alt.a);
+  objSetData(ifThen, IF_COND_OFS, cond.a);
+  objSetData(ifThen, IF_CONSEQ_OFS, conseq.a);
+  objSetData(ifThen, IF_ALT_OFS, alt.a);
   return ifThen;
 }
 
 /*------------------------------------------------------------------*/
 void ifShow(Object ifThen, FILE* stream) {
-  Object cond = {objGetData(ifThen, 0)};
-  Object conseq = {objGetData(ifThen, 1)};
-  Object alt = {objGetData(ifThen, 2)};
+  Object cond = {objGetData(ifThen, IF_COND_OFS)};
+  Object conseq = {objGetData(ifThen, IF_CONSEQ_OFS)};
+  Object alt = {objGetData(ifThen, IF_ALT_OFS)};
   fprintf(stream, "if ");
   objShow(cond, stream);
   fprintf(stream, " then ");

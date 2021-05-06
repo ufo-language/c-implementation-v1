@@ -21,6 +21,7 @@
 #include "delegate.h"
 #include "e_abstr.h"
 #include "e_app.h"
+#include "e_binop.h"
 #include "e_ident.h"
 #include "e_if.h"
 #include "e_let.h"
@@ -172,6 +173,9 @@ Object objEval(Object obj, Thread* thd) {
       case E_App:
         obj = appEval(obj, thd);
         break;
+      case E_Binop:
+        obj = binopEval(obj, thd);
+        break;
       case E_Ident:
         obj = identEval(obj, thd);
         break;
@@ -243,6 +247,9 @@ void objFreeVars(Object obj, Object freeVarSet) {
       break;
     case E_App:
       appFreeVars(obj, freeVarSet);
+      break;
+    case E_Binop:
+      binopFreeVars(obj, freeVarSet);
       break;
     case E_Ident:
       setAddElem(freeVarSet, obj);
@@ -321,13 +328,13 @@ Word objHashCode(Object obj) {
 }
 
 /*------------------------------------------------------------------*/
-void objMark_generic(Object obj, Word start, Word count) {
+/*void objMark_generic(Object obj, Word start, Word count) {
   Word to = start + count;
   for (Word n=start; n<to; n++) {
     Object obj1 = {objGetData(obj, n)};
     objMark(obj1);
   }
-}
+}*/
 
 /*------------------------------------------------------------------*/
 void objMark(Object obj) {
@@ -368,6 +375,9 @@ void objMark(Object obj) {
       break;
     case E_App:
       appMark(obj);
+      break;
+    case E_Binop:
+      binopMark(obj);
       break;
     case E_If:
       ifMark(obj);
@@ -481,6 +491,9 @@ void objShow(Object obj, FILE* stream) {
       break;
     case E_App:
       appShow(obj, stream);
+      break;
+    case E_Binop:
+      binopShow(obj, stream);
       break;
     case E_Ident:
       identShow(obj, stream);

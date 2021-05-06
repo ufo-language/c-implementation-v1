@@ -43,6 +43,7 @@ set(LIB_SRC_FILES
   src/delegate.c
   src/e_abstr.c
   src/e_app.c
+  src/e_binop.c
   src/e_ident.c
   src/e_if.c
   src/e_let.c
@@ -60,6 +61,7 @@ set(LIB_SRC_FILES
   src/main.c
   src/mem.c
   src/namespace.c
+  src/ns_global.c
   src/ns_io.c
   src/object.c
   src/parser.c

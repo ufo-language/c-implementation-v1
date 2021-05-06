@@ -29,6 +29,7 @@ typedef enum {
   D_Tuple,
   E_Abstr,
   E_App,
+  E_Binop,
   E_Ident,
   E_If,
   E_Let,

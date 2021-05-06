@@ -37,6 +37,7 @@ char* ObjTypeNames[] = {
   /* expressions */
   "Abstraction",
   "Application",
+  "Binop",
   "Ident",
   "IfThen",
   "Let",
@@ -45,6 +46,7 @@ char* ObjTypeNames[] = {
   "Quote",
   "Seq",
   "Throw",
+  /* special */
   "Trampoline"
 };
 

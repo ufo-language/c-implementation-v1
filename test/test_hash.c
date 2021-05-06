@@ -120,13 +120,13 @@ void test_hashPut1() {
 
   EXPECT_EQ(1, objGetData(hash, 0)); /* nBindings */
   EXPECT_EQ(1, hashCount(hash));
-  EXPECT_EQ(i100.a, hashGet(hash, x).a);
+  EXPECT_EQ(i100.a, hashGet_unsafe(hash, x).a);
 
   hashPut(hash, x, i200);
 
   EXPECT_EQ(1, objGetData(hash, 0)); /* nBindings */
   EXPECT_EQ(1, hashCount(hash));
-  EXPECT_EQ(i200.a, hashGet(hash, x).a);
+  EXPECT_EQ(i200.a, hashGet_unsafe(hash, x).a);
 }
 
 void test_hashPut2() {
@@ -210,9 +210,9 @@ void test_hashGet() {
   hashPut(hash, y, i200);
   hashPut(hash, z, i300);
 
-  EXPECT_EQ(i100.a, hashGet(hash, x).a);
-  EXPECT_EQ(i200.a, hashGet(hash, y).a);
-  EXPECT_EQ(i300.a, hashGet(hash, z).a);
+  EXPECT_EQ(i100.a, hashGet_unsafe(hash, x).a);
+  EXPECT_EQ(i200.a, hashGet_unsafe(hash, y).a);
+  EXPECT_EQ(i300.a, hashGet_unsafe(hash, z).a);
 }
 
 void test_hashEqual() {
@@ -263,8 +263,8 @@ static void test_hashEval() {
 
   Object hash2 = objEval(hash1, thd);
 
-  EXPECT_EQ(i100.a, hashGet(hash2, a).a);
-  EXPECT_EQ(i200.a, hashGet(hash2, b).a);
+  EXPECT_EQ(i100.a, hashGet_unsafe(hash2, a).a);
+  EXPECT_EQ(i200.a, hashGet_unsafe(hash2, b).a);
   threadDelete(thd);
 }
 

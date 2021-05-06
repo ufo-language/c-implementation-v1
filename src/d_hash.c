@@ -50,7 +50,7 @@ bool hashEquals(Object hash, Object other) {
       Object binding = listGetFirst(bucket);
       Object key = bindingGetLhs(binding);
       Object val = bindingGetRhs(binding);
-      if (!objEquals(val, hashGet(other, key))) {
+      if (!objEquals(val, hashGet_unsafe(other, key))) {
         return false;
       }
       bucket = listGetRest(bucket);
@@ -109,7 +109,19 @@ void hashFreeVars(Object hash, Object freeVarSet) {
 #endif
 
 /*------------------------------------------------------------------*/
-Object hashGet(Object hash, Object key) {
+Object hashGet(Object hash, Object key, Thread* thd) {
+  Object elem = hashGet_unsafe(hash, key);
+  if (elem.a == nullObj.a) {
+    Object exn = arrayNew(2);
+    arraySet_unsafe(exn, 0, key);
+    arraySet_unsafe(exn, 1, hash);
+    threadThrowException(thd, "Error", "Key {} not found in hash {}", exn);
+  }
+  return elem;
+}
+
+/*------------------------------------------------------------------*/
+Object hashGet_unsafe(Object hash, Object key) {
   Word bucketNum;
   Object binding = hashLocate(hash, key, &bucketNum);
   if (binding.a != nullObj.a) {
