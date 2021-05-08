@@ -52,5 +52,10 @@ PrimFunc primGet(Object prim) {
 
 /*------------------------------------------------------------------*/
 void primShow(Object prim, FILE* stream) {
-  fprintf(stream, "prim@%p", (void*)primGet(prim));
+  union {
+    PrimFunc p;
+    void* v;
+  } u;
+  u.p = primGet(prim);
+  fprintf(stream, "prim@%p", u.v);
 }
