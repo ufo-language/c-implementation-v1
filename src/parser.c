@@ -65,6 +65,7 @@ Object p_braceOpen(Thread* thd, Object tokens);
 Object p_braceClose(Thread* thd, Object tokens);
 Object p_bracketOpen(Thread* thd, Object tokens);
 Object p_bracketClose(Thread* thd, Object tokens);
+Object p_colon(Thread* thd, Object tokens);
 Object p_comma(Thread* thd, Object tokens);
 Object p_equalSign(Thread* thd, Object tokens);
 Object p_hashMark(Thread* thd, Object tokens);
@@ -101,7 +102,7 @@ Object p_THEN(Thread* thd, Object tokens);
 
 /* expressions */
 Object p_apply(Thread* thd, Object tokens);
-Object p_binop(Thread* thd, Object tokens);
+Object p_colonExpr(Thread* thd, Object tokens);
 Object p_do(Thread* thd, Object tokens);
 Object p_function(Thread* thd, Object tokens);
 Object p_ident(Thread* thd, Object tokens);
@@ -113,7 +114,6 @@ Object p_queue(Thread* thd, Object tokens);
 Object p_quote(Thread* thd, Object tokens);
 Object p_set(Thread* thd, Object tokens);
 
-Object p_anyBinaryOperator(Thread* thd, Object tokens);
 Object p_expr(Thread* thd, Object tokens);
 Object p_listOfAny(Thread* thd, Object tokens);
 Object p_any(Thread* thd, Object tokens);
@@ -133,9 +133,7 @@ struct ParserEntry_struct {
   {(void*)p_angleClose, "p_angleClose"},
   {(void*)p_angleOpen, "p_angleOpen"},
   {(void*)p_any, "p_any"},
-  {(void*)p_anyBinaryOperator, "p_anyBinaryOperator"},
   {(void*)p_apply, "p_apply"},
-  {(void*)p_binop, "p_binop"},
   {(void*)p_array, "p_array"},
   {(void*)p_binding, "p_binding"},
   {(void*)p_bool, "p_bool"},
@@ -144,6 +142,8 @@ struct ParserEntry_struct {
   {(void*)p_braceOpen, "p_braceOpen"},
   {(void*)p_bracketClose, "p_bracketClose"},
   {(void*)p_bracketOpen, "p_bracketOpen"},
+  {(void*)p_colon, "p_colon"},
+  {(void*)p_colonExpr, "p_colonExpr"},
   {(void*)p_comma, "p_comma"},
   {(void*)p_commaList, "p_commaList"},
   {(void*)p_commaBindings, "p_commaBindings"},
@@ -712,14 +712,10 @@ Object p_parenCommaList(Thread* thd, Object tokens) {
 }
 
 Object p_apply(Thread* thd, Object tokens) {
-  /* try a parenthesized expression, and if that fails then try just
-     an identifier */
-  Object abstrRes = p_parenExpr(thd, tokens);
+  Parser parsers[] = {p_parenExpr, p_colonExpr, p_ident, NULL};
+  Object abstrRes = p_oneOf(thd, tokens, parsers);
   if (abstrRes.a == nullObj.a) {
-    abstrRes = p_ident(thd, tokens);
-    if (abstrRes.a == nullObj.a) {
-      return nullObj;
-    }
+    return nullObj;
   }
   Object abstr = listGetFirst(abstrRes);
   tokens = listGetRest(abstrRes);
@@ -734,17 +730,13 @@ Object p_apply(Thread* thd, Object tokens) {
   return listNew(apply, tokens);
 }
 
-Object p_anyBinaryOperator(Thread* thd, Object tokens) {
+Object p_colon(Thread* thd, Object tokens) {
   (void)thd;
-  Object res = p_spotSpecial(tokens, ":");
-  if (res.a == nullObj.a) {
-    return nullObj;
-  }
-  return res;
+  return p_spotSpecial(tokens, ":");
 }
 
-Object p_binop(Thread* thd, Object tokens) {
-  Parser parsers[] = {p_object, p_anyBinaryOperator, p_any, NULL};
+Object p_colonExpr(Thread* thd, Object tokens) {
+  Parser parsers[] = {p_object, p_colon, p_ident, NULL};
   Object res = p_seqOf(thd, tokens, parsers);
   if (res.a == nullObj.a) {
     return nullObj;
@@ -964,7 +956,18 @@ Object p_set(Thread* thd, Object tokens) {
 
 /* any expression */
 Object p_expr(Thread* thd, Object tokens) {
-  Parser parsers[] = {p_binop, p_parenExpr, p_apply, p_do, p_function, p_if, p_let, p_letRec, p_quote, NULL};
+  Parser parsers[] = {
+    p_parenExpr,
+    p_apply,
+    p_colonExpr,  /* must come after p_apply */
+    p_do,
+    p_function,
+    p_if,
+    p_let,
+    p_letRec,
+    p_quote,
+    NULL
+  };
   Object res = p_oneOf(thd, tokens, parsers);
   return res;
 }
