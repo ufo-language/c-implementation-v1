@@ -736,7 +736,7 @@ Object p_colon(Thread* thd, Object tokens) {
 }
 
 Object p_colonExpr(Thread* thd, Object tokens) {
-  Parser parsers[] = {p_object, p_colon, p_ident, NULL};
+  Parser parsers[] = {p_object, p_colon, p_object, NULL};
   Object res = p_seqOf(thd, tokens, parsers);
   if (res.a == nullObj.a) {
     return nullObj;
