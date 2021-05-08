@@ -1,6 +1,8 @@
+#include "d_list.h"
 #include "d_prim.h"
 #include "defines.h"
 #include "delegate.h"
+#include "globals.h"
 #include "thread.h"
 
 /*------------------------------------------------------------------*/
@@ -8,6 +10,16 @@ Object primApply(Object prim, Object argList, Thread* thd) {
   PrimFunc primFunc = primGet(prim);
   Object res = primFunc(thd, argList);
   return res;
+}
+
+/*------------------------------------------------------------------*/
+Object primCheckArgs(Object params, Object args, Thread* thd) {
+  Object matchRes = objMatch(params, args, EMPTY_LIST);
+  if (matchRes.a == nullObj.a) {
+    Object exn = listNew(params, args);
+    threadThrowException(thd, "ArgumentError", "parameter/argument mismatch", exn);
+  }
+  return matchRes;
 }
 
 /*------------------------------------------------------------------*/
