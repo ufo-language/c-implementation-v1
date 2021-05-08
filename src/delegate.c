@@ -207,8 +207,8 @@ Object objEval(Object obj, Thread* thd) {
     objType = objGetType(obj);
     if (objType == S_Trampoline) {
       contin = true;
-      obj = trampGetExpr(obj);
       Object env = trampGetEnv(obj);
+      obj = trampGetExpr(obj);
       threadSetEnv(thd, env);
     }
     else {
