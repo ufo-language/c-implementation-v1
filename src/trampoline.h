@@ -13,5 +13,6 @@ Object trampGetExpr(Object tramp);
 Object trampGetEnv(Object tramp);
 void trampMark(Object tramp);
 void trampSet(Object tramp, Object expr, Object env);
+void trampShow(Object tramp, FILE* stream);
 
 #endif

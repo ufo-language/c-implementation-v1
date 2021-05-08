@@ -39,3 +39,13 @@ void trampSet(Object tramp, Object expr, Object env) {
   objSetData(tramp, TRAMP_EXPR_OFS, expr.a);
   objSetData(tramp, TRAMP_ENV_OFS, env.a);  
 }
+
+void trampShow(Object tramp, FILE* stream) {
+  fprintf(stream, "Trampoline{");
+  Object obj = {objGetData(tramp, TRAMP_EXPR_OFS)};
+  objShow(obj, stream);
+  fputs(", ", stream);
+  Object env = {objGetData(tramp, TRAMP_ENV_OFS)};
+  objShow(env, stream);
+  fputc('}', stream);
+}

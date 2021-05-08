@@ -523,12 +523,8 @@ void objShow(Object obj, FILE* stream) {
     case D_Null:
       fprintf(stream, "NULL-OBJECT");
       break;
-    case S_Trampoline: {
-        fprintf(stream, "Trampoline{");
-        Object obj1 = {objGetData(obj, 0)};
-        objShow(obj1, stream);
-        fputc('}', stream);
-      }
+    case S_Trampoline:
+      trampShow(obj, stream);
       break;
     default:
       fprintf(stream, "SHOW:UNHANDLED-OBJECT(%s)@%d", ObjTypeNames[objGetType(obj)], obj.a);
