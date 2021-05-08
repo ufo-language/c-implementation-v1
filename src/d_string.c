@@ -118,11 +118,7 @@ void stringSetChar_unsafe(Object string, Word index, char c) {
 
 /*------------------------------------------------------------------*/
 void stringDisp(Object string, FILE* stream) {
-  Word len = stringCount(string);
-  for (Word n=0; n<len; n++) {
-    char c = stringGetChar_unsafe(string, n);
-    fputc(c, stream);
-  }
+  stringUnescapify(string, stream);
 }
 
 /*------------------------------------------------------------------*/

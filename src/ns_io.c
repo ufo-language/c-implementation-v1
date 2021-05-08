@@ -19,8 +19,13 @@ Object io_defineAll(Object env) {
   return listNew(binding, env);
 }
 
+static void printCallback(Object data, Object elem) {
+  (void)data;
+  objDisp(elem, stdout);
+}
+
 Object io_print(Thread* thd, Object args) {
   (void)thd;
-  printf("io_print args = "); objShow(args, stdout); printf("\n");
+  listEach(args, printCallback, NOTHING);
   return NOTHING;
 }
