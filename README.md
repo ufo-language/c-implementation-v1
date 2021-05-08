@@ -14,12 +14,12 @@ You prolly want docs, right? We got docs: see https://github.com/ufo-language/re
 
 ----
 
-Current status: there's a REPL that lets you enter many of the data structures and a few of the expressions, but there are no built-in functions.
+Current status: there's a REPL that lets you enter many of the data structures and a few of the expressions, and there is now a *single built-in primitive function* (you can try it: `io:print("Hello, World!\n")`).
 
 Features:
 * Virtual memory
 * Automatic memory management with memory block defragmentation
-* Recursive evaluator that also provides proper tail call elimination (impressed? *you should be*) ;)
+* Recursive evaluator that also provides proper tail call elimination (impressed? *you should be*)
 * Expressions:
   * variable
   * if/then/else
@@ -37,6 +37,7 @@ Features:
   * set
   * queue
   * tuple (immutable array)
+* Namespaces for primitive functions
 * Plenty of undocumented features! (i.e., bugs)
 
 CS quiz: What's so useful about an immuatable array (or any immutable data type, for that matter)? No fair peeking at my source code before you answer it. Hint: I said "CS quiz" and not "software engineering quiz".
