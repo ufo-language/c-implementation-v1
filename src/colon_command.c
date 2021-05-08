@@ -8,12 +8,13 @@
 #include "thread.h"
 
 void colonCommandHelp() {
-  puts("  :?    Shows this help message");
-  puts("  :env  Shows current dynamic environment");
-  puts("  :gc   Performs a garbage collection");
-  puts("  :i    Shows last input");
-  puts("  :mem  Shows memory values");
-  puts("  :q    Quits UFO");
+  puts("  :?     Shows this help message");
+  puts("  :env   Shows current dynamic environment");
+  puts("  :gc    Performs a garbage collection");
+  puts("  :i     Shows last input");
+  puts("  :mem   Shows memory values");
+  puts("  :q     Quits UFO");
+  puts("  :size  Shows system word sizes");
 }
 
 void colonCommandShowInput(ReplObj* replObj) {
@@ -23,6 +24,16 @@ void colonCommandShowInput(ReplObj* replObj) {
   printf(" : %s\n", ObjTypeNames[objGetType(replObj->parseRes)]);
   printf("Value:        "); objShow(replObj->value, stdout);
   printf(" : %s\n", ObjTypeNames[objGetType(replObj->value)]);
+}
+
+void colonCommandShowSizes() {
+  printf("System stats:\n");
+  printf("Size of char:  %ld bits\n", sizeof(char) * 8);
+  printf("Size of int:   %ld bits\n", sizeof(int) * 8);
+  printf("Size of long:  %ld bits\n", sizeof(long) * 8);
+  printf("Size of void*: %ld bits\n", sizeof(void*) * 8);
+  printf("Size of uint:  %ld bits\n", sizeof(uint) * 8);
+  printf("  where uint = unsigned short int\n");
 }
 
 bool colonCommand(Thread* thd, ReplObj* replObj) {
@@ -45,6 +56,9 @@ bool colonCommand(Thread* thd, ReplObj* replObj) {
   }
   else if (!strcmp(":q", input)) {
     contin = false;
+  }
+  else if (!strcmp(":size", input)) {
+    colonCommandShowSizes();
   }
   else if (!strcmp(":?", input)) {
     colonCommandHelp();
