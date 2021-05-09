@@ -18,7 +18,6 @@ static Object hash_oneParam;
 /*------------------------------------------------------------------*/
 Object hash_defineAll(Object env) {
   hash_oneParam = listNew(symbolNew(ObjTypeNames[D_Hash]), EMPTY_LIST);
-
   Object ns = hashNew();
   nsAddPrim(ns, "keys", hash_keys);
   Object binding = bindingNew(identNew("hash"), ns);

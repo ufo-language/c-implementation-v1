@@ -25,7 +25,6 @@ static Object any_twoParams;
 Object any_defineAll(Object env) {
   any_oneParam = listNew(symbolNew("Any"), EMPTY_LIST);
   any_twoParams = listNew(symbolNew("Any"), listNew(symbolNew("Any"), EMPTY_LIST));
-
   Object ns = hashNew();
   nsAddPrim(ns, "freeVars", any_freeVars);
   nsAddPrim(ns, "hashCode", any_hashCode);

@@ -16,17 +16,12 @@ Object io_nl(Thread* thd, Object args);
 Object io_show(Thread* thd, Object args);
 Object io_showln(Thread* thd, Object args);
 
-static Object io_nl_params;
-
 /*------------------------------------------------------------------*/
 Object io_defineAll(Object env) {
   Object ns = hashNew();
   nsAddPrim(ns, "disp", io_disp);
   nsAddPrim(ns, "displn", io_displn);
-
   nsAddPrim(ns, "nl", io_nl);
-  io_nl_params = EMPTY_LIST;
-
   nsAddPrim(ns, "show", io_show);
   nsAddPrim(ns, "showln", io_showln);
   Object binding = bindingNew(identNew("io"), ns);
@@ -63,7 +58,7 @@ Object io_displn(Thread* thd, Object args) {
 /*------------------------------------------------------------------*/
 Object io_nl(Thread* thd, Object args) {
   (void)thd;
-  primCheckArgs(io_nl_params, args, thd);
+  primCheckArgs(EMPTY_LIST, args, thd);
   printf("\n");
   return NOTHING;
 }
