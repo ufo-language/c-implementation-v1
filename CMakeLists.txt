@@ -64,6 +64,7 @@ set(LIB_SRC_FILES
   src/ns_global.c
   src/ns_hash.c
   src/ns_io.c
+  src/ns_list.c
   src/ns_ns.c
   src/object.c
   src/parser.c
