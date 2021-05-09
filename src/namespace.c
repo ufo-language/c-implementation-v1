@@ -10,6 +10,7 @@ Object hash_defineAll(Object env);
 Object io_defineAll(Object env);
 Object list_defineAll(Object env);
 Object ns_defineAll(Object env);
+Object ufo_defineAll(Object env);
 
 void nsAddPrim(Object hash, char* name, PrimFunc func) {
   Object key = identNew(name);
@@ -25,5 +26,6 @@ Object nsDefineAll() {
   env = io_defineAll(env);
   env = list_defineAll(env);
   env = ns_defineAll(env);
+  env = ufo_defineAll(env);
   return env;
 }

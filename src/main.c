@@ -5,13 +5,16 @@
 #include "object.h"
 #include "repl.h"
 
+extern int main_argc;
+extern char** main_argv;
+
 void staticInit() {
   objStaticInit();
 }
 
 int main(int argc, char** argv) {
-  (void)argc;  /* suppresses unused parameter warning */
-  (void)argv;  /* suppresses unused parameter warning */
+  main_argc = argc;
+  main_argv = argv;
   memStart();
   staticInit();
   globalsSetup();
