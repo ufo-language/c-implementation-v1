@@ -14,7 +14,7 @@ You prolly want docs, right? We got docs: see https://github.com/ufo-language/re
 
 ----
 
-Current status: there's a REPL that lets you enter many of the data structures and a few of the expressions, and there is now a *single built-in primitive function* (you can try it: `io:print("Hello, World!\n")`).
+Current status: there's a REPL that lets you enter many of the data structures and a few of the expressions, and there are a few namespaces with primitive functions (type `ns:global()` -- the output is messy, I'll try to clean that up).
 
 Features:
 * Virtual memory
