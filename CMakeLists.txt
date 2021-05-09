@@ -67,6 +67,8 @@ set(LIB_SRC_FILES
   src/ns_io.c
   src/ns_list.c
   src/ns_ns.c
+  src/ns_tuple.c
+  src/ns_type.c
   src/ns_ufo.c
   src/object.c
   src/parser.c

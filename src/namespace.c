@@ -11,6 +11,8 @@ Object hash_defineAll(Object env);
 Object io_defineAll(Object env);
 Object list_defineAll(Object env);
 Object ns_defineAll(Object env);
+Object tuple_defineAll(Object env);
+Object type_defineAll(Object env);
 Object ufo_defineAll(Object env);
 
 void nsAddPrim(Object hash, char* name, PrimFunc func) {
@@ -28,6 +30,8 @@ Object nsDefineAll() {
   env = io_defineAll(env);
   env = list_defineAll(env);
   env = ns_defineAll(env);
+  env = tuple_defineAll(env);
+  env = type_defineAll(env);
   env = ufo_defineAll(env);
   return env;
 }

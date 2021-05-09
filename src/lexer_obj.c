@@ -44,7 +44,7 @@ Object lex(Thread* thd, Object string) {
         }
         break;
       case T_BOOL:
-        lexeme = boolNew(!strcmp(token.lexeme, BOOL_TRUE_STRING));
+        lexeme = strcmp(token.lexeme, BOOL_TRUE_STRING) ? FALSE : TRUE;
         break;
       case T_OPER:
       case T_IDENT:

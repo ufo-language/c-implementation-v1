@@ -16,7 +16,6 @@
 Object any_freeVars(Thread* thd, Object args);
 Object any_hashCode(Thread* thd, Object args);
 Object any_match(Thread* thd, Object args);
-Object any_type(Thread* thd, Object args);
 
 static Object param_Any;
 static Object param_AnyAny;
@@ -29,7 +28,6 @@ Object any_defineAll(Object env) {
   nsAddPrim(ns, "freeVars", any_freeVars);
   nsAddPrim(ns, "hashCode", any_hashCode);
   nsAddPrim(ns, "match", any_match);
-  nsAddPrim(ns, "type", any_type);
   Object binding = bindingNew(identNew("any"), ns);
   return listNew(binding, env);
 }
@@ -58,15 +56,4 @@ Object any_match(Thread* thd, Object args) {
   (void)thd;
   primCheckArgs(param_AnyAny, args, thd);
   return objMatch(listGetFirst(args), listGetSecond(args), EMPTY_LIST);
-}
-
-/*------------------------------------------------------------------*/
-Object any_type(Thread* thd, Object args) {
-  (void)thd;
-  primCheckArgs(param_Any, args, thd);
-  Object arg = listGetFirst(args);
-  ObjType objType = objGetType(arg);
-  char* typeName = ObjTypeNames[objType];
-  Object typeSym = symbolNew(typeName);
-  return typeSym;
 }
