@@ -31,6 +31,7 @@ Object queueDeq(Object q, Thread* thd) {
 Object queueDeq_unsafe(Object q) {
   Word nElems = objGetData(q, Q_NELEMS_OFS);
   if (nElems == 0) {
+    return nullObj;
   }
   Object head = {objGetData(q, Q_HEAD_OFS)};
   Object elem = listGetFirst(head);
