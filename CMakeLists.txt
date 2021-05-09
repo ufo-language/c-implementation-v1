@@ -61,6 +61,7 @@ set(LIB_SRC_FILES
   src/mem.c
   src/namespace.c
   src/ns_any.c
+  src/ns_array.c
   src/ns_global.c
   src/ns_hash.c
   src/ns_io.c
