@@ -6,6 +6,7 @@
 
 Object any_defineAll(Object env);
 Object global_defineAll(Object env);
+Object hash_defineAll(Object env);
 Object io_defineAll(Object env);
 Object ns_defineAll(Object env);
 
@@ -19,6 +20,7 @@ Object nsDefineAll() {
   Object env = EMPTY_LIST;
   env = any_defineAll(env);
   env = global_defineAll(env);
+  env = hash_defineAll(env);
   env = io_defineAll(env);
   env = ns_defineAll(env);
   return env;

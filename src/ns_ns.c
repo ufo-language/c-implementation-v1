@@ -23,7 +23,6 @@ Object ns_defineAll(Object env) {
 /*------------------------------------------------------------------*/
 Object ns_global(Thread* thd, Object args) {
   (void)thd;
-  (void)args;
   primCheckArgs(EMPTY_LIST, args, thd);
   return threadGetEnv(thd);
 }

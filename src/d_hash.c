@@ -2,6 +2,7 @@
 #include "d_binding.h"
 #include "d_hash.h"
 #include "d_list.h"
+#include "d_set.h"
 #include "delegate.h"
 #include "eval.h"
 #include "globals.h"
@@ -79,14 +80,14 @@ Object hashEval(Object hash, Thread* thd) {
 }
 
 /*------------------------------------------------------------------*/
-Object hashFreeVars_aux(Object freeVarSet, Object key, Object val) {
+Object hashFreeVars_callback(Object freeVarSet, Object key, Object val) {
   objFreeVars(key, freeVarSet);
   objFreeVars(val, freeVarSet);
   return freeVarSet;
 }
 
 void hashFreeVars(Object hash, Object freeVarSet) {
-  hashFold(hash, freeVarSet, *hashFreeVars_aux);
+  hashFold(hash, freeVarSet, *hashFreeVars_callback);
 }
 
 #if 0
@@ -128,6 +129,20 @@ Object hashGet_unsafe(Object hash, Object key) {
     return bindingGetRhs(binding);
   }
   return nullObj;
+}
+
+/*------------------------------------------------------------------*/
+Object hashKeys_callback(Object keySet, Object key, Object val) {
+  (void)val;
+  setAddElem(keySet, key);
+  return keySet;
+}
+
+/*------------------------------------------------------------------*/
+Object hashKeys(Object hash) {
+  Object keySet = setNew();
+  hashFold(hash, keySet, hashKeys_callback);
+  return keySet;
 }
 
 /*------------------------------------------------------------------*/

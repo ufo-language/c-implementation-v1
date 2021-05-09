@@ -62,6 +62,7 @@ set(LIB_SRC_FILES
   src/namespace.c
   src/ns_any.c
   src/ns_global.c
+  src/ns_hash.c
   src/ns_io.c
   src/ns_ns.c
   src/object.c
