@@ -13,13 +13,29 @@ Object primApply(Object prim, Object argList, Thread* thd) {
 }
 
 /*------------------------------------------------------------------*/
-Object primCheckArgs(Object params, Object args, Thread* thd) {
-  Object matchRes = objMatch(params, args, EMPTY_LIST);
-  if (matchRes.a == nullObj.a) {
-    Object exn = listNew(params, args);
-    threadThrowException(thd, "ArgumentError", "parameter/argument mismatch", exn);
+void primCheckArgs(Object paramTypes, Object args, Thread* thd) {
+  bool error = false;
+  while (!error) {
+    if (listIsEmpty(paramTypes)) {
+      error = !listIsEmpty(args);
+      break;
+    }
+    if (listIsEmpty(args)) {
+      error = true;
+      break;
+    }
+    Object paramType = listGetFirst(paramTypes);
+    Object arg = listGetFirst(args);
+    if (!objHasType(arg, paramType)) {
+      error = true;
+      break;
+    }
+    paramTypes = listGetRest(paramTypes);
+    args = listGetRest(args);
   }
-  return matchRes;
+  if (error) {
+    threadThrowException(thd, "ArgumentError", "parameter/argument mismatch", listNew(paramTypes, args));
+  }
 }
 
 /*------------------------------------------------------------------*/

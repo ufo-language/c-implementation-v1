@@ -39,14 +39,17 @@ typedef enum {
   E_Quote,
   E_Seq,
   E_Throw,
-  S_Trampoline
+  S_Trampoline,
+  X_Count
 } ObjType;
-
-extern char* ObjTypeNames[];
 
 typedef struct {
   Address a;
 } Object;
+
+extern char* ObjTypeNames[];
+extern Object ObjTypeNameSyms[];
+extern Object SYM_ANY;
 
 extern Object nullObj;
 
@@ -54,6 +57,8 @@ extern Object nullObj;
 #define OBJ_OVERHEAD 1
 
 /* function prototypes ---------------------------------------------*/
+
+void objStaticInit();
 
 /* pointer conversions */
 Object objRawBlockToObj(RawBlock rawBlk);

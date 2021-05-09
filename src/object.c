@@ -2,6 +2,7 @@
 #include <stdio.h>  /* TODO remove after debugging */
 #include <string.h>
 
+#include "d_symbol.h"
 #include "defines.h"
 #include "eval.h"
 #include "gc.h"
@@ -60,6 +61,16 @@ char* ObjTypeNames[] = {
 */
 
 Object nullObj = {0};
+
+Object ObjTypeNameSyms[X_Count];
+Object SYM_ANY;
+
+void objStaticInit() {
+  SYM_ANY = symbolNew("Any");
+  for (int n=0; n<X_Count; n++) {
+    ObjTypeNameSyms[n] = symbolNew(ObjTypeNames[n]);
+  }
+}
 
 /* Object functions ------------------------------------------------*/
 

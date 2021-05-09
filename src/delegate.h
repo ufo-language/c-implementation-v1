@@ -12,6 +12,7 @@ bool objEquals(Object obj1, Object obj2);
 Object objEval(Object obj, Thread* thd);
 void objFreeVars(Object obj, Object freeVarSet);
 Word objHashCode(Object obj);
+bool objHasType(Object obj, Object typeSym);
 void objMark(Object obj);
 Object objMatch(Object obj, Object other, Object bindingList);
 void objShow(Object obj, FILE* stream);

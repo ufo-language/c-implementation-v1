@@ -328,6 +328,15 @@ Word objHashCode(Object obj) {
 }
 
 /*------------------------------------------------------------------*/
+bool objHasType(Object obj, Object typeSym) {
+  if (symbolEquals(SYM_ANY, typeSym)) {
+    return true;
+  }
+  Object objTypeSym = ObjTypeNameSyms[objGetType(obj)];
+  return symbolEquals(objTypeSym, typeSym);
+}
+
+/*------------------------------------------------------------------*/
 /*void objMark_generic(Object obj, Word start, Word count) {
   Word to = start + count;
   for (Word n=start; n<to; n++) {
@@ -431,7 +440,7 @@ Object objMatch(Object obj, Object other, Object bindingList) {
     case D_Tuple:
       return tupleMatch(obj, other, bindingList);
     default:
-      return (obj.a == other.a) ? bindingList : nullObj;
+      return objEquals(obj, other) ? bindingList : nullObj;
   }
 }
 
