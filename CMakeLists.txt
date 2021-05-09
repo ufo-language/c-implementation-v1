@@ -60,6 +60,7 @@ set(LIB_SRC_FILES
   src/main.c
   src/mem.c
   src/namespace.c
+  src/ns_any.c
   src/ns_global.c
   src/ns_io.c
   src/object.c
