@@ -83,7 +83,7 @@ void repl(void) {
             repl.value = val;
             if (val.a != NOTHING.a) {
               objShow(val, stdout);
-              printf(" : %s\n", ObjTypeNames[objGetType(val)]);
+              printf(" :: %s\n", ObjTypeNames[objGetType(val)]);
             }
           }
         }
