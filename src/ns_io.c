@@ -18,6 +18,7 @@ Object io_showln(Thread* thd, Object args);
 
 static Object io_nl_params;
 
+/*------------------------------------------------------------------*/
 Object io_defineAll(Object env) {
   Object ns = hashNew();
   nsAddPrim(ns, "disp", io_disp);
@@ -32,22 +33,26 @@ Object io_defineAll(Object env) {
   return listNew(binding, env);
 }
 
+/*------------------------------------------------------------------*/
 static void dispCallback(Object data, Object elem) {
   (void)data;
   objDisp(elem, stdout);
 }
 
+/*------------------------------------------------------------------*/
 static void showCallback(Object data, Object elem) {
   (void)data;
   objShow(elem, stdout);
 }
 
+/*------------------------------------------------------------------*/
 Object io_disp(Thread* thd, Object args) {
   (void)thd;
   listEach(args, dispCallback, NOTHING);
   return NOTHING;
 }
 
+/*------------------------------------------------------------------*/
 Object io_displn(Thread* thd, Object args) {
   (void)thd;
   listEach(args, dispCallback, NOTHING);
@@ -55,6 +60,7 @@ Object io_displn(Thread* thd, Object args) {
   return NOTHING;
 }
 
+/*------------------------------------------------------------------*/
 Object io_nl(Thread* thd, Object args) {
   (void)thd;
   primCheckArgs(io_nl_params, args, thd);
@@ -62,11 +68,14 @@ Object io_nl(Thread* thd, Object args) {
   return NOTHING;
 }
 
+/*------------------------------------------------------------------*/
 Object io_show(Thread* thd, Object args) {
   (void)thd;
   listEach(args, showCallback, NOTHING);
   return NOTHING;
 }
+
+/*------------------------------------------------------------------*/
 Object io_showln(Thread* thd, Object args) {
   (void)thd;
   listEach(args, showCallback, NOTHING);

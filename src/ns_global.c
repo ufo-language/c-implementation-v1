@@ -11,6 +11,7 @@
 
 Object oper_colon(Thread* thd, Object args);
 
+/*------------------------------------------------------------------*/
 Object global_defineAll(Object env) {
   Object ident = identNew(":");
   Object prim = primMacroNew(oper_colon);
@@ -19,6 +20,7 @@ Object global_defineAll(Object env) {
   return env;
 }
 
+/*------------------------------------------------------------------*/
 Object oper_colon(Thread* thd, Object args) {
   (void)thd;
   Object lhs = listGetFirst(args);
