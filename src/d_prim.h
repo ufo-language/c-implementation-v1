@@ -12,6 +12,7 @@ Object primNew(PrimFunc func);
 Object primMacroNew(PrimFunc func);
 
 Object primApply(Object closure, Object argList, Thread* thd);
+Object primBuildTypeList(int nArgs, ...);
 void primCheckArgs(Object params, Object args, Thread* thd);
 PrimFunc primGet(Object prim);
 void primShow(Object prim, FILE* stream);

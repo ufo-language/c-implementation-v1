@@ -18,13 +18,13 @@ Object any_hashCode(Thread* thd, Object args);
 Object any_match(Thread* thd, Object args);
 Object any_type(Thread* thd, Object args);
 
-static Object any_oneParam;
-static Object any_twoParams;
+static Object param_Any;
+static Object param_AnyAny;
 
 /*------------------------------------------------------------------*/
 Object any_defineAll(Object env) {
-  any_oneParam = listNew(symbolNew("Any"), EMPTY_LIST);
-  any_twoParams = listNew(symbolNew("Any"), listNew(symbolNew("Any"), EMPTY_LIST));
+  param_Any = primBuildTypeList(1, D_Null);
+  param_AnyAny = primBuildTypeList(2, D_Null, D_Null);
   Object ns = hashNew();
   nsAddPrim(ns, "freeVars", any_freeVars);
   nsAddPrim(ns, "hashCode", any_hashCode);
@@ -37,7 +37,7 @@ Object any_defineAll(Object env) {
 /*------------------------------------------------------------------*/
 Object any_freeVars(Thread* thd, Object args) {
   (void)thd;
-  primCheckArgs(any_oneParam, args, thd);
+  primCheckArgs(param_Any, args, thd);
   Object freeVarSet = setNew();
   Object arg = listGetFirst(args);
   objFreeVars(arg, freeVarSet);
@@ -47,7 +47,7 @@ Object any_freeVars(Thread* thd, Object args) {
 /*------------------------------------------------------------------*/
 Object any_hashCode(Thread* thd, Object args) {
   (void)thd;
-  primCheckArgs(any_oneParam, args, thd);
+  primCheckArgs(param_Any, args, thd);
   Object arg = listGetFirst(args);
   Word hashCode = objHashCode(arg);
   return intNew(hashCode);
@@ -56,14 +56,14 @@ Object any_hashCode(Thread* thd, Object args) {
 /*------------------------------------------------------------------*/
 Object any_match(Thread* thd, Object args) {
   (void)thd;
-  primCheckArgs(any_twoParams, args, thd);
+  primCheckArgs(param_AnyAny, args, thd);
   return objMatch(listGetFirst(args), listGetSecond(args), EMPTY_LIST);
 }
 
 /*------------------------------------------------------------------*/
 Object any_type(Thread* thd, Object args) {
   (void)thd;
-  primCheckArgs(any_oneParam, args, thd);
+  primCheckArgs(param_Any, args, thd);
   Object arg = listGetFirst(args);
   ObjType objType = objGetType(arg);
   char* typeName = ObjTypeNames[objType];

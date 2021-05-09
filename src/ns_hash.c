@@ -13,11 +13,11 @@
 
 Object hash_keys(Thread* thd, Object args);
 
-static Object hash_oneParam;
+static Object param_Hash;
 
 /*------------------------------------------------------------------*/
 Object hash_defineAll(Object env) {
-  hash_oneParam = listNew(symbolNew(ObjTypeNames[D_Hash]), EMPTY_LIST);
+  param_Hash = primBuildTypeList(1, D_Hash);
   Object ns = hashNew();
   nsAddPrim(ns, "keys", hash_keys);
   Object binding = bindingNew(identNew("hash"), ns);
@@ -27,7 +27,7 @@ Object hash_defineAll(Object env) {
 /*------------------------------------------------------------------*/
 Object hash_keys(Thread* thd, Object args) {
   (void)thd;
-  primCheckArgs(hash_oneParam, args, thd);
+  primCheckArgs(param_Hash, args, thd);
   Object arg = listGetFirst(args);
   return hashKeys(arg);
 }

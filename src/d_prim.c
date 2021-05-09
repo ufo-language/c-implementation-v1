@@ -1,5 +1,10 @@
+#include <stdarg.h>
+
+#include "d_int.h"
 #include "d_list.h"
 #include "d_prim.h"
+#include "d_queue.h"
+#include "d_symbol.h"
 #include "defines.h"
 #include "delegate.h"
 #include "globals.h"
@@ -13,9 +18,33 @@ Object primApply(Object prim, Object argList, Thread* thd) {
 }
 
 /*------------------------------------------------------------------*/
+Object primBuildTypeList(int nArgs, ...) {
+  va_list argList;
+  va_start(argList, nArgs);
+  Object q = queueNew();
+  for (int n=0; n<nArgs; n++) {
+    ObjType objType = va_arg(argList, ObjType);
+    Object typeSym;
+    if (objType == D_Null) {
+      typeSym = symbolNew("Any");
+    }
+    else {
+      typeSym = symbolNew(ObjTypeNames[objType]);
+    }
+    queueEnq(q, typeSym);
+  }
+  va_end(argList);
+  return queueAsList(q);
+}
+
+/*------------------------------------------------------------------*/
 void primCheckArgs(Object paramTypes, Object args, Thread* thd) {
   bool error = false;
+  Object paramTypesOrig = paramTypes;
+  Object argsOrig = args;
+  Word n = 0;
   while (!error) {
+    n++;
     if (listIsEmpty(paramTypes)) {
       error = !listIsEmpty(args);
       break;
@@ -34,7 +63,8 @@ void primCheckArgs(Object paramTypes, Object args, Thread* thd) {
     args = listGetRest(args);
   }
   if (error) {
-    threadThrowException(thd, "ArgumentError", "parameter/argument mismatch", listNew(paramTypes, args));
+    threadThrowException(thd, "ArgumentError", "parameter/argument mismatch",
+      listNew(intNew(n), listNew(paramTypesOrig, listNew(argsOrig, EMPTY_LIST))));
   }
 }
 
