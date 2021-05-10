@@ -14,6 +14,6 @@ Object seqEval(Object seq, Thread* thd);
 void seqFreeVars(Object seq, Object freeVarSet);
 void seqMark(Object seq);
 void seqShow(Object seq, FILE* stream);
-void seqShowExprs(Object exprList, FILE* stream);
+void seqShowWith(char* start, Object seq, char* end, FILE* stream);
 
 #endif

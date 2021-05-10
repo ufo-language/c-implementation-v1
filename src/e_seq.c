@@ -29,7 +29,7 @@ void seqFreeVars(Object seq, Object freeVarSet) {
   Object exprs = {objGetData(seq, SEQ_EXPRS_OFS)};
   listFreeVars(exprs, freeVarSet);
   Object lastExpr = {objGetData(seq, SEQ_LAST_EXPR_OFS)};
-  listFreeVars(lastExpr, freeVarSet);
+  objFreeVars(lastExpr, freeVarSet);
 }
 
 /*------------------------------------------------------------------*/
@@ -42,6 +42,9 @@ void seqMark(Object seq) {
 
 /*------------------------------------------------------------------*/
 Object seqNew(Object exprList) {
+  if (listIsEmpty(exprList)) {
+    exprList = listNew(NOTHING, EMPTY_LIST);
+  }
   Object seq = objAlloc(E_Seq, SEQ_OBJ_SIZE);
   Object exprParts = listSplitLast(exprList);
   objSetData(seq, SEQ_EXPRS_OFS, listGetFirst(exprParts).a);
@@ -51,19 +54,20 @@ Object seqNew(Object exprList) {
 
 /*------------------------------------------------------------------*/
 void seqShow(Object seq, FILE* stream) {
-  fputs("do ", stream);
-  Object exprs = {objGetData(seq, SEQ_EXPRS_OFS)};
-  seqShowExprs(exprs, stream);
-  Object lastExpr = {objGetData(seq, SEQ_LAST_EXPR_OFS)};
-  objShow(lastExpr, stream);
-  fputs(" end", stream);
+  seqShowWith("do ", seq, " end", stream);
 }
 
 /*------------------------------------------------------------------*/
-void seqShowExprs(Object exprList, FILE* stream) {
-  while (!listIsEmpty(exprList)) {
-    objShow(listGetFirst(exprList), stream);
+void seqShowWith(char* start, Object seq, char* end, FILE* stream) {
+  fputs(start, stream);
+  Object exprs = {objGetData(seq, SEQ_EXPRS_OFS)};
+  while (!listIsEmpty(exprs)) {
+    objShow(listGetFirst(exprs), stream);
     fputc(' ', stream);
-    exprList = listGetRest(exprList);
+    exprs = listGetRest(exprs);
   }
+  Object lastExpr = {objGetData(seq, SEQ_LAST_EXPR_OFS)};
+  objShow(lastExpr, stream);
+  fputs(end, stream);
 }
+
