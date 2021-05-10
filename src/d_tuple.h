@@ -12,10 +12,12 @@
 #define TUP_ELEMS_OFS 2
 #define TUP_OBJ_SIZE 2
 
-Object tuple1(Object elem0);
+Object tupleN(int nElems, ...);
+/*Object tuple1(Object elem0);
 Object tuple2(Object elem0, Object elem1);
 Object tuple3(Object elem0, Object elem1, Object elem2);
 Object tuple4(Object elem0, Object elem1, Object elem2, Object elem3);
+*/
 Object tupleFromArray(Object array);
 
 void tupleDel(Object tuple);

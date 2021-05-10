@@ -1,3 +1,4 @@
+#include <stdarg.h>
 #include <stdio.h>
 
 #include "d_array.h"
@@ -14,50 +15,16 @@
 Word tupleHash_aux(Object tuple);
 
 /*------------------------------------------------------------------*/
-Object tuple1(Object elem0) {
-  Word nElems = 1;
+Object tupleN(int nElems, ...) {
+  va_list argList;
+  va_start(argList, nElems);
   Object tup = objAlloc(D_Tuple, TUP_OBJ_SIZE + nElems);
   objSetData(tup, TUP_NELEMS_OFS, nElems);
-  objSetData(tup, TUP_ELEMS_OFS, elem0.a);
-  Word hashCode = tupleHash_aux(tup);
-  objSetData(tup, TUP_HASHCODE_OFS, hashCode);
-  return tup;
-}
-
-/*------------------------------------------------------------------*/
-Object tuple2(Object elem0, Object elem1) {
-  Word nElems = 2;
-  Object tup = objAlloc(D_Tuple, TUP_OBJ_SIZE + nElems);
-  objSetData(tup, TUP_NELEMS_OFS, nElems);
-  objSetData(tup, TUP_ELEMS_OFS, elem0.a);
-  objSetData(tup, TUP_ELEMS_OFS + 1, elem1.a);
-  Word hashCode = tupleHash_aux(tup);
-  objSetData(tup, TUP_HASHCODE_OFS, hashCode);
-  return tup;
-}
-
-/*------------------------------------------------------------------*/
-Object tuple3(Object elem0, Object elem1, Object elem2) {
-  Word nElems = 3;
-  Object tup = objAlloc(D_Tuple, TUP_OBJ_SIZE + nElems);
-  objSetData(tup, TUP_NELEMS_OFS, nElems);
-  objSetData(tup, TUP_ELEMS_OFS, elem0.a);
-  objSetData(tup, TUP_ELEMS_OFS + 1, elem1.a);
-  objSetData(tup, TUP_ELEMS_OFS + 2, elem2.a);
-  Word hashCode = tupleHash_aux(tup);
-  objSetData(tup, TUP_HASHCODE_OFS, hashCode);
-  return tup;
-}
-
-/*------------------------------------------------------------------*/
-Object tuple4(Object elem0, Object elem1, Object elem2, Object elem3) {
-  Word nElems = 3;
-  Object tup = objAlloc(D_Tuple, TUP_OBJ_SIZE + nElems);
-  objSetData(tup, TUP_NELEMS_OFS, nElems);
-  objSetData(tup, TUP_ELEMS_OFS, elem0.a);
-  objSetData(tup, TUP_ELEMS_OFS + 1, elem1.a);
-  objSetData(tup, TUP_ELEMS_OFS + 2, elem2.a);
-  objSetData(tup, TUP_ELEMS_OFS + 3, elem3.a);
+  for (int n=0; n<nElems; n++) {
+    Object elem = va_arg(argList, Object);
+    objSetData(tup, TUP_ELEMS_OFS + n, elem.a);
+  }
+  va_end(argList);
   Word hashCode = tupleHash_aux(tup);
   objSetData(tup, TUP_HASHCODE_OFS, hashCode);
   return tup;

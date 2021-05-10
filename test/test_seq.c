@@ -57,7 +57,7 @@ void test_seqNew() {
 
 void test_seqEvalEmpty() {
   Object seq = seqNew(EMPTY_LIST);
-  Thread* thd = 0;
+  Thread* thd = threadNew();
   Object res = eval(seq, thd);
   EXPECT_EQ(res.a, NOTHING.a);
 }

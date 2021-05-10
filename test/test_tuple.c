@@ -10,18 +10,14 @@
 #include "../src/mem.h"
 #include "../src/object.h"
 
-static void test_tuple1();
-static void test_tuple2();
-static void test_tuple3();
+static void test_tupleN();
 static void test_tupleFromArray();
 static void test_tupleHashCode();
 
 /* List the unit tests to run here ---------------------------------*/
 
 static TestEntry testEntries[] = {
-  {"test_tuple1", test_tuple1},
-  {"test_tuple2", test_tuple2},
-  {"test_tuple3", test_tuple3},
+  {"test_tupleN", test_tupleN},
   {"test_tupleFromArray", test_tupleFromArray},
   {"test_tupleHashCode", test_tupleHashCode},
   {0, 0}
@@ -46,27 +42,21 @@ void test_tuple() {
 
 /* Unit tests ------------------------------------------------------*/
 
-void test_tuple1() {
-  Object i100 = intNew(100);
-  Object tup = tuple1(i100);
-  ASSERT_EQ(1, tupleCount(tup));
-  EXPECT_EQ(i100.a, tupleGet_unsafe(tup, 0).a);
-}
-
-void test_tuple2() {
-  Object i100 = intNew(100);
-  Object i200 = intNew(200);
-  Object tup = tuple2(i100, i200);
-  ASSERT_EQ(2, tupleCount(tup));
-  EXPECT_EQ(i100.a, tupleGet_unsafe(tup, 0).a);
-  EXPECT_EQ(i200.a, tupleGet_unsafe(tup, 1).a);
-}
-
-void test_tuple3() {
+void test_tupleN() { 
   Object i100 = intNew(100);
   Object i200 = intNew(200);
   Object i300 = intNew(300);
-  Object tup = tuple3(i100, i200, i300);
+
+  Object tup = tupleN(1, i100);
+  ASSERT_EQ(1, tupleCount(tup));
+  EXPECT_EQ(i100.a, tupleGet_unsafe(tup, 0).a);
+
+  tup = tupleN(2, i100, i200);
+  ASSERT_EQ(2, tupleCount(tup));
+  EXPECT_EQ(i100.a, tupleGet_unsafe(tup, 0).a);
+  EXPECT_EQ(i200.a, tupleGet_unsafe(tup, 1).a);
+
+  tup = tupleN(3, i100, i200, i300);
   ASSERT_EQ(3, tupleCount(tup));
   EXPECT_EQ(i100.a, tupleGet_unsafe(tup, 0).a);
   EXPECT_EQ(i200.a, tupleGet_unsafe(tup, 1).a);
@@ -92,7 +82,7 @@ void test_tupleHashCode() {
   Object i100 = intNew(100);
   Object i200 = intNew(200);
   Object i300 = intNew(300);
-  Object tup = tuple3(i100, i200, i300);
+  Object tup = tupleN(3, i100, i200, i300);
   Word hashCode = objHashCode(tup);
   EXPECT_NE(0, hashCode);
 }
