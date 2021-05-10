@@ -125,7 +125,7 @@ void test_objMarkClosure() {
   Object y = identNew("y");
   Object params = listNew(x, EMPTY_LIST);
   Object i100 = intNew(100);
-  Object abstr = abstrNew(params, y);
+  Object abstr = abstrNew(params, listNew(y, EMPTY_LIST));
   Object lexEnv = listNew(bindingNew(y, i100), EMPTY_LIST);
   Object clo = closureNew(abstr, lexEnv);
   /* the lexical environment created in the closure is not the same
@@ -237,7 +237,8 @@ void test_objMarkSet() {
 void test_objMarkAbstr1() {
   Object x = identNew("x");
   Object params = listNew(x, EMPTY_LIST);
-  Object body = intNew(100);
+  Object i100 = intNew(100);
+  Object body = listNew(i100, EMPTY_LIST);
   Object abstr = abstrNew(params, body);
 
   objMark(abstr);
@@ -245,18 +246,20 @@ void test_objMarkAbstr1() {
   EXPECT_T(gcIsMarked(abstr));
   EXPECT_T(gcIsMarked(params));
   EXPECT_T(gcIsMarked(x));
-  EXPECT_T(gcIsMarked(body));
+  EXPECT_T(gcIsMarked(i100));
 }
 
 void test_objMarkAbstr2() {
   Object x = identNew("x");
   Object params1 = listNew(x, EMPTY_LIST);
-  Object body1 = intNew(100);
+  Object i100 = intNew(100);
+  Object body1 = listNew(i100, EMPTY_LIST);
   Object rule1 = abstrNew(params1, body1);
 
   Object y = identNew("y");
   Object params2 = listNew(y, EMPTY_LIST);
-  Object body2 = intNew(200);
+  Object i200 = intNew(200);
+  Object body2 = listNew(i200, EMPTY_LIST);
   Object rule2 = abstrNew(params2, body2);
 
   abstrSetNext(rule1, rule2);
@@ -266,11 +269,11 @@ void test_objMarkAbstr2() {
   EXPECT_T(gcIsMarked(rule1));
   EXPECT_T(gcIsMarked(params1));
   EXPECT_T(gcIsMarked(x));
-  EXPECT_T(gcIsMarked(body1));
+  EXPECT_T(gcIsMarked(i100));
   EXPECT_T(gcIsMarked(rule2));
   EXPECT_T(gcIsMarked(params2));
   EXPECT_T(gcIsMarked(y));
-  EXPECT_T(gcIsMarked(body2));
+  EXPECT_T(gcIsMarked(i200));
 }
 
 void test_objMarkApp() {
@@ -345,7 +348,6 @@ void test_objMarkSeq() {
   EXPECT_T(gcIsMarked(x));
   EXPECT_T(gcIsMarked(y));
   EXPECT_T(gcIsMarked(z));
-  EXPECT_T(gcIsMarked(exprs));
   EXPECT_T(gcIsMarked(seq));
 }
 

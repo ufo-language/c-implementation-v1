@@ -121,7 +121,6 @@ void test_closureMark() {
   EXPECT_T(_isMarked(objToRawBlock(y)));
   EXPECT_T(_isMarked(objToRawBlock(x)));
   EXPECT_T(_isMarked(objToRawBlock(params1)));
-  EXPECT_T(_isMarked(objToRawBlock(body)));
   EXPECT_T(_isMarked(objToRawBlock(params2)));
   EXPECT_T(_isMarked(objToRawBlock(closure)));
 }

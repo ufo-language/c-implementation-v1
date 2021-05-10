@@ -58,7 +58,7 @@ void test_abstr() {
 void test_abstrNew() {
   Object x = identNew("x");
   Object y = identNew("y");
-  Object z = identNew("y");
+  Object z = identNew("z");
   Object params1 = listNew(x, EMPTY_LIST);
   Object body = listNew(x, listNew(y, listNew(z, EMPTY_LIST)));
 
@@ -69,11 +69,12 @@ void test_abstrNew() {
 
   abstrSetNext(abstr1, abstr2);
 
-  EXPECT_EQ(body.a, abstrGetBody(abstr1).a);
+  EXPECT_EQ(E_Seq, objGetType(abstrGetBody(abstr1)));
   EXPECT_EQ(params1.a, abstrGetParams(abstr1).a);
   EXPECT_EQ(abstr2.a, abstrGetNext(abstr1).a);
 
-  EXPECT_EQ(body.a, abstrGetBody(abstr2).a);
+  EXPECT_EQ(E_Seq, objGetType(abstrGetBody(abstr2)));
+
   EXPECT_EQ(params2.a, abstrGetParams(abstr2).a);
   EXPECT_EQ(nullObj.a, abstrGetNext(abstr2).a);
 }
@@ -92,7 +93,7 @@ void test_abstrFreeVars1() {
 void test_abstrFreeVars2() {
   Object x = identNew("x");
   Object params = EMPTY_LIST;
-  Object body = x;
+  Object body = listNew(x, EMPTY_LIST);
   Object abstr = abstrNew(params, body);
 
   Object freeVarSet = setNew();
@@ -150,7 +151,6 @@ void test_abstrMark() {
   EXPECT_T(_isMarked(objToRawBlock(y)));
   EXPECT_T(_isMarked(objToRawBlock(x)));
   EXPECT_T(_isMarked(objToRawBlock(params1)));
-  EXPECT_T(_isMarked(objToRawBlock(body)));
   EXPECT_T(_isMarked(objToRawBlock(abstr1)));
   EXPECT_T(_isMarked(objToRawBlock(params2)));
   EXPECT_T(_isMarked(objToRawBlock(abstr2)));
