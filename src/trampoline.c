@@ -1,4 +1,4 @@
-#include "delegate.h" // TODO for debugging
+#include "delegate.h"
 #include "eval.h"
 #include "object.h"
 #include "thread.h"

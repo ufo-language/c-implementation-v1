@@ -32,7 +32,6 @@ Object p_real(Thread* thd, Object tokens);
 Object p_string(Thread* thd, Object tokens);
 Object p_symbol(Thread* thd, Object tokens);
 
-//Object p_number(Thread* thd, Object tokens);
 Object p_object(Thread* thd, Object tokens);
 
 /* reserved word parsers */

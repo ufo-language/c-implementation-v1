@@ -56,7 +56,6 @@ Object array_get(Thread* thd, Object args) {
 /*------------------------------------------------------------------*/
 Object array_set(Thread* thd, Object args) {
   (void)thd;
-  //printf("array_set param types = "); objShow(param_Arra
   primCheckArgs(param_ArrayIntAny, args, thd);
   Object array = listGetFirst(args);
   Object indexInt = listGetSecond(args);

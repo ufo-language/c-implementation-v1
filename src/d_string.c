@@ -124,7 +124,6 @@ void stringDisp(Object string, FILE* stream) {
 /*------------------------------------------------------------------*/
 void stringShow(Object string, FILE* stream) {
   fputc('"', stream);
-  //stringDisp(string, stream);
   stringEscapify(string, stream);
   fputc('"', stream);
 }
@@ -156,7 +155,6 @@ void stringUnescapify(Object string, FILE* stream) {
     char c = stringGetChar_unsafe(string, n);
     if (escaped) {
       switch(c) {
-        //case '\'': fprintf(stream, '\''); break;
         case '\"': fputc('\"', stream); break;
         case '\\': fputc('\\', stream); break;
         case 'b' : fputc('\b', stream); break;

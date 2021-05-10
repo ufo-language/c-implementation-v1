@@ -25,9 +25,6 @@
 */
 #define MEMBLK_GC_MARK ((MAX_ADDRESS >> 1) + 1)
 
-//typedef Address RawBlock;
-//typedef Address Block;
-
 typedef struct {
   Address a;
 } RawBlock;
