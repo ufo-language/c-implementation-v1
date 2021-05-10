@@ -10,6 +10,7 @@ int test_binding();
 int test_blockFile();
 int test_closure();
 int test_delegate();
+int test_do();
 int test_eval();
 int test_gc();
 int test_hash();
@@ -23,7 +24,6 @@ int test_mem();
 int test_object();
 int test_parser();
 int test_queue();
-int test_seq();
 int test_set();
 int test_string();
 int test_thread();
@@ -41,7 +41,7 @@ static int (*tests[])() = {
   test_queue,
   test_eval,
   test_if,
-  test_seq,
+  test_do,
   test_throw,
   test_thread,
   test_hash,

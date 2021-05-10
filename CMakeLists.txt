@@ -33,6 +33,7 @@ set(LIB_SRC_FILES
   src/d_prim.c
   src/d_queue.c
   src/d_real.c
+  src/d_seq.c
   src/d_set.c
   src/d_streamin.c
   src/d_streamout.c
@@ -43,13 +44,13 @@ set(LIB_SRC_FILES
   src/e_abstr.c
   src/e_app.c
   src/e_binop.c
+  src/e_do.c
   src/e_ident.c
   src/e_if.c
   src/e_let.c
   src/e_letin.c
   src/e_letrec.c
   src/e_quote.c
-  src/e_seq.c
   src/e_throw.c
   src/eval.c
   src/gc.c
@@ -91,6 +92,7 @@ set(TEST_SRC_FILES
   test/test_blockfile.c
   test/test_closure.c
   test/test_delegate.c
+  test/test_do.c
   test/test_eval.c
   test/test_gc.c
   test/test_hash.c
@@ -104,7 +106,6 @@ set(TEST_SRC_FILES
   test/test_object.c
   test/test_parser.c
   test/test_queue.c
-  test/test_seq.c
   test/test_set.c
   test/test_string.c
   test/test_thread.c

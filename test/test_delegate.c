@@ -14,11 +14,11 @@
 #include "../src/delegate.h"
 #include "../src/e_abstr.h"
 #include "../src/e_app.h"
+#include "../src/e_do.h"
 #include "../src/e_ident.h"
 #include "../src/e_if.h"
 #include "../src/e_let.h"
 #include "../src/e_letin.h"
-#include "../src/e_seq.h"
 #include "../src/e_throw.h"
 #include "../src/gc.h"
 #include "../src/globals.h"
@@ -341,7 +341,7 @@ void test_objMarkSeq() {
   Object y = identNew("y");
   Object z = identNew("z");
   Object exprs = listNew(x, listNew(y, listNew(z, EMPTY_LIST)));
-  Object seq = seqNew(exprs);
+  Object seq = doNew(exprs);
 
   objMark(seq);
 

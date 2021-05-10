@@ -3,7 +3,7 @@
 #include "d_set.h"
 #include "delegate.h"
 #include "e_abstr.h"
-#include "e_seq.h"
+#include "e_do.h"
 #include "object.h"
 #include "thread.h"
 
@@ -42,7 +42,7 @@ void abstrFreeVars(Object abstr, Object freeVarSet) {
 Object abstrNew(Object params, Object body) {
   /* the body is a list of expressions, convert it to a do/end
      expression */
-  body = seqNew(body);
+  body = doNew(body);
   Object abstr = objAlloc(E_Abstr, ABSTR_OBJ_SIZE);
   objSetData(abstr, ABSTR_PARAMS_OFS, params.a);
   objSetData(abstr, ABSTR_BODY_OFS, body.a);
@@ -97,7 +97,7 @@ void abstrShow_aux(Object abstr, char* prefix, FILE* stream) {
     Object params = {objGetData(abstr, ABSTR_PARAMS_OFS)};
     Object body = {objGetData(abstr, ABSTR_BODY_OFS)};
     listShowWith(params, "(", ", ", ") = ", stream);
-    seqShowWith("", body, " ", stream);
+    doShowWith("", body, " ", stream);
     abstr.a = objGetData(abstr, ABSTR_NEXT_OFS);
   }
   fputs("end", stream);

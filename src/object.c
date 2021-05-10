@@ -40,13 +40,13 @@ char* ObjTypeNames[] = {
   "Abstraction",
   "Application",
   "Binop",
+  "DoSeq",
   "Ident",
   "IfThen",
   "Let",
   "LetIn",
   "LetRec",
   "Quote",
-  "Seq",
   "Throw",
   /* special */
   "Trampoline"

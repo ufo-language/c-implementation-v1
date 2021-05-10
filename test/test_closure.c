@@ -200,13 +200,13 @@ void test_closureApply() {
   Object res1 = closureApply(closure, args1, thd);
   ASSERT_EQ(S_Trampoline, objGetType(res1));
   res1 = trampGetExpr(res1);
-  EXPECT_EQ(E_Seq, objGetType(res1));
+  EXPECT_EQ(E_DoSeq, objGetType(res1));
 
   Object args2 = listNew(NOTHING, EMPTY_LIST);
   Object res2 = closureApply(closure, args2, thd);
   ASSERT_EQ(S_Trampoline, objGetType(res2));
   res2 = trampGetExpr(res2);
-  EXPECT_EQ(E_Seq, objGetType(res2));
+  EXPECT_EQ(E_DoSeq, objGetType(res2));
 
   Object i400 = intNew(400);
   Object i500 = intNew(500);

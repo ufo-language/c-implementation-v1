@@ -16,12 +16,12 @@
 #include "e_abstr.h"
 #include "e_app.h"
 #include "e_binop.h"
+#include "e_do.h"
 #include "e_ident.h"
 #include "e_if.h"
 #include "e_let.h"
 #include "e_letrec.h"
 #include "e_quote.h"
-#include "e_seq.h"
 #include "globals.h"
 #include "lexer_obj.h"
 #include "parser.h"
@@ -756,7 +756,7 @@ Object p_do(Thread* thd, Object tokens) {
     return nullObj;
   }
   Object exprs = listGetFirst(res);
-  Object doExpr = seqNew(exprs);
+  Object doExpr = doNew(exprs);
   tokens = listGetRest(res);
   return listNew(doExpr, tokens);
 }

@@ -69,11 +69,11 @@ void test_abstrNew() {
 
   abstrSetNext(abstr1, abstr2);
 
-  EXPECT_EQ(E_Seq, objGetType(abstrGetBody(abstr1)));
+  EXPECT_EQ(E_DoSeq, objGetType(abstrGetBody(abstr1)));
   EXPECT_EQ(params1.a, abstrGetParams(abstr1).a);
   EXPECT_EQ(abstr2.a, abstrGetNext(abstr1).a);
 
-  EXPECT_EQ(E_Seq, objGetType(abstrGetBody(abstr2)));
+  EXPECT_EQ(E_DoSeq, objGetType(abstrGetBody(abstr2)));
 
   EXPECT_EQ(params2.a, abstrGetParams(abstr2).a);
   EXPECT_EQ(nullObj.a, abstrGetNext(abstr2).a);

@@ -22,13 +22,13 @@
 #include "e_abstr.h"
 #include "e_app.h"
 #include "e_binop.h"
+#include "e_do.h"
 #include "e_ident.h"
 #include "e_if.h"
 #include "e_let.h"
 #include "e_letin.h"
 #include "e_letrec.h"
 #include "e_quote.h"
-#include "e_seq.h"
 #include "e_throw.h"
 #include "gc.h"
 #include "globals.h"
@@ -176,6 +176,9 @@ Object objEval(Object obj, Thread* thd) {
       case E_Binop:
         obj = binopEval(obj, thd);
         break;
+      case E_DoSeq:
+        obj = doEval(obj, thd);
+        break;
       case E_Ident:
         obj = identEval(obj, thd);
         break;
@@ -193,9 +196,6 @@ Object objEval(Object obj, Thread* thd) {
         break;
       case E_Quote:
         obj = quoteEval(obj, thd);
-        break;
-      case E_Seq:
-        obj = seqEval(obj, thd);
         break;
       case E_Throw:
         obj = throwEval(obj, thd);
@@ -251,6 +251,9 @@ void objFreeVars(Object obj, Object freeVarSet) {
     case E_Binop:
       binopFreeVars(obj, freeVarSet);
       break;
+    case E_DoSeq:
+      doFreeVars(obj, freeVarSet);
+      break;
     case E_Ident:
       setAddElem(freeVarSet, obj);
       break;
@@ -268,9 +271,6 @@ void objFreeVars(Object obj, Object freeVarSet) {
       break;
     case E_Quote:
       quoteFreeVars(obj, freeVarSet);
-      break;
-    case E_Seq:
-      seqFreeVars(obj, freeVarSet);
       break;
     case E_Throw:
       throwFreeVars(obj, freeVarSet);
@@ -388,6 +388,9 @@ void objMark(Object obj) {
     case E_Binop:
       binopMark(obj);
       break;
+    case E_DoSeq:
+      doMark(obj);
+      break;
     case E_If:
       ifMark(obj);
       break;
@@ -402,9 +405,6 @@ void objMark(Object obj) {
       break;
     case E_Quote:
       quoteMark(obj);
-      break;
-    case E_Seq:
-      seqMark(obj);
       break;
     case E_Throw:
       throwMark(obj);
@@ -505,6 +505,9 @@ void objShow(Object obj, FILE* stream) {
     case E_Binop:
       binopShow(obj, stream);
       break;
+    case E_DoSeq:
+      doShow(obj, stream);
+      break;
     case E_Ident:
       identShow(obj, stream);
       break;
@@ -522,9 +525,6 @@ void objShow(Object obj, FILE* stream) {
       break;
     case E_Quote:
       quoteShow(obj, stream);
-      break;
-    case E_Seq:
-      seqShow(obj, stream);
       break;
     case E_Throw:
       throwShow(obj, stream);
