@@ -16,13 +16,17 @@
 #include "namespace.h"
 #include "object.h"
 
+Object list_accept(Thread* thd, Object args);
 Object list_count(Thread* thd, Object args);
 Object list_drop(Thread* thd, Object args);
 Object list_first(Thread* thd, Object args);
 Object list_keys(Thread* thd, Object args);
 Object list_map(Thread* thd, Object args);
+Object list_reject(Thread* thd, Object args);
 Object list_rest(Thread* thd, Object args);
 Object list_reverse(Thread* thd, Object args);
+Object list_setFirst(Thread* thd, Object args);
+Object list_setRest(Thread* thd, Object args);
 Object list_take(Thread* thd, Object args);
 
 static Object param_List;
@@ -35,16 +39,42 @@ Object list_defineAll(Object env) {
   param_ListAny = primBuildTypeList(2, D_List, D_Null);
   param_ListInt = primBuildTypeList(2, D_List, D_Int);
   Object ns = hashNew();
+  nsAddPrim(ns, "accept", list_accept);
   nsAddPrim(ns, "drop", list_drop);
   nsAddPrim(ns, "count", list_count);
   nsAddPrim(ns, "first", list_first);
   nsAddPrim(ns, "keys", list_keys);
   nsAddPrim(ns, "map", list_map);
+  nsAddPrim(ns, "reject", list_reject);
   nsAddPrim(ns, "rest", list_rest);
+  nsAddPrim(ns, "setFirst", list_setFirst);
+  nsAddPrim(ns, "setRest", list_setRest);
   nsAddPrim(ns, "reverse", list_reverse);
   nsAddPrim(ns, "take", list_take);
   Object binding = bindingNew(identNew("list"), ns);
   return listNew(binding, env);
+}
+
+/*------------------------------------------------------------------*/
+Object list_accept(Thread* thd, Object args) {
+  primCheckArgs(param_ListAny, args, thd);
+  Object list = listGetFirst(args);
+  Object fun = listGetSecond(args);
+  Object funVal = eval(fun, thd);
+  Object q = queueNew();
+  while (!listIsEmpty(list)) {
+    Object elem = listGetFirst(list);
+    Object app = appNew(funVal, listNew(elem, EMPTY_LIST));
+    Object val = eval(app, thd);
+    if (objBoolValue(val)) {
+      queueEnq(q, val);
+    }
+    list = listGetRest(list);
+    if (objGetType(list) != D_List) {
+      list = listNew(list, EMPTY_LIST);
+    }
+  }
+  return queueAsList(q);
 }
 
 /*------------------------------------------------------------------*/
@@ -115,6 +145,28 @@ Object list_map(Thread* thd, Object args) {
 }
 
 /*------------------------------------------------------------------*/
+Object list_reject(Thread* thd, Object args) {
+  primCheckArgs(param_ListAny, args, thd);
+  Object list = listGetFirst(args);
+  Object fun = listGetSecond(args);
+  Object funVal = eval(fun, thd);
+  Object q = queueNew();
+  while (!listIsEmpty(list)) {
+    Object elem = listGetFirst(list);
+    Object app = appNew(funVal, listNew(elem, EMPTY_LIST));
+    Object val = eval(app, thd);
+    if (!objBoolValue(val)) {
+      queueEnq(q, val);
+    }
+    list = listGetRest(list);
+    if (objGetType(list) != D_List) {
+      list = listNew(list, EMPTY_LIST);
+    }
+  }
+  return queueAsList(q);
+}
+
+/*------------------------------------------------------------------*/
 Object list_rest(Thread* thd, Object args) {
   (void)thd;
   primCheckArgs(param_List, args, thd);
@@ -128,6 +180,26 @@ Object list_reverse(Thread* thd, Object args) {
   primCheckArgs(param_List, args, thd);
   Object list = listGetFirst(args);
   return listReverse(list);
+}
+
+/*------------------------------------------------------------------*/
+Object list_setFirst(Thread* thd, Object args) {
+  (void)thd;
+  primCheckArgs(param_ListAny, args, thd);
+  Object list = listGetFirst(args);
+  Object first = listGetSecond(args);
+  listSetFirst(list, first);
+  return list;
+}
+
+/*------------------------------------------------------------------*/
+Object list_setRest(Thread* thd, Object args) {
+  (void)thd;
+  primCheckArgs(param_ListAny, args, thd);
+  Object list = listGetFirst(args);
+  Object rest = listGetSecond(args);
+  listSetRest(list, rest);
+  return list;
 }
 
 /*------------------------------------------------------------------*/
