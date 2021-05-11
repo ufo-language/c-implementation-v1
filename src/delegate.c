@@ -140,6 +140,7 @@ bool objEquals(Object obj1, Object obj2) {
 /*------------------------------------------------------------------*/
 Object objEval(Object obj, Thread* thd) {
   bool contin = true;
+  Object threadRestoreEnv = nullObj;
   while (contin) {
     ObjType objType = objGetType(obj);
     switch (objType) {
@@ -207,14 +208,20 @@ Object objEval(Object obj, Thread* thd) {
     objType = objGetType(obj);
     if (objType == S_Trampoline) {
       contin = true;
+      if (threadRestoreEnv.a == nullObj.a) {
+        threadRestoreEnv = threadGetEnv(thd);
+      }
       Object env = trampGetEnv(obj);
-      obj = trampGetExpr(obj);
       threadSetEnv(thd, env);
+      obj = trampGetExpr(obj);
     }
     else {
       contin = false;
     }
-  }  /* end whilte */
+  }  /* end while */
+  if (threadRestoreEnv.a != nullObj.a) {
+    threadSetEnv(thd, threadRestoreEnv);
+  }
   return obj;
 }
 
