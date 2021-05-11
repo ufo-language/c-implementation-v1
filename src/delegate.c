@@ -14,6 +14,7 @@
 #include "d_prim.h"
 #include "d_queue.h"
 #include "d_real.h"
+#include "d_seq.h"
 #include "d_set.h"
 #include "d_string.h"
 #include "d_symbol.h"
@@ -120,6 +121,8 @@ bool objEquals(Object obj1, Object obj2) {
       return queueEquals(obj1, obj2);
     case D_Real:
       return realEquals(obj1, obj2);
+    case D_Seq:
+      return seqEquals(obj1, obj2);
     case D_Set:
       return setEquals(obj1, obj2);
     case D_String:
@@ -490,6 +493,9 @@ void objShow(Object obj, FILE* stream) {
       break;
     case D_Real:
       realShow(obj, stream);
+      break;
+    case D_Seq:
+      seqShow(obj, stream);
       break;
     case D_Set:
       setShow(obj, stream);

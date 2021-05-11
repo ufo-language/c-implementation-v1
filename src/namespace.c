@@ -12,6 +12,7 @@ Object io_defineAll(Object env);
 Object list_defineAll(Object env);
 Object ns_defineAll(Object env);
 Object queue_defineAll(Object env);
+Object seq_defineAll(Object env);
 Object tuple_defineAll(Object env);
 Object type_defineAll(Object env);
 Object ufo_defineAll(Object env);
@@ -32,6 +33,7 @@ Object nsDefineAll() {
   env = list_defineAll(env);
   env = ns_defineAll(env);
   env = queue_defineAll(env);
+  env = seq_defineAll(env);
   env = tuple_defineAll(env);
   env = type_defineAll(env);
   env = ufo_defineAll(env);

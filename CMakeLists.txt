@@ -69,6 +69,7 @@ set(LIB_SRC_FILES
   src/ns_list.c
   src/ns_ns.c
   src/ns_queue.c
+  src/ns_seq.c
   src/ns_tuple.c
   src/ns_type.c
   src/ns_ufo.c

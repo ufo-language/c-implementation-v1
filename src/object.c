@@ -30,6 +30,7 @@ char* ObjTypeNames[] = {
   "PrimitiveMacro",
   "Queue",
   "Real",
+  "Sequence",
   "Set",
   "StreamIn",
   "StreamOut",

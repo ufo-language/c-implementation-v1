@@ -22,6 +22,7 @@ typedef enum {
   D_PrimMacro,
   D_Queue,
   D_Real,
+  D_Seq,
   D_Set,
   D_StreamIn,
   D_StreamOut,
