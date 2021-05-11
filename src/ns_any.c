@@ -21,15 +21,15 @@ static Object param_Any;
 static Object param_AnyAny;
 
 /*------------------------------------------------------------------*/
-Object any_defineAll(Object env) {
+void any_defineAll(Object env) {
+  char* nsName = "any";
   param_Any = primBuildTypeList(1, D_Null);
   param_AnyAny = primBuildTypeList(2, D_Null, D_Null);
   Object ns = hashNew();
   nsAddPrim(ns, "freeVars", any_freeVars);
   nsAddPrim(ns, "hashCode", any_hashCode);
   nsAddPrim(ns, "match", any_match);
-  Object binding = bindingNew(identNew("any"), ns);
-  return listNew(binding, env);
+  hashPut(env, identNew(nsName), ns);
 }
 
 /*------------------------------------------------------------------*/

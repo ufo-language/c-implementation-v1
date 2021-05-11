@@ -13,16 +13,16 @@
 Object ns_global(Thread* thd, Object args);
 
 /*------------------------------------------------------------------*/
-Object ns_defineAll(Object env) {
+void ns_defineAll(Object env) {
+  char* nsName = "ns";
   Object ns = hashNew();
   nsAddPrim(ns, "global", ns_global);
-  Object binding = bindingNew(identNew("ns"), ns);
-  return listNew(binding, env);
+  hashPut(env, identNew(nsName), ns);
 }
 
 /*------------------------------------------------------------------*/
 Object ns_global(Thread* thd, Object args) {
   (void)thd;
   primCheckArgs(EMPTY_LIST, args, thd);
-  return threadGetEnv(thd);
+  return GLOBALS;
 }

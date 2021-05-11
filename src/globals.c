@@ -1,4 +1,5 @@
 #include "d_bool.h"
+#include "d_hash.h"
 #include "d_nothing.h"
 #include "delegate.h"
 #include "gc.h"
@@ -9,7 +10,8 @@ Object EMPTY_LIST;
 Object NOTHING;
 Object TRUE;
 Object FALSE;
-Object STANDARD_ENV;
+Object GLOBALS;
+Object SUPER_GLOBALS;
 
 Object listCreateEmpty();
 
@@ -18,7 +20,8 @@ void globalsSetup() {
   EMPTY_LIST = listCreateEmpty();
   TRUE = boolNew(true);
   FALSE = boolNew(false);
-  STANDARD_ENV = nsDefineAll();
+  GLOBALS = nsDefineAll();
+  SUPER_GLOBALS = hashNew();
 }
 
 void globalsMark() {
@@ -26,4 +29,6 @@ void globalsMark() {
   gcSetObjMarkedFlag(EMPTY_LIST);
   gcSetObjMarkedFlag(TRUE);
   gcSetObjMarkedFlag(FALSE);
+  objMark(GLOBALS);
+  objMark(SUPER_GLOBALS);
 }

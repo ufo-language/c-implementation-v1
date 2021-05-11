@@ -2,10 +2,12 @@
 
 #include "d_array.h"
 #include "d_binding.h"
+#include "d_hash.h"
 #include "d_list.h"
 #include "d_string.h"
 #include "d_symbol.h"
 #include "e_ident.h"
+#include "globals.h"
 #include "hash.h"
 #include "object.h"
 #include "thread.h"
@@ -21,10 +23,18 @@ bool identEquals(Object ident, Object obj) {
 Object identEval(Object ident, Thread* thd) {
   Object env = threadGetEnv(thd);
   Object binding = listLocate(env, ident);
-  if (binding.a == nullObj.a) {
+  if (binding.a != nullObj.a) {
+    return bindingGetRhs(binding);
+  }
+  Object val = hashGet_unsafe(GLOBALS, ident);
+  if (val.a != nullObj.a) {
+    return val;
+  }
+  val = hashGet_unsafe(SUPER_GLOBALS, ident);
+  if (val.a == nullObj.a) {
     threadThrowException(thd, "EvaluatorError", "unbound identifier", ident);
   }
-  return bindingGetRhs(binding);
+  return val;
 }
 
 /*------------------------------------------------------------------*/

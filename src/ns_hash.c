@@ -16,12 +16,12 @@ Object hash_keys(Thread* thd, Object args);
 static Object param_Hash;
 
 /*------------------------------------------------------------------*/
-Object hash_defineAll(Object env) {
+void hash_defineAll(Object env) {
+  char* nsName = "hash";
   param_Hash = primBuildTypeList(1, D_Hash);
   Object ns = hashNew();
   nsAddPrim(ns, "keys", hash_keys);
-  Object binding = bindingNew(identNew("hash"), ns);
-  return listNew(binding, env);
+  hashPut(env, identNew(nsName), ns);
 }
 
 /*------------------------------------------------------------------*/

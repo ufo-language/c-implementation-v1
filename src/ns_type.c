@@ -21,15 +21,15 @@ static Object param_Any;
 static Object param_AnySymbol;
 
 /*------------------------------------------------------------------*/
-Object type_defineAll(Object env) {
+void type_defineAll(Object env) {
+  char* nsName = "type";
   param_Any = primBuildTypeList(1, D_Null);
   param_AnySymbol = primBuildTypeList(2, D_Null, D_Symbol);
   Object ns = hashNew();
   nsAddPrim(ns, "check", type_check);
   nsAddPrim(ns, "hasType", type_hasType);
   nsAddPrim(ns, "name", type_name);
-  Object binding = bindingNew(identNew("type"), ns);
-  return listNew(binding, env);
+  hashPut(env, identNew(nsName), ns);
 }
 
 /*------------------------------------------------------------------*/

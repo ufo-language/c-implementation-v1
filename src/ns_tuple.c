@@ -21,14 +21,14 @@ static Object param_Tuple;
 static Object param_TupleInt;
 
 /*------------------------------------------------------------------*/
-Object tuple_defineAll(Object env) {
+void tuple_defineAll(Object env) {
+  char* nsName = "tuple";
   param_Tuple = primBuildTypeList(1, D_Tuple);
   param_TupleInt = primBuildTypeList(2, D_Tuple, D_Int);
   Object ns = hashNew();
   nsAddPrim(ns, "count", tuple_count);
   nsAddPrim(ns, "get", tuple_get);
-  Object binding = bindingNew(identNew("tuple"), ns);
-  return listNew(binding, env);
+  hashPut(env, identNew(nsName), ns);
 }
 
 /*------------------------------------------------------------------*/

@@ -1,10 +1,12 @@
 #include <stdio.h>
 
 #include "colon_command.h"
+#include "d_hash.h"
 #include "d_list.h"
 #include "d_queue.h"
 #include "d_string.h"
 #include "delegate.h"
+#include "e_ident.h"
 #include "eval.h"
 #include "globals.h"
 #include "lexer_obj.h"
@@ -13,6 +15,7 @@
 #include "repl.h"
 #include "thread.h"
 
+/*------------------------------------------------------------------*/
 void intro(void) {
   puts("▌▐ ▛▘▛▜ UFO version 4-rc-1");
   puts("▙▟ ▛ ▙▟ http://github.com/ufo-language");
@@ -20,10 +23,12 @@ void intro(void) {
   puts("");
 }
 
+/*------------------------------------------------------------------*/
 void prompt(void) {
   printf("UFO> ");
 }
 
+/*------------------------------------------------------------------*/
 int getLine(char* buffer, int len) {
   int i = 0;
   char c;
@@ -42,8 +47,11 @@ int getLine(char* buffer, int len) {
   return i;
 }
 
+/*------------------------------------------------------------------*/
 void repl(void) {
   intro();
+  Object it = identNew("it");
+  hashPut(SUPER_GLOBALS, it, NOTHING);
   Thread* thd = threadNew();
   ReplObj repl;
   bool contin = true;
@@ -84,6 +92,7 @@ void repl(void) {
             if (val.a != NOTHING.a) {
               objShow(val, stdout);
               printf(" :: %s\n", ObjTypeNames[objGetType(val)]);
+              hashPut(SUPER_GLOBALS, it, val);
             }
           }
         }

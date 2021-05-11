@@ -12,12 +12,9 @@
 Object oper_colon(Thread* thd, Object args);
 
 /*------------------------------------------------------------------*/
-Object global_defineAll(Object env) {
-  Object ident = identNew(":");
+void global_defineAll(Object env) {
   Object prim = primMacroNew(oper_colon);
-  Object binding = bindingNew(ident, prim);
-  env = listNew(binding, env);
-  return env;
+  hashPut(env, identNew(":"), prim);
 }
 
 /*------------------------------------------------------------------*/

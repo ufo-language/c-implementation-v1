@@ -7,9 +7,10 @@
 
 extern Object NOTHING;
 extern Object EMPTY_LIST;
-extern Object STANDARD_ENV;
 extern Object TRUE;
 extern Object FALSE;
+extern Object GLOBALS;
+extern Object SUPER_GLOBALS;
 
 void globalsMark();
 void globalsSetup();

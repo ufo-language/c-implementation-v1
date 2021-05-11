@@ -106,7 +106,7 @@ void threadMarkAllThreads(void) {
 
 /*------------------------------------------------------------------*/
 Thread* threadNew(void) {
-  return threadNew_aux(STANDARD_ENV);
+  return threadNew_aux(EMPTY_LIST);
 }
 
 /*------------------------------------------------------------------*/

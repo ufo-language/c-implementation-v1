@@ -34,7 +34,8 @@ static Object param_ListAny;
 static Object param_ListInt;
 
 /*------------------------------------------------------------------*/
-Object list_defineAll(Object env) {
+void list_defineAll(Object env) {
+  char* nsName = "list";
   param_List = primBuildTypeList(1, D_List);
   param_ListAny = primBuildTypeList(2, D_List, D_Null);
   param_ListInt = primBuildTypeList(2, D_List, D_Int);
@@ -51,8 +52,7 @@ Object list_defineAll(Object env) {
   nsAddPrim(ns, "setRest", list_setRest);
   nsAddPrim(ns, "reverse", list_reverse);
   nsAddPrim(ns, "take", list_take);
-  Object binding = bindingNew(identNew("list"), ns);
-  return listNew(binding, env);
+  hashPut(env, identNew(nsName), ns);
 }
 
 /*------------------------------------------------------------------*/

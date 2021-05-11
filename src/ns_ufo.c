@@ -20,11 +20,11 @@ char** main_argv;
 static Object argAry = {0};
 
 /*------------------------------------------------------------------*/
-Object ufo_defineAll(Object env) {
+void ufo_defineAll(Object env) {
+  char* nsName = "ufo";
   Object ns = hashNew();
   nsAddPrim(ns, "args", ufo_args);
-  Object binding = bindingNew(identNew("ufo"), ns);
-  return listNew(binding, env);
+  hashPut(env, identNew(nsName), ns);
 }
 
 /*------------------------------------------------------------------*/

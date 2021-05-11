@@ -17,15 +17,15 @@ Object io_show(Thread* thd, Object args);
 Object io_showln(Thread* thd, Object args);
 
 /*------------------------------------------------------------------*/
-Object io_defineAll(Object env) {
+void io_defineAll(Object env) {
+  char* nsName = "io";
   Object ns = hashNew();
   nsAddPrim(ns, "disp", io_disp);
   nsAddPrim(ns, "displn", io_displn);
   nsAddPrim(ns, "nl", io_nl);
   nsAddPrim(ns, "show", io_show);
   nsAddPrim(ns, "showln", io_showln);
-  Object binding = bindingNew(identNew("io"), ns);
-  return listNew(binding, env);
+  hashPut(env, identNew(nsName), ns);
 }
 
 /*------------------------------------------------------------------*/

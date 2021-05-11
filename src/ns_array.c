@@ -22,7 +22,8 @@ static Object param_ArrayInt;
 static Object param_ArrayIntAny;
 
 /*------------------------------------------------------------------*/
-Object array_defineAll(Object env) {
+void array_defineAll(Object env) {
+  char* nsName = "array";
   param_Array = primBuildTypeList(1, D_Array);
   param_ArrayInt = primBuildTypeList(2, D_Array, D_Int);
   param_ArrayIntAny = primBuildTypeList(3, D_Array, D_Int, D_Null);
@@ -30,8 +31,7 @@ Object array_defineAll(Object env) {
   nsAddPrim(ns, "count", array_count);
   nsAddPrim(ns, "get", array_get);
   nsAddPrim(ns, "set", array_set);
-  Object binding = bindingNew(identNew("array"), ns);
-  return listNew(binding, env);
+  hashPut(env, identNew(nsName), ns);
 }
 
 /*------------------------------------------------------------------*/
