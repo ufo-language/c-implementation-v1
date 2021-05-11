@@ -536,6 +536,6 @@ void objShow(Object obj, FILE* stream) {
       trampShow(obj, stream);
       break;
     default:
-      fprintf(stream, "SHOW:UNHANDLED-OBJECT(%s)@%d", ObjTypeNames[objGetType(obj)], obj.a);
+      fprintf(stream, "SHOW:UNHANDLED-OBJECT(%d|%s)@%d", objGetType(obj), ObjTypeNames[objGetType(obj)], obj.a);
   }
 }
