@@ -67,7 +67,7 @@ Object list_accept(Thread* thd, Object args) {
     Object app = appNew(funVal, listNew(elem, EMPTY_LIST));
     Object val = eval(app, thd);
     if (objBoolValue(val)) {
-      queueEnq(q, val);
+      queueEnq(q, elem);
     }
     list = listGetRest(list);
     if (objGetType(list) != D_List) {
@@ -156,7 +156,7 @@ Object list_reject(Thread* thd, Object args) {
     Object app = appNew(funVal, listNew(elem, EMPTY_LIST));
     Object val = eval(app, thd);
     if (!objBoolValue(val)) {
-      queueEnq(q, val);
+      queueEnq(q, elem);
     }
     list = listGetRest(list);
     if (objGetType(list) != D_List) {
