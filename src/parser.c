@@ -20,6 +20,7 @@
 #include "e_ident.h"
 #include "e_if.h"
 #include "e_let.h"
+#include "e_letin.h"
 #include "e_letrec.h"
 #include "e_quote.h"
 #include "globals.h"
@@ -96,6 +97,7 @@ Object p_END(Thread* thd, Object tokens);
 Object p_END_required(Thread* thd, Object tokens);
 Object p_FUN(Thread* thd, Object tokens);
 Object p_IF(Thread* thd, Object tokens);
+Object p_IN(Thread* thd, Object tokens);
 Object p_LET(Thread* thd, Object tokens);
 Object p_LETREC(Thread* thd, Object tokens);
 Object p_THEN(Thread* thd, Object tokens);
@@ -108,6 +110,7 @@ Object p_function(Thread* thd, Object tokens);
 Object p_ident(Thread* thd, Object tokens);
 Object p_if(Thread* thd, Object tokens);
 Object p_let(Thread* thd, Object tokens);
+Object p_letIn(Thread* thd, Object tokens);
 Object p_letRec(Thread* thd, Object tokens);
 Object p_parenExpr(Thread* thd, Object tokens);
 Object p_queue(Thread* thd, Object tokens);
@@ -128,6 +131,7 @@ struct ParserEntry_struct {
   {(void*)p_END_required, "p_END_required"},
   {(void*)p_FUN, "p_FUN"},
   {(void*)p_IF, "p_IF"},
+  {(void*)p_IN, "p_IN"},
   {(void*)p_LET, "p_LET"},
   {(void*)p_THEN, "p_THEN"},
   {(void*)p_angleClose, "p_angleClose"},
@@ -160,7 +164,8 @@ struct ParserEntry_struct {
   {(void*)p_ignore, "p_ignore"},
   {(void*)p_int, "p_int"},
   {(void*)p_let, "p_let"},
-  {(void*)p_let, "p_let"},
+  {(void*)p_letIn, "p_letIn"},
+  {(void*)p_letRec, "p_letRec"},
   {(void*)p_list, "p_list"},
   {(void*)p_listOfAny, "p_listOfAny"},
   {(void*)p_literal, "p_literal"},
@@ -681,6 +686,11 @@ Object p_IF(Thread* thd, Object tokens) {
   return p_spotReserved(tokens, "if");
 }
 
+Object p_IN(Thread* thd, Object tokens) {
+  (void)thd;
+  return p_spotReserved(tokens, "in");
+}
+
 Object p_LET(Thread* thd, Object tokens) {
   (void)thd;
   return p_spotReserved(tokens, "let");
@@ -849,6 +859,29 @@ Object p_let(Thread* thd, Object tokens) {
   return listNew(let, tokens);
 }
 
+Object p_letIn(Thread* thd, Object tokens) {
+  Object res = p_let(thd, tokens);
+  if (res.a == nullObj.a) {
+    return nullObj;
+  }
+  Object letRes = res;
+  tokens = listGetRest(res);
+  res = p_IN(thd, tokens);
+  if (res.a == nullObj.a) {
+    return letRes;
+  }
+  tokens = listGetRest(res);
+  Object bodyRes = p_listOfAny(thd, tokens);
+  tokens = listGetRest(bodyRes);
+  res = p_END_required(thd, tokens);
+  Object letExpr = listGetFirst(letRes);
+  Object bindings = letGetBindings(letExpr);
+  Object body = listGetFirst(bodyRes);
+  Object letInExpr = letInNew(bindings, body);
+  tokens = listGetRest(res);
+  return listNew(letInExpr, tokens);
+}
+
 Object p_letRec(Thread* thd, Object tokens) {
   Object res = p_LETREC(thd, tokens);
   if (res.a == nullObj.a) {
@@ -952,7 +985,7 @@ Object p_expr(Thread* thd, Object tokens) {
     p_do,
     p_function,
     p_if,
-    p_let,
+    p_letIn,  /* includes plain 'let' */
     p_letRec,
     p_quote,
     NULL

@@ -4,6 +4,7 @@
 #include "d_list.h"
 #include "d_set.h"
 #include "delegate.h"
+#include "e_do.h"
 #include "e_letin.h"
 #include "eval.h"
 #include "globals.h"
@@ -58,8 +59,9 @@ void letInMark(Object letIn) {
 /*------------------------------------------------------------------*/
 Object letInNew(Object bindings, Object body) {
   Object letIn = objAlloc(E_LetIn, LETIN_OBJ_SIZE);
+  Object bodySeq = doNew(body);
   objSetData(letIn, LETIN_BINDINGS_OFS, bindings.a);
-  objSetData(letIn, LETIN_BODY_OFS, body.a);
+  objSetData(letIn, LETIN_BODY_OFS, bodySeq.a);
   return letIn;
 }
 
@@ -69,5 +71,6 @@ void letInShow(Object letIn, FILE* stream) {
   listShowWith(bindings, "let ", ", ", "", stream);
   fputs(" in ", stream);
   Object body = {objGetData(letIn, LETIN_BODY_OFS)};
-  objShow(body, stream);
+  doShowWith("", body, " ", stream);
+  fputs("end", stream);
 }

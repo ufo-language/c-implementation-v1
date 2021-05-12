@@ -49,6 +49,12 @@ void letFreeVars(Object let, Object freeVarSet) {
 }
 
 /*------------------------------------------------------------------*/
+Object letGetBindings(Object let) {
+  Object bindings = {objGetData(let, LET_BINDINGS_OFS)};
+  return bindings;
+}
+
+/*------------------------------------------------------------------*/
 void letMark(Object let) {
   Object bindings = {objGetData(let, LET_BINDINGS_OFS)};
   objMark(bindings);
