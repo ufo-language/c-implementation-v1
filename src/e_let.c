@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "d_array.h"
 #include "d_binding.h"
 #include "d_list.h"
 #include "d_set.h"
@@ -13,14 +14,23 @@
 /*------------------------------------------------------------------*/
 Object letEval(Object let, Thread* thd) {
   Object bindings = {objGetData(let, LET_BINDINGS_OFS)};
+  Object env = threadGetEnv(thd);
   while (!listIsEmpty(bindings)) {
     Object binding = listGetFirst(bindings);
-    Object var = bindingGetLhs(binding);
-    Object valExpr = bindingGetRhs(binding);
-    Object bindingVal = eval(valExpr, thd);
-    threadEnvBind(thd, var, bindingVal);
+    Object lhs = bindingGetLhs(binding);
+    Object rhs = bindingGetRhs(binding);
+    Object rhsVal = eval(rhs, thd);
+    env = objMatch(lhs, rhs, env);
+    if (env.a == nullObj.a) {
+      Object exn = arrayNew(3);
+      arraySet_unsafe(exn, 0, lhs);
+      arraySet_unsafe(exn, 1, rhs);
+      arraySet_unsafe(exn, 2, rhsVal);
+      threadThrowException(thd, "Error", "Patterh mis-match in let expression", exn);
+    }
     bindings = listGetRest(bindings);
   }
+  threadSetEnv(thd, env);
   return NOTHING;
 }
 
