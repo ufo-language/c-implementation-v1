@@ -1,5 +1,6 @@
 #include <stdarg.h>
 
+#include "d_array.h"
 #include "d_int.h"
 #include "d_list.h"
 #include "d_prim.h"
@@ -63,8 +64,8 @@ void primCheckArgs(Object paramTypes, Object args, Thread* thd) {
     args = listGetRest(args);
   }
   if (error) {
-    threadThrowException(thd, "ArgumentError", "parameter/argument mismatch",
-      listNew(intNew(n), listNew(paramTypesOrig, listNew(argsOrig, EMPTY_LIST))));
+    Object exn = arrayN(3, intNew(n), paramTypesOrig, argsOrig);
+    threadThrowException(thd, "ArgumentError", "parameter/argument mismatch", exn);
   }
 }
 

@@ -291,11 +291,7 @@ Object p_spotOperator(Object tokens, char* word) {
 Object p_spotOperator_required(Thread* thd, Object tokens, char* word) {
   Object res = p_spotSpecific(tokens, T_OPER, word);
   if (res.a == nullObj.a) {
-    Object exn = arrayNew(4);
-    arraySet_unsafe(exn, 0, symbolNew(PARSER_ERROR));
-    arraySet_unsafe(exn, 1, stringNew("character expected"));
-    arraySet_unsafe(exn, 2, stringNew(word));
-    arraySet_unsafe(exn, 3, tokens);
+    Object exn = arrayN(4, symbolNew(PARSER_ERROR), stringNew("character expected"), stringNew(word), tokens);
     threadThrowExceptionObj(thd, exn);
   }
   return res;
@@ -308,10 +304,7 @@ Object p_spotReserved(Object tokens, char* word) {
 Object p_spotReserved_required(Thread* thd, Object tokens, char* word) {
   Object res = p_spotSpecific(tokens, T_RESERVED, word);
   if (res.a == nullObj.a) {
-    Object exn = arrayNew(3);
-    arraySet_unsafe(exn, 0, symbolNew(PARSER_ERROR));
-    arraySet_unsafe(exn, 1, stringNew("keyword expected"));
-    arraySet_unsafe(exn, 2, stringNew(word));
+    Object exn = arrayN(3, symbolNew(PARSER_ERROR), stringNew("keyword expected"), stringNew(word));
     threadThrowExceptionObj(thd, exn);
   }
   return res;
@@ -324,11 +317,7 @@ Object p_spotSpecial(Object tokens, char* word) {
 Object p_spotSpecial_required(Thread* thd, Object tokens, char* word) {
   Object res = p_spotSpecific(tokens, T_SPECIAL, word);
   if (res.a == nullObj.a) {
-    Object exn = arrayNew(4);
-    arraySet_unsafe(exn, 0, symbolNew(PARSER_ERROR));
-    arraySet_unsafe(exn, 1, stringNew("character expected"));
-    arraySet_unsafe(exn, 2, stringNew(word));
-    arraySet_unsafe(exn, 3, tokens);
+    Object exn = arrayN(4, symbolNew(PARSER_ERROR), stringNew("character expected"), stringNew(word), tokens);
     threadThrowExceptionObj(thd, exn);
   }
   return res;

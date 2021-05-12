@@ -22,10 +22,7 @@ Object letEval(Object let, Thread* thd) {
     Object rhsVal = eval(rhs, thd);
     env = objMatch(lhs, rhs, env);
     if (env.a == nullObj.a) {
-      Object exn = arrayNew(3);
-      arraySet_unsafe(exn, 0, lhs);
-      arraySet_unsafe(exn, 1, rhs);
-      arraySet_unsafe(exn, 2, rhsVal);
+      Object exn = arrayN(3, lhs, rhs, rhsVal);
       threadThrowException(thd, "Error", "Patterh mis-match in let expression", exn);
     }
     bindings = listGetRest(bindings);

@@ -72,10 +72,7 @@ Object stringNew(char* str) {
 char stringGetChar(Object string, Word index, Thread* thd) {
   int nChars = stringCount(string);
   if (index >= nChars) {
-    Object exn = arrayNew(3);
-    arraySet_unsafe(exn, 0, intNew(index));
-    arraySet_unsafe(exn, 1, intNew(stringCount(string)));
-    arraySet_unsafe(exn, 2, string);
+    Object exn = arrayN(3, intNew(index), intNew(stringCount(string)), string);
     threadThrowException(thd, "Error", "String index out of bounds", exn);
   }
   return stringGetChar_unsafe(string, index);
@@ -94,10 +91,7 @@ char stringGetChar_unsafe(Object string, Word index) {
 void stringSetChar(Object string, Word index, char c, Thread* thd) {
   int nChars = stringCount(string);
   if (index >= nChars) {
-    Object exn = arrayNew(3);
-    arraySet_unsafe(exn, 0, intNew(index));
-    arraySet_unsafe(exn, 1, intNew(stringCount(string)));
-    arraySet_unsafe(exn, 2, string);
+    Object exn = arrayN(3, intNew(index), intNew(stringCount(string)), string);
     threadThrowException(thd, "Error", "String index out of bounds", exn);
   }
   stringSetChar_unsafe(string, index, c);

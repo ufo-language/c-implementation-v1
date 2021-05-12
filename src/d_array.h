@@ -11,7 +11,8 @@
 #define ARY_ELEMS_OFS 1
 #define ARY_OBJ_SIZE 1
 
-Object arrayNew(Word size);
+Object arrayNew(Word nElems);
+Object arrayN(int nElems, ...);
 void arrayDel(Object array);
 
 Word arrayCount(Object array);

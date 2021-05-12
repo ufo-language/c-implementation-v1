@@ -113,9 +113,7 @@ void hashFreeVars(Object hash, Object freeVarSet) {
 Object hashGet(Object hash, Object key, Thread* thd) {
   Object elem = hashGet_unsafe(hash, key);
   if (elem.a == nullObj.a) {
-    Object exn = arrayNew(2);
-    arraySet_unsafe(exn, 0, key);
-    arraySet_unsafe(exn, 1, hash);
+    Object exn = arrayN(2, key, hash);
     threadThrowException(thd, "Error", "Key {} not found in hash {}", exn);
   }
   return elem;

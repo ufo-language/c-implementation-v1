@@ -91,10 +91,7 @@ void tupleFreeVars(Object tuple, Object freeVarSet) {
 Object tupleGet(Object tuple, Word index, Thread* thd) {
   Object elem = tupleGet_unsafe(tuple, index);
   if (elem.a == nullObj.a) {
-    Object exn = arrayNew(3);
-    arraySet_unsafe(exn, 0, intNew(index));
-    arraySet_unsafe(exn, 1, intNew(tupleCount(tuple)));
-    arraySet_unsafe(exn, 2, tuple);
+    Object exn = arrayN(3,  intNew(index), intNew(tupleCount(tuple)), tuple);
     threadThrowException(thd, "Error", "Tuple index out of bounds", exn);
   }
   return elem;

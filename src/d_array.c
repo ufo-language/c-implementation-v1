@@ -1,3 +1,4 @@
+#include <stdarg.h>
 #include <stdio.h>
 
 #include "d_array.h"
@@ -16,6 +17,19 @@ Object arrayNew(Word nElems) {
   for (Word n=0; n<nElems; n++) {
     arraySet_unsafe(array, n, NOTHING);
   }
+  return array;
+}
+
+/*------------------------------------------------------------------*/
+Object arrayN(int nElems, ...) {
+  va_list argList;
+  va_start(argList, nElems);
+  Object array = arrayNew(nElems);
+  for (int n=0; n<nElems; n++) {
+    Object elem = va_arg(argList, Object);
+    arraySet_unsafe(array, n, elem);
+  }
+  va_end(argList);
   return array;
 }
 
@@ -83,10 +97,7 @@ void arrayFreeVars(Object array, Object freeVarSet) {
 Object arrayGet(Object array, Word index, Thread* thd) {
   Object elem = arrayGet_unsafe(array, index);
   if (elem.a == nullObj.a) {
-    Object exn = arrayNew(3);
-    arraySet_unsafe(exn, 0, intNew(index));
-    arraySet_unsafe(exn, 1, intNew(arrayCount(array)));
-    arraySet_unsafe(exn, 2, array);
+    Object exn = arrayN(3, intNew(index), intNew(arrayCount(array)), array);
     threadThrowException(thd, "Error", "Array index out of bounds", exn);
   }
   return elem;
@@ -133,10 +144,7 @@ Object arrayMatch(Object array, Object other, Object bindingList) {
 void arraySet(Object array, Word index, Object obj, Thread* thd) {
   bool res = arraySet_unsafe(array, index, obj);
   if (!res) {
-    Object exn = arrayNew(3);
-    arraySet_unsafe(exn, 0, intNew(index));
-    arraySet_unsafe(exn, 1, intNew(arrayCount(array)));
-    arraySet_unsafe(exn, 2, array);
+    Object exn = arrayN(3, intNew(index), intNew(arrayCount(array)), array);
     threadThrowException(thd, "Error", "Array index out of bounds", exn);
   }
 }

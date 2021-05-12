@@ -143,10 +143,7 @@ void threadRestoreJump(Thread* thd, jmp_buf* jumpBuf) {
 
 /*------------------------------------------------------------------*/
 void threadThrowException(Thread* thd, char* sym, char* message, Object obj) {
-  Object exnAry = arrayNew(3);
-  arraySet_unsafe(exnAry, 0, symbolNew(sym));
-  arraySet_unsafe(exnAry, 1, stringNew(message));
-  arraySet_unsafe(exnAry, 2, obj);
+  Object exnAry = arrayN(3, symbolNew(sym), stringNew(message), obj);
   threadThrowExceptionObj(thd, exnAry);
 }
 
