@@ -20,7 +20,7 @@ Object letEval(Object let, Thread* thd) {
     Object lhs = bindingGetLhs(binding);
     Object rhs = bindingGetRhs(binding);
     Object rhsVal = eval(rhs, thd);
-    env = objMatch(lhs, rhs, env);
+    env = objMatch(lhs, rhsVal, env);
     if (env.a == nullObj.a) {
       Object exn = arrayN(3, lhs, rhs, rhsVal);
       threadThrowException(thd, "Error", "Patterh mis-match in let expression", exn);
