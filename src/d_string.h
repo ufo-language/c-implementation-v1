@@ -9,6 +9,7 @@
 
 Object stringNew(char* str);
 
+Object stringAlloc(Word nChars);
 Word stringCount(Object string);
 void stringDisp(Object string, FILE* stream);
 bool stringEquals(Object string, Object other);
@@ -21,6 +22,8 @@ char stringGetChar_unsafe(Object string, Word offset);
 void stringSetChar(Object string, Word offset, char c, Thread* thd);
 void stringSetChar_unsafe(Object string, Word offset, char c);
 void stringShow(Object string, FILE* stream);
+void stringShowChars(Object string, FILE* stream);
+Object stringSubstring(Object string, Word start, Word end);
 void stringUnescapify(Object string, FILE* stream);
 
 #endif
