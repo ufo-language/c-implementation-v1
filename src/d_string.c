@@ -10,6 +10,14 @@
 #include "thread.h"
 
 /*------------------------------------------------------------------*/
+Object stringAlloc(Word nChars) {
+  Word nWords = nChars / sizeof(Word) + 2;  /* reserves room for null terminator */
+  Object string = objAlloc(D_String, nWords);
+  objSetData(string, 0, nChars);
+  return string;
+}
+
+/*------------------------------------------------------------------*/
 Word stringCount(Object string) {
   return objGetData(string, 0);
 }
@@ -58,10 +66,8 @@ Word stringHash_aux(Object str) {
 /*------------------------------------------------------------------*/
 Object stringNew(char* str) {
   int len = strlen(str);
-  Word nWords = len / sizeof(Word) + 2;
-  Object string = objAlloc(D_String, nWords);
-  objSetData(string, 0, len);
-  /* going '<= len' includes the null terminator */
+  Object string = stringAlloc(len);
+  /* iterating '<= len' includes the null terminator */
   for (int n=0; n<=len; n++) {
     stringSetChar_unsafe(string, n, str[n]);
   }
@@ -118,8 +124,27 @@ void stringDisp(Object string, FILE* stream) {
 /*------------------------------------------------------------------*/
 void stringShow(Object string, FILE* stream) {
   fputc('"', stream);
-  stringEscapify(string, stream);
+  stringShowChars(string, stream);
   fputc('"', stream);
+}
+
+/*------------------------------------------------------------------*/
+void stringShowChars(Object string, FILE* stream) {
+  stringEscapify(string, stream);
+}
+
+/*------------------------------------------------------------------*/
+Object stringSubstring(Object string, Word start, Word end) {
+  Word nChars = end - start;
+  if (nChars <= 0) {
+    return stringNew("");
+  }
+  Object newString = stringAlloc(nChars);
+  for (Word n=0; n<nChars; n++) {
+    stringSetChar_unsafe(newString, n, stringGetChar_unsafe(string, n + start));
+  }
+  stringSetChar_unsafe(newString, nChars, '\0');
+  return newString;
 }
 
 /*------------------------------------------------------------------*/
