@@ -35,7 +35,9 @@ Word vmemGet(Address addr);
 void vmemSet(Address addr, Word value);
 long vmemGetNWords(void);
 
-void vmemInc(Address addr);
-void vmemDec(Address addr);
+Word vmemInc(Address addr);
+Word vmemIncBy(Address addr, Word w);
+Word vmemDec(Address addr);
+Word vmemDecBy(Address addr, Word w);
 
 #endif

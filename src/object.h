@@ -27,6 +27,7 @@ typedef enum {
   D_StreamIn,
   D_StreamOut,
   D_String,
+  D_StringBuffer,
   D_Symbol,
   D_Tuple,
   E_Abstr,
@@ -82,7 +83,9 @@ void objSetType(Object obj, ObjType objType);
 Word objGetData(Object obj, Word offset);
 void objSetData(Object obj, Word offset, Word value);
 
-void objIncData(Object obj, Word offset);
-void objDecData(Object obj, Word offset);
+Word objIncData(Object obj, Word offset);
+Word objIncDataBy(Object obj, Word offset, Word w);
+Word objDecData(Object obj, Word offset);
+Word objDecDataBy(Object obj, Word offset, Word w);
 
 #endif

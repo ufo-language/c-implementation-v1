@@ -114,15 +114,29 @@ void vmemSet(Address addr, Word value) {
 }
 
 /*------------------------------------------------------------------*/
-void vmemInc(Address addr) {
+Word vmemInc(Address addr) {
   uint pageIndex = pageGet(addr / PAGE_SIZE);
   Word* page = vmemPageTable[pageIndex];
-  page[addr % PAGE_SIZE]++;
+  return ++page[addr % PAGE_SIZE];
 }
 
 /*------------------------------------------------------------------*/
-void vmemDec(Address addr) {
+Word vmemIncBy(Address addr, Word w) {
   uint pageIndex = pageGet(addr / PAGE_SIZE);
   Word* page = vmemPageTable[pageIndex];
-  page[addr % PAGE_SIZE]--;
+  return (page[addr % PAGE_SIZE] += w);
+}
+
+/*------------------------------------------------------------------*/
+Word vmemDec(Address addr) {
+  uint pageIndex = pageGet(addr / PAGE_SIZE);
+  Word* page = vmemPageTable[pageIndex];
+  return --page[addr % PAGE_SIZE];
+}
+
+/*------------------------------------------------------------------*/
+Word vmemDecBy(Address addr, Word w) {
+  uint pageIndex = pageGet(addr / PAGE_SIZE);
+  Word* page = vmemPageTable[pageIndex];
+  return (page[addr % PAGE_SIZE] -= w);
 }

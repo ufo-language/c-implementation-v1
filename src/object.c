@@ -35,6 +35,7 @@ char* ObjTypeNames[] = {
   "StreamIn",
   "StreamOut",
   "String",
+  "StringBuffer",
   "Symbol",
   "Tuple",
   /* expressions */
@@ -147,10 +148,18 @@ void objSetData(Object obj, Word offset, Word value) {
   vmemSet(obj.a + OBJ_OVERHEAD + offset, value);
 }
 
-void objIncData(Object obj, Word offset) {
-  vmemInc(obj.a + OBJ_OVERHEAD + offset);
+Word objIncData(Object obj, Word offset) {
+  return vmemInc(obj.a + OBJ_OVERHEAD + offset);
 }
 
-void objDecData(Object obj, Word offset) {
-  vmemDec(obj.a + OBJ_OVERHEAD + offset);
+Word objIncDataBy(Object obj, Word offset, Word w) {
+  return vmemIncBy(obj.a + OBJ_OVERHEAD + offset, w);
+}
+
+Word objDecData(Object obj, Word offset) {
+  return vmemDec(obj.a + OBJ_OVERHEAD + offset);
+}
+
+Word objDecDataBy(Object obj, Word offset, Word w) {
+  return vmemDecBy(obj.a + OBJ_OVERHEAD + offset, w);
 }
