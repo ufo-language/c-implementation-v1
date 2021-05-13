@@ -33,7 +33,6 @@ void tuple_defineAll(Object env) {
 
 /*------------------------------------------------------------------*/
 Object tuple_count(Thread* thd, Object args) {
-  (void)thd;
   primCheckArgs(param_Tuple, args, thd);
   Object tuple = listGetFirst(args);
   Word nElems = tupleCount(tuple);
@@ -42,7 +41,6 @@ Object tuple_count(Thread* thd, Object args) {
 
 /*------------------------------------------------------------------*/
 Object tuple_get(Thread* thd, Object args) {
-  (void)thd;
   primCheckArgs(param_TupleInt, args, thd);
   Object tuple = listGetFirst(args);
   Object indexInt = listGetSecond(args);

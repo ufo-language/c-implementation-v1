@@ -34,7 +34,6 @@ void type_defineAll(Object env) {
 
 /*------------------------------------------------------------------*/
 Object type_check(Thread* thd, Object args) {
-  (void)thd;
   primCheckArgs(param_AnySymbol, args, thd);
   Object arg = listGetFirst(args);
   Object typeNameSym = listGetSecond(args);
@@ -50,7 +49,6 @@ Object type_check(Thread* thd, Object args) {
 
 /*------------------------------------------------------------------*/
 Object type_hasType(Thread* thd, Object args) {
-  (void)thd;
   primCheckArgs(param_AnySymbol, args, thd);
   Object arg = listGetFirst(args);
   Object typeNameSym = listGetSecond(args);
@@ -62,7 +60,6 @@ Object type_hasType(Thread* thd, Object args) {
 
 /*------------------------------------------------------------------*/
 Object type_name(Thread* thd, Object args) {
-  (void)thd;
   primCheckArgs(param_Any, args, thd);
   Object arg = listGetFirst(args);
   ObjType objType = objGetType(arg);

@@ -19,7 +19,6 @@ void global_defineAll(Object env) {
 
 /*------------------------------------------------------------------*/
 Object oper_colon(Thread* thd, Object args) {
-  (void)thd;
   Object lhs = listGetFirst(args);
   Object lhsVal = eval(lhs, thd);
   Object rhs = listGetSecond(args);

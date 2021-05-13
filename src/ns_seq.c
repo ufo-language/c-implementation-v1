@@ -27,7 +27,6 @@ void seq_defineAll(Object env) {
 
 /*------------------------------------------------------------------*/
 Object seq_new(Thread* thd, Object args) {
-  (void)thd;
   primCheckArgs(param_AnyAny, args, thd);
   Object from = listGetFirst(args);
   Object to = listGetSecond(args);

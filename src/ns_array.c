@@ -36,7 +36,6 @@ void array_defineAll(Object env) {
 
 /*------------------------------------------------------------------*/
 Object array_count(Thread* thd, Object args) {
-  (void)thd;
   primCheckArgs(param_Array, args, thd);
   Object array = listGetFirst(args);
   Word nElems = arrayCount(array);
@@ -45,7 +44,6 @@ Object array_count(Thread* thd, Object args) {
 
 /*------------------------------------------------------------------*/
 Object array_get(Thread* thd, Object args) {
-  (void)thd;
   primCheckArgs(param_ArrayInt, args, thd);
   Object array = listGetFirst(args);
   Object indexInt = listGetSecond(args);
@@ -55,7 +53,6 @@ Object array_get(Thread* thd, Object args) {
 
 /*------------------------------------------------------------------*/
 Object array_set(Thread* thd, Object args) {
-  (void)thd;
   primCheckArgs(param_ArrayIntAny, args, thd);
   Object array = listGetFirst(args);
   Object indexInt = listGetSecond(args);

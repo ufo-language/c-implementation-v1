@@ -26,7 +26,6 @@ void hash_defineAll(Object env) {
 
 /*------------------------------------------------------------------*/
 Object hash_keys(Thread* thd, Object args) {
-  (void)thd;
   primCheckArgs(param_Hash, args, thd);
   Object arg = listGetFirst(args);
   return hashKeys(arg);

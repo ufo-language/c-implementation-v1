@@ -22,7 +22,6 @@ void ns_defineAll(Object env) {
 
 /*------------------------------------------------------------------*/
 Object ns_global(Thread* thd, Object args) {
-  (void)thd;
   primCheckArgs(EMPTY_LIST, args, thd);
   return GLOBALS;
 }

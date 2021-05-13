@@ -29,7 +29,6 @@ void ufo_defineAll(Object env) {
 
 /*------------------------------------------------------------------*/
 Object ufo_args(Thread* thd, Object args) {
-  (void)thd;
   primCheckArgs(EMPTY_LIST, args, thd);
   if (argAry.a != nullObj.a) {
     return argAry;

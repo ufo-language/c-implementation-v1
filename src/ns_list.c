@@ -79,7 +79,6 @@ Object list_accept(Thread* thd, Object args) {
 
 /*------------------------------------------------------------------*/
 Object list_count(Thread* thd, Object args) {
-  (void)thd;
   primCheckArgs(param_List, args, thd);
   Object list = listGetFirst(args);
   Word nElems = listCount(list);
@@ -88,7 +87,6 @@ Object list_count(Thread* thd, Object args) {
 
 /*------------------------------------------------------------------*/
 Object list_drop(Thread* thd, Object args) {
-  (void)thd;
   primCheckArgs(param_ListInt, args, thd);
   Object list = listGetFirst(args);
   Object nElemsInt = listGetSecond(args);
@@ -101,7 +99,6 @@ Object list_drop(Thread* thd, Object args) {
 
 /*------------------------------------------------------------------*/
 Object list_first(Thread* thd, Object args) {
-  (void)thd;
   primCheckArgs(param_List, args, thd);
   Object list = listGetFirst(args);
   return listGetFirst(list);
@@ -116,7 +113,6 @@ static void list_keys_callback(Object keySet, Object elem) {
 
 /*------------------------------------------------------------------*/
 Object list_keys(Thread* thd, Object args) {
-  (void)thd;
   primCheckArgs(param_List, args, thd);
   Object list = listGetFirst(args);
   Object keySet = setNew();
@@ -168,7 +164,6 @@ Object list_reject(Thread* thd, Object args) {
 
 /*------------------------------------------------------------------*/
 Object list_rest(Thread* thd, Object args) {
-  (void)thd;
   primCheckArgs(param_List, args, thd);
   Object list = listGetFirst(args);
   return listGetRest(list);
@@ -176,7 +171,6 @@ Object list_rest(Thread* thd, Object args) {
 
 /*------------------------------------------------------------------*/
 Object list_reverse(Thread* thd, Object args) {
-  (void)thd;
   primCheckArgs(param_List, args, thd);
   Object list = listGetFirst(args);
   return listReverse(list);
@@ -184,7 +178,6 @@ Object list_reverse(Thread* thd, Object args) {
 
 /*------------------------------------------------------------------*/
 Object list_setFirst(Thread* thd, Object args) {
-  (void)thd;
   primCheckArgs(param_ListAny, args, thd);
   Object list = listGetFirst(args);
   Object first = listGetSecond(args);
@@ -194,7 +187,6 @@ Object list_setFirst(Thread* thd, Object args) {
 
 /*------------------------------------------------------------------*/
 Object list_setRest(Thread* thd, Object args) {
-  (void)thd;
   primCheckArgs(param_ListAny, args, thd);
   Object list = listGetFirst(args);
   Object rest = listGetSecond(args);
@@ -204,7 +196,6 @@ Object list_setRest(Thread* thd, Object args) {
 
 /*------------------------------------------------------------------*/
 Object list_take(Thread* thd, Object args) {
-  (void)thd;
   primCheckArgs(param_ListInt, args, thd);
   Object list = listGetFirst(args);
   Object q = queueNew();
