@@ -4,7 +4,6 @@
 #include "repl.h"
 #include "thread.h"
 
-/* returns true to continue, false to quit */
 bool colonCommand(Thread* thd, ReplObj* replObj);
 
 #endif

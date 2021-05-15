@@ -148,6 +148,17 @@ Object stringSubstring(Object string, Word start, Word end) {
 }
 
 /*------------------------------------------------------------------*/
+void stringToCharStar(Object string, char* buf, Word bufSize) {
+  for (Word n=0; n<bufSize; n++) {
+    char c = stringGetChar_unsafe(string, n);
+    buf[n] = c;
+    if (c == '\0') {
+      break;
+    }
+  }
+}
+
+/*------------------------------------------------------------------*/
 void stringEscapify(Object string, FILE* stream) {
   Word len = stringCount(string);
   for (Word n=0; n<len; n++) {

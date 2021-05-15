@@ -24,6 +24,7 @@ void stringSetChar_unsafe(Object string, Word offset, char c);
 void stringShow(Object string, FILE* stream);
 void stringShowChars(Object string, FILE* stream);
 Object stringSubstring(Object string, Word start, Word end);
+void stringToCharStar(Object string, char* buf, Word bufSize);
 void stringUnescapify(Object string, FILE* stream);
 
 #endif

@@ -5,6 +5,7 @@
 #include "d_list.h"
 #include "d_queue.h"
 #include "d_string.h"
+#include "d_stringbuffer.h"
 #include "delegate.h"
 #include "e_ident.h"
 #include "eval.h"
@@ -14,6 +15,8 @@
 #include "parser.h"
 #include "repl.h"
 #include "thread.h"
+
+ReplObj theRepl;
 
 /*------------------------------------------------------------------*/
 void intro(void) {
@@ -48,14 +51,27 @@ int getLine(char* buffer, int len) {
 }
 
 /*------------------------------------------------------------------*/
+void getLines(Object stringBuffer) {
+  Object newline = stringNew("\n");
+  while (true) {
+    int nChars = getLine(theRepl.inputBuffer, READ_BUF_SIZE);
+    if (nChars == 0) {
+      break;
+    }
+    Object string = stringNew(theRepl.inputBuffer);
+    stringBufferWrite(stringBuffer, string);
+    stringBufferWrite(stringBuffer, newline);
+  }
+}
+
+/*------------------------------------------------------------------*/
 void repl(void) {
+  replInit(&theRepl);
   intro();
   Object it = identNew("it");
   hashPut(SUPER_GLOBALS, it, NOTHING);
   Thread* thd = threadNew();
-  ReplObj repl;
-  bool contin = true;
-  while (contin) {
+  while (theRepl.contin) {
     int jumpRes = setjmp(thd->jumpBuf);
     if (jumpRes != 0) {
       Object exn = threadGetExn(thd);
@@ -65,30 +81,34 @@ void repl(void) {
       continue;
     }
     prompt();
-    int nChars = getLine(repl.inputBuffer, READ_BUF_SIZE);
+    int nChars = getLine(theRepl.inputBuffer, READ_BUF_SIZE);
     if (nChars > 0) {
-      if (repl.inputBuffer[0] == ':') {
-        contin = colonCommand(thd, &repl);
-        continue;
+      if (theRepl.inputBuffer[0] == ':') {
+        if (!colonCommand(thd, &theRepl)) {
+          /* returns false for all commands except ':e' multi-line input */
+          continue;
+        }
       }
-      repl.inputString = stringNew(repl.inputBuffer);
-      Object tokenQ = lex(thd, repl.inputString);
-      repl.tokens = queueAsList(tokenQ);
-      repl.parseRes = parseEntry(thd, repl.tokens);
-      if (repl.parseRes.a != nullObj.a) {
-        Object obj = listGetFirst(repl.parseRes);
-        Object tokens = listGetRest(repl.parseRes);
+      else {
+        theRepl.inputString = stringNew(theRepl.inputBuffer);
+      }
+      Object tokenQ = lex(thd, theRepl.inputString);
+      theRepl.tokens = queueAsList(tokenQ);
+      theRepl.parseRes = parseEntry(thd, theRepl.tokens);
+      if (theRepl.parseRes.a != nullObj.a) {
+        Object obj = listGetFirst(theRepl.parseRes);
+        Object tokens = listGetRest(theRepl.parseRes);
         if (listGetRest(tokens).a != EMPTY_LIST.a) {
           fprintf(stderr, "REPL ERROR: too many tokens on line (probably because the parser is incomplete)\n");
           fprintf(stderr, "  remaining tokens = "); objShow(tokens, stderr); fprintf(stderr, "\n");
           /* TODO should I just call the parser on the remaining tokens? */
         }
         else {
-          repl.parseRes = obj;
-          repl.value = nullObj;
+          theRepl.parseRes = obj;
+          theRepl.value = nullObj;
           Object val = evaluate(obj, thd);
           if (val.a != nullObj.a) {
-            repl.value = val;
+            theRepl.value = val;
             if (val.a != NOTHING.a) {
               objShow(val, stdout);
               printf(" :: %s\n", ObjTypeNames[objGetType(val)]);
@@ -102,4 +122,23 @@ void repl(void) {
       }
     }
   }
+}
+
+/*------------------------------------------------------------------*/
+void replInit(ReplObj* repl) {
+  repl->lineBuffer = stringBufferNew();
+  repl->inputString = stringNew("");
+  repl->tokens = EMPTY_LIST;
+  repl-> parseRes = NOTHING;
+  repl->value = NOTHING;
+  repl->contin = true;
+}
+
+/*------------------------------------------------------------------*/
+void replMark() {
+  objMark(theRepl.lineBuffer);
+  objMark(theRepl.inputString);
+  objMark(theRepl.tokens);
+  objMark(theRepl.parseRes);
+  objMark(theRepl.value);
 }

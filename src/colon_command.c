@@ -1,6 +1,9 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
+#include "d_string.h"
+#include "d_stringbuffer.h"
 #include "delegate.h"
 #include "gc.h"
 #include "mem.h"
@@ -8,13 +11,20 @@
 #include "thread.h"
 
 void colonCommandHelp() {
-  puts("  :?     Shows this help message");
-  puts("  :env   Shows current dynamic environment");
-  puts("  :gc    Performs a garbage collection");
-  puts("  :i     Shows last input");
-  puts("  :mem   Shows memory values");
-  puts("  :q     Quits UFO");
-  puts("  :size  Shows system word sizes");
+  puts("  :?         Shows this help message");
+  puts("  :e         Enter multiple lines, empty line to terminate");
+  puts("  :env       Shows current dynamic environment");
+  puts("  :gc        Performs a garbage collection");
+  puts("  :i         Shows last input");
+  puts("  :mem       Shows memory values");
+  puts("  :mr <addr> Shows the value of memory at addr");
+  puts("  :q         Quits UFO");
+  puts("  :size      Shows system word sizes");
+}
+
+void colonCommandReadMultipleLines(ReplObj* repl) {
+  getLines(repl->lineBuffer);
+  repl->inputString = stringBufferToString(repl->lineBuffer);
 }
 
 void colonCommandShowInput(ReplObj* replObj) {
@@ -36,11 +46,19 @@ void colonCommandShowSizes() {
   printf("  where uint = unsigned short int\n");
 }
 
+bool startsWith(char* prefix, char* str) {
+  return strncmp(prefix, str, strlen(prefix)) == 0;
+}
+
 bool colonCommand(Thread* thd, ReplObj* replObj) {
   (void)thd;
   char* input = replObj->inputBuffer;
-  bool contin = true;
-  if (!strcmp(":env", input)) {
+  bool res = false;
+  if (!strcmp(":e", input)) {
+    colonCommandReadMultipleLines(replObj);
+    res = true;
+  }
+  else if (!strcmp(":env", input)) {
     objShow(threadGetEnv(thd), stdout);
     printf("\n");
   }
@@ -54,8 +72,13 @@ bool colonCommand(Thread* thd, ReplObj* replObj) {
     printf("Free blocks: %d\n", memGetNBlocks());
     printf("Free words : %d\n", memGetNFreeWords());
   }
+  else if (startsWith(":mr", input)) {
+    Word addr = atoi(input + 4);
+    Word val = vmemGet(addr);
+    printf("value @%d = %d\n", addr, val);
+  }
   else if (!strcmp(":q", input)) {
-    contin = false;
+    replObj->contin = false;
   }
   else if (!strcmp(":size", input)) {
     colonCommandShowSizes();
@@ -66,5 +89,5 @@ bool colonCommand(Thread* thd, ReplObj* replObj) {
   else {
     printf("Colon command '%s' not understood\n", replObj->inputBuffer);
   }
-  return contin;
+  return res;
 }
