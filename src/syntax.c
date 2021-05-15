@@ -42,8 +42,7 @@ Transition integerState[] = {
 /* S_POINT: transition from INT to REAL */
 Transition pointState[] = {
   {'0', '9',     S_REAL,  A_KEEP,      T_NONE},
-  //{'.', '.',     S_OPER,  A_KEEP,      T_NONE},
-  {'.', '.',     S_I,     A_DOUBLEDOT, T_NONE},
+  {'.', '.',     S_I,     A_DOUBLEDOT, T_INT},
   {C_ANY, C_ANY, S_I,     A_ERR_REAL,  T_NONE}
 };
 
