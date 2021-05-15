@@ -293,7 +293,14 @@ Object p_spotSpecific(Object tokens, TokenType tokenType, char* word) {
 
 Object p_spotOperator(Thread* thd, Object tokens) {
   (void)thd;
-  return p_spot(tokens, T_OPER);
+  Object res = p_spot(tokens, T_OPER);
+  if (res.a == nullObj.a) {
+    return nullObj;
+  }
+  Object token = listGetFirst(res);
+  tokens = listGetRest(res);
+  Object oper = arrayGet_unsafe(token, 1);
+  return listNew(oper, tokens);
 }
 
 Object p_spotOperator_required(Thread* thd, Object tokens, char* word) {

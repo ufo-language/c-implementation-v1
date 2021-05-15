@@ -61,7 +61,7 @@ void seqMark(Object seq) {
 /*------------------------------------------------------------------*/
 void seqShow(Object seq, FILE* stream) {
   objShow(seqGetFrom(seq), stream);
-  fputs(" # ", stream);
+  fputs("..", stream);
   objShow(seqGetTo(seq), stream);
   Object step = {objGetData(seq, SEQ_STEP_OFS)};
   if (intGet(step) != 1) {
