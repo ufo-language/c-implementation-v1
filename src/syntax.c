@@ -27,6 +27,7 @@ Transition initialState[] = {
   {'/', '/',     S_OPER,  A_KEEP,      T_NONE},
   {'<', '>',     S_OPER,  A_KEEP,      T_NONE},
   {'!', '!',     S_OPER,  A_KEEP,      T_NONE},
+  {'.', '.',     S_OPER,  A_KEEP,      T_NONE},
   {C_NUL, C_NUL, S_I,     A_IGNORE,    T_EOI},     /* C_NUL is end of input */
   {C_ANY, C_ANY, S_I,     A_KEEP,      T_SPECIAL}  /* C_ANY is wildcard */
 };
@@ -41,6 +42,8 @@ Transition integerState[] = {
 /* S_POINT: transition from INT to REAL */
 Transition pointState[] = {
   {'0', '9',     S_REAL,  A_KEEP,      T_NONE},
+  //{'.', '.',     S_OPER,  A_KEEP,      T_NONE},
+  {'.', '.',     S_I,     A_DOUBLEDOT, T_NONE},
   {C_ANY, C_ANY, S_I,     A_ERR_REAL,  T_NONE}
 };
 
@@ -74,6 +77,7 @@ Transition operatorState[] = {
   {'/', '/',     S_OPER,  A_KEEP,      T_NONE},
   {'<', '>',     S_OPER,  A_KEEP,      T_NONE},
   {'!', '!',     S_OPER,  A_KEEP,      T_NONE},
+  {'.', '.',     S_OPER,  A_KEEP,      T_NONE},
   {C_ANY, C_ANY, S_I,     A_REUSE,     T_OPER}
 };
 

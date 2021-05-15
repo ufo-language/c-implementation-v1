@@ -21,7 +21,7 @@ typedef enum {
 } StateName;
 
 typedef enum {
-  A_KEEP, A_REUSE, A_IGNORE, A_ERR, A_ERR_REAL, A_ERR_STRING
+  A_KEEP, A_REUSE, A_IGNORE, A_DOUBLEDOT, A_ERR, A_ERR_REAL, A_ERR_STRING
 } Action;
 
 typedef enum {

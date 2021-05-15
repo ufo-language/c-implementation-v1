@@ -19,7 +19,7 @@ char* S_NAMES[] = {
 
 /* There must be a 1:1 correspondence between this and the Action enum */
 char* A_NAMES[] = {
-  "Keep", "Reuse", "Ignore", "Err", "ErrReal", "ErrString"
+  "Keep", "Reuse", "Ignore", "DoubleDot", "Err", "ErrReal", "ErrString"
 };
 
 /* There must be a 1:1 correspondence between this and the TokenType enum */
@@ -102,6 +102,10 @@ bool lexToken(Thread* thd, LexerState* lexerState, Token* token) {
         lexerState->pos--;
         break;
       case A_IGNORE:
+        break;
+      case A_DOUBLEDOT:
+        lexerState->pos -= 2;
+        lexemeIndex--;
         break;
       case A_ERR:
         lexError(thd, lexerState, "lexer error");
