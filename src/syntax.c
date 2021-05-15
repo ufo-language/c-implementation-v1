@@ -25,6 +25,7 @@ Transition initialState[] = {
   {'-', '-',     S_OPER,  A_KEEP,      T_NONE},
   {'*', '*',     S_OPER,  A_KEEP,      T_NONE},
   {'/', '/',     S_OPER,  A_KEEP,      T_NONE},
+  {'%', '%',     S_OPER,  A_KEEP,      T_NONE},
   {'<', '>',     S_OPER,  A_KEEP,      T_NONE},
   {'!', '!',     S_OPER,  A_KEEP,      T_NONE},
   {'.', '.',     S_OPER,  A_KEEP,      T_NONE},
