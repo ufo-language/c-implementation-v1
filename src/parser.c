@@ -34,7 +34,7 @@
 /* primitives */
 Object p_spot(Object tokens, TokenType tokenType);
 Object p_spotSpecific(Object tokens, TokenType tokenType, char* word);
-Object p_spotOperator(Object tokens, char* word);
+Object p_spotOperator(Thread* thd, Object tokens);
 Object p_spotReserved(Object tokens, char* word);
 Object p_spotReserved_required(Thread* thd, Object tokens, char* word);
 Object p_spotSpecial(Object tokens, char* word);
@@ -104,6 +104,7 @@ Object p_THEN(Thread* thd, Object tokens);
 
 /* expressions */
 Object p_apply(Thread* thd, Object tokens);
+Object p_binopExpr(Thread* thd, Object tokens);
 Object p_colonExpr(Thread* thd, Object tokens);
 Object p_do(Thread* thd, Object tokens);
 Object p_function(Thread* thd, Object tokens);
@@ -140,6 +141,7 @@ struct ParserEntry_struct {
   {(void*)p_apply, "p_apply"},
   {(void*)p_array, "p_array"},
   {(void*)p_binding, "p_binding"},
+  {(void*)p_binopExpr, "p_binopExpr"},
   {(void*)p_bool, "p_bool"},
   {(void*)p_bar, "p_bar"},
   {(void*)p_braceClose, "p_braceClose"},
@@ -289,8 +291,9 @@ Object p_spotSpecific(Object tokens, TokenType tokenType, char* word) {
   return _ignore(tokens);
 }
 
-Object p_spotOperator(Object tokens, char* word) {
-  return p_spotSpecific(tokens, T_OPER, word);
+Object p_spotOperator(Thread* thd, Object tokens) {
+  (void)thd;
+  return p_spot(tokens, T_OPER);
 }
 
 Object p_spotOperator_required(Thread* thd, Object tokens, char* word) {
@@ -474,7 +477,7 @@ Object p_literal(Thread* thd, Object tokens) {
 
 Object p_angleOpen(Thread* thd, Object tokens) {
   (void)thd;
-  return p_spotOperator(tokens, "<");
+  return p_spotSpecific(tokens, T_OPER, "<");
 }
 
 Object p_angleClose(Thread* thd, Object tokens) {
@@ -483,7 +486,7 @@ Object p_angleClose(Thread* thd, Object tokens) {
 
 Object p_bar(Thread* thd, Object tokens) {
   (void)thd;
-  return p_spotSpecial(tokens, "|");
+  return p_spotSpecific(tokens, T_OPER, "|");
 }
 
 Object p_braceOpen(Thread* thd, Object tokens) {
@@ -506,7 +509,7 @@ Object p_bracketClose(Thread* thd, Object tokens) {
 
 Object p_equalSign(Thread* thd, Object tokens) {
   (void)thd;
-  return p_spotOperator(tokens, "=");
+  return p_spotSpecific(tokens, T_OPER, "=");
 }
 
 Object p_comma(Thread* thd, Object tokens) {
@@ -727,6 +730,21 @@ Object p_apply(Thread* thd, Object tokens) {
   tokens = listGetRest(argsRes);
   Object apply = appNew(abstr, args);
   return listNew(apply, tokens);
+}
+
+Object p_binopExpr(Thread* thd, Object tokens) {
+  Parser parsers[] = {p_object, p_spotOperator, p_object, NULL};
+  Object res = p_seqOf(thd, tokens, parsers);
+  if (res.a == nullObj.a) {
+    return nullObj;
+  }
+  Object exprs = listGetFirst(res);
+  tokens = listGetRest(res);
+  Object lhs = listGetFirst(exprs);
+  Object oper = listGetSecond(exprs);
+  Object rhs = listGetThird(exprs);
+  Object binopExpr = binopNew(lhs, oper, rhs);
+  return listNew(binopExpr, tokens);
 }
 
 Object p_colon(Thread* thd, Object tokens) {
@@ -982,6 +1000,7 @@ Object p_expr(Thread* thd, Object tokens) {
     p_parenExpr,
     p_apply,
     p_colonExpr,  /* must come after p_apply */
+    p_binopExpr,
     p_do,
     p_function,
     p_if,
