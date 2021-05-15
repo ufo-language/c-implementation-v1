@@ -29,6 +29,7 @@ set(LIB_SRC_FILES
   src/d_hash.c
   src/d_int.c
   src/d_list.c
+  src/d_method.c
   src/d_nothing.c
   src/d_prim.c
   src/d_queue.c

@@ -25,6 +25,7 @@ char* ObjTypeNames[] = {
   "Hash",
   "Integer",
   "List",
+  "Method",
   "Nothing",
   "Primitive",
   "PrimitiveMacro",

@@ -17,6 +17,7 @@ typedef enum {
   D_Hash,
   D_Int,
   D_List,
+  D_Method,
   D_Nothing,
   D_Prim,
   D_PrimMacro,

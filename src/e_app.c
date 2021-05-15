@@ -3,6 +3,7 @@
 #include "d_array.h"
 #include "d_closure.h"
 #include "d_list.h"
+#include "d_method.h"
 #include "d_prim.h"
 #include "d_string.h"
 #include "d_symbol.h"
@@ -23,6 +24,10 @@ Object appEval(Object app, Thread* thd) {
     case D_Closure:
       argsVal = eval(args, thd);
       res = closureApply(abstrVal, argsVal, thd);
+      break;
+    case D_Method:
+      argsVal = eval(args, thd);
+      res = methodApply(abstrVal, argsVal, thd);
       break;
     case D_Prim:
       argsVal = eval(args, thd);

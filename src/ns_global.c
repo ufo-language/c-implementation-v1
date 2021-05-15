@@ -3,6 +3,7 @@
 #include "d_hash.h"
 #include "d_int.h"
 #include "d_list.h"
+#include "d_method.h"
 #include "d_prim.h"
 #include "d_seq.h"
 #include "delegate.h"
@@ -13,6 +14,7 @@
 #include "thread.h"
 
 Object oper_colon(Thread* thd, Object args);
+Object oper_dot(Thread* thd, Object args);
 Object oper_doubleDot(Thread* thd, Object args);
 Object oper_equalTo(Thread* thd, Object args);
 Object oper_minus(Thread* thd, Object args);
@@ -24,6 +26,7 @@ Object oper_times(Thread* thd, Object args);
 /*------------------------------------------------------------------*/
 void global_defineAll(Object env) {
   hashPut(env, identNew(":"), primMacroNew(oper_colon));
+  hashPut(env, identNew("."), primMacroNew(oper_dot));
   hashPut(env, identNew(".."), primNew(oper_doubleDot));
   hashPut(env, identNew("=="), primNew(oper_equalTo));
   hashPut(env, identNew("+"), primNew(oper_plus));
@@ -49,6 +52,15 @@ Object oper_colon(Thread* thd, Object args) {
       }
   }
   return res;
+}
+
+/*------------------------------------------------------------------*/
+Object oper_dot(Thread* thd, Object args) {
+  (void)thd;
+  Object receiver = listGetFirst(args);
+  Object func = listGetSecond(args);
+  Object method = methodNew(receiver, func);
+  return method;
 }
 
 /*------------------------------------------------------------------*/

@@ -9,6 +9,7 @@
 #include "d_exn.h"
 #include "d_hash.h"
 #include "d_int.h"
+#include "d_method.h"
 #include "d_nothing.h"
 #include "d_list.h"
 #include "d_prim.h"
@@ -383,6 +384,9 @@ void objMark(Object obj) {
     case D_List:
       listMark(obj);
       break;
+    case D_Method:
+      methodMark(obj);
+      break;
     case D_Queue:
       queueMark(obj);
       break;
@@ -489,6 +493,9 @@ void objShow(Object obj, FILE* stream) {
       break;
     case D_List:
       listShow(obj, stream);
+      break;
+    case D_Method:
+      methodShow(obj, stream);
       break;
     case D_Prim:
     case D_PrimMacro:

@@ -66,6 +66,7 @@ Object p_braceOpen(Thread* thd, Object tokens);
 Object p_braceClose(Thread* thd, Object tokens);
 Object p_bracketOpen(Thread* thd, Object tokens);
 Object p_bracketClose(Thread* thd, Object tokens);
+Object p_dot(Thread* thd, Object tokens);
 Object p_colon(Thread* thd, Object tokens);
 Object p_comma(Thread* thd, Object tokens);
 Object p_equalSign(Thread* thd, Object tokens);
@@ -106,6 +107,7 @@ Object p_THEN(Thread* thd, Object tokens);
 Object p_apply(Thread* thd, Object tokens);
 Object p_binopExpr(Thread* thd, Object tokens);
 Object p_colonExpr(Thread* thd, Object tokens);
+Object p_dottedExpr(Thread* thd, Object tokens);
 Object p_do(Thread* thd, Object tokens);
 Object p_function(Thread* thd, Object tokens);
 Object p_ident(Thread* thd, Object tokens);
@@ -154,6 +156,8 @@ struct ParserEntry_struct {
   {(void*)p_commaList, "p_commaList"},
   {(void*)p_commaBindings, "p_commaBindings"},
   {(void*)p_do, "p_do"},
+  {(void*)p_dot, "p_dot"},
+  {(void*)p_dottedExpr, "p_dottedExpr"},
   {(void*)p_equalSign, "p_equalSign"},
   {(void*)p_expr, "p_expr"},
   {(void*)p_fail, "p_fail"},
@@ -721,7 +725,7 @@ Object p_parenCommaList(Thread* thd, Object tokens) {
 }
 
 Object p_apply(Thread* thd, Object tokens) {
-  Parser parsers[] = {p_parenExpr, p_colonExpr, p_ident, NULL};
+  Parser parsers[] = {p_parenExpr, p_colonExpr, p_dottedExpr, p_ident, NULL};
   Object abstrRes = p_oneOf(thd, tokens, parsers);
   if (abstrRes.a == nullObj.a) {
     return nullObj;
@@ -770,6 +774,25 @@ Object p_colonExpr(Thread* thd, Object tokens) {
   Object lhs = listGetFirst(exprs);
   Object rhs = listGetSecond(exprs);
   Object binopExpr = binopNew(lhs, identNew(":"), rhs);
+  return listNew(binopExpr, tokens);
+}
+
+Object p_dot(Thread* thd, Object tokens) {
+  (void)thd;
+  return p_spotSpecific(tokens, T_OPER, ".");
+}
+
+Object p_dottedExpr(Thread* thd, Object tokens) {
+  Parser parsers[] = {p_object, p_dot, p_object, NULL};
+  Object res = p_seqOf(thd, tokens, parsers);
+  if (res.a == nullObj.a) {
+    return nullObj;
+  }
+  Object exprs = listGetFirst(res);
+  tokens = listGetRest(res);
+  Object lhs = listGetFirst(exprs);
+  Object rhs = listGetSecond(exprs);
+  Object binopExpr = binopNew(lhs, identNew("."), rhs);
   return listNew(binopExpr, tokens);
 }
 
