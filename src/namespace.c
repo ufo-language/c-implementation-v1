@@ -13,6 +13,8 @@ void list_defineAll(Object env);
 void ns_defineAll(Object env);
 void queue_defineAll(Object env);
 void seq_defineAll(Object env);
+void string_defineAll(Object env);
+void stringBuffer_defineAll(Object env);
 void tuple_defineAll(Object env);
 void type_defineAll(Object env);
 void ufo_defineAll(Object env);
@@ -34,6 +36,8 @@ Object nsDefineAll() {
   ns_defineAll(env);
   queue_defineAll(env);
   seq_defineAll(env);
+  string_defineAll(env);
+  stringBuffer_defineAll(env);
   tuple_defineAll(env);
   type_defineAll(env);
   ufo_defineAll(env);

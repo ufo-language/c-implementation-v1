@@ -38,6 +38,7 @@ set(LIB_SRC_FILES
   src/d_streamin.c
   src/d_streamout.c
   src/d_string.c
+  src/d_stringbuffer.c
   src/d_symbol.c
   src/d_tuple.c
   src/delegate.c
@@ -70,6 +71,8 @@ set(LIB_SRC_FILES
   src/ns_ns.c
   src/ns_queue.c
   src/ns_seq.c
+  src/ns_string.c
+  src/ns_stringbuffer.c
   src/ns_tuple.c
   src/ns_type.c
   src/ns_ufo.c
