@@ -39,7 +39,6 @@ Object stringBufferReadChar(Object sb, Thread* thd) {
 }
 
 /*------------------------------------------------------------------*/
-#include <assert.h>
 Object stringBufferReadChar_unsafe(Object sb) {
   Word nChars = objGetData(sb, STRBUF_NCHARS_OFS);
   if (nChars == 0) {
@@ -60,8 +59,6 @@ Object stringBufferReadChar_unsafe(Object sb) {
     objSetData(sb, STRBUF_READ_INDEX_OFS, readIndex);
   }
   objSetData(sb, STRBUF_NCHARS_OFS, nChars - 1);
-  
-
   char str[2];
   str[0] = c;
   str[1] = '\0';
@@ -79,24 +76,48 @@ Object stringBufferReadUntil(Object sb, char c) {
 void stringBufferShow(Object sb, FILE* stream) {
   fputs("StringBuffer{\"", stream);\
   Word nChars = stringBufferCount(sb);
+  char str[nChars + 1];
+  stringBufferToString_aux(sb, str, nChars);
+  fputs(str, stream);
+  fputs("\"}", stream);
+}
+
+/*------------------------------------------------------------------*/
+Object stringBufferToString(Object sb) {
+  Word nChars = stringBufferCount(sb);
+  char str[nChars + 1];
+  stringBufferToString_aux(sb, str, nChars);
+  return stringNew(str);
+}
+
+/*------------------------------------------------------------------*/
+void stringBufferToString_aux(Object sb, char* str, Word nChars) {
+  str[nChars] = '\0';
+  Word strIndex = 0;
   if (nChars > 0) {
+    bool firstIter = true;
     Object q = {objGetData(sb, STRBUF_Q_OFS)};
     Object list = queueAsList(q);
-    Object firstString = listGetFirst(list);
-    Word readIndex = objGetData(sb, STRBUF_READ_INDEX_OFS);
-    while (readIndex < nChars) {
-      char c = stringGetChar_unsafe(firstString, readIndex);
-      fputc(c, stream);
-      readIndex++;
-    }
-    list = listGetRest(list);
     while (!listIsEmpty(list)) {
+      Word readIndex;
+      if (firstIter) {
+          readIndex = objGetData(sb, STRBUF_READ_INDEX_OFS);
+          firstIter = false;
+      }
+      else {
+        readIndex = 0;
+      }
       Object string = listGetFirst(list);
-      stringShowChars(string, stream);
+      while (true) {
+        char c = stringGetChar_unsafe(string, readIndex++);
+        if (c == 0) {
+          break;
+        }
+        str[strIndex++] = c;
+      }
       list = listGetRest(list);
     }
   }
-  fputs("\"}", stream);
 }
 
 /*------------------------------------------------------------------*/

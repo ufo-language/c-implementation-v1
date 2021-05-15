@@ -21,6 +21,7 @@ Object stringBufferReadChar_unsafe(Object sb);
 Object stringBufferReadUntil(Object sb, char c);
 void stringBufferShow(Object sb, FILE* stream);
 Object stringBufferToString(Object sb);
+void stringBufferToString_aux(Object sb, char* str, Word nChars);
 void stringBufferWrite(Object sb, Object string);
 
 #endif

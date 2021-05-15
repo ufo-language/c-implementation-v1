@@ -17,6 +17,7 @@
 #include "d_seq.h"
 #include "d_set.h"
 #include "d_string.h"
+#include "d_stringbuffer.h"
 #include "d_symbol.h"
 #include "d_tuple.h"
 #include "delegate.h"
@@ -61,6 +62,8 @@ bool objBoolValue(Object obj) {
       return setCount(obj) != 0;
     case D_String:
       return stringCount(obj) > 0;
+    case D_StringBuffer:
+      return stringBufferCount(obj) > 0;
     case D_Tuple:
       return tupleCount(obj) > 0;
     default:
@@ -386,6 +389,9 @@ void objMark(Object obj) {
     case D_Set:
       setMark(obj);
       break;
+    case D_StringBuffer:
+      stringBufferMark(obj);
+      break;
     case D_Tuple:
       tupleMark(obj);
       break;
@@ -502,6 +508,9 @@ void objShow(Object obj, FILE* stream) {
       break;
     case D_String:
       stringShow(obj, stream);
+      break;
+    case D_StringBuffer:
+      stringBufferShow(obj, stream);
       break;
     case D_Symbol:
       symbolShow(obj, stream);

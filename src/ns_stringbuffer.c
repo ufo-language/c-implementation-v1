@@ -15,6 +15,7 @@
 Object stringBuffer_count(Thread* thd, Object args);
 Object stringBuffer_new(Thread* thd, Object args);
 Object stringBuffer_readChar(Thread* thd, Object args);
+Object stringBuffer_toString(Thread* thd, Object args);
 Object stringBuffer_write(Thread* thd, Object args);
 
 static Object param_Sb;
@@ -29,6 +30,7 @@ void stringBuffer_defineAll(Object env) {
   nsAddPrim(ns, "count", stringBuffer_count);
   nsAddPrim(ns, "new", stringBuffer_new);
   nsAddPrim(ns, "readChar", stringBuffer_readChar);
+  nsAddPrim(ns, "toString", stringBuffer_toString);
   nsAddPrim(ns, "write", stringBuffer_write);
   hashPut(env, identNew(nsName), ns);
 }
@@ -52,6 +54,14 @@ Object stringBuffer_readChar(Thread* thd, Object args) {
   primCheckArgs(param_Sb, args, thd);
   Object sb = listGetFirst(args);
   Object string = stringBufferReadChar(sb, thd);
+  return string;
+}
+
+/*------------------------------------------------------------------*/
+Object stringBuffer_toString(Thread* thd, Object args) {
+  primCheckArgs(param_Sb, args, thd);
+  Object sb = listGetFirst(args);
+  Object string = stringBufferToString(sb);
   return string;
 }
 
