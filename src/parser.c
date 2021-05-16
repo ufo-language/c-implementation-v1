@@ -744,7 +744,7 @@ Object p_apply(Thread* thd, Object tokens) {
 }
 
 Object p_binopExpr(Thread* thd, Object tokens) {
-  Parser parsers[] = {p_object, p_spotOperator, p_object, NULL};
+  Parser parsers[] = {p_expr, p_spotOperator, p_any, NULL};
   Object res = p_seqOf(thd, tokens, parsers);
   if (res.a == nullObj.a) {
     return nullObj;
@@ -955,7 +955,7 @@ Object p_parenExpr(Thread* thd, Object tokens) {
     return nullObj;
   }
   tokens = listGetRest(openRes);
-  Object exprRes = p_expr(thd, tokens);
+  Object exprRes = p_any(thd, tokens);
   if (exprRes.a == nullObj.a) {
     return nullObj;
   }
@@ -1030,13 +1030,13 @@ Object p_expr(Thread* thd, Object tokens) {
     p_parenExpr,
     p_apply,
     p_colonExpr,  /* must come after p_apply */
-    p_binopExpr,
     p_do,
     p_function,
     p_if,
     p_letIn,  /* includes plain 'let' */
     p_letRec,
     p_quote,
+    p_object,
     NULL
   };
   Object res = p_oneOf(thd, tokens, parsers);
@@ -1054,7 +1054,7 @@ Object p_listOfAny(Thread* thd, Object tokens) {
 
 /* any object or expression */
 Object p_any(Thread* thd, Object tokens) {
-  Parser parsers[] = {p_expr, p_object, NULL};
+  Parser parsers[] = {p_binopExpr, p_expr, /*p_object,*/ NULL};
   Object res = p_oneOf(thd, tokens, parsers);
   return res;
 }
