@@ -30,6 +30,6 @@ Object seq_new(Thread* thd, Object args) {
   primCheckArgs(param_AnyAny, args, thd);
   Object from = listGetFirst(args);
   Object to = listGetSecond(args);
-  Object seq = seqNew(from, to, intNew(1));
+  Object seq = seqNew(from, to, intNew(1), thd);
   return seq;
 }

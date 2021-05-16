@@ -68,7 +68,7 @@ Object oper_doubleDot(Thread* thd, Object args) {
   (void)thd;
   Object lhs = listGetFirst(args);
   Object rhs = listGetSecond(args);
-  Object seq = seqNew(lhs, rhs, intNew(1));
+  Object seq = seqNew(lhs, rhs, intNew(1), thd);
   return seq;
 }
 
@@ -109,6 +109,9 @@ Object oper_percent(Thread* thd, Object args) {
   switch (objGetType(lhs)) {
     case D_Int:
       res = intBinop(lhs, rhs, intModulus, thd);
+      break;
+    case D_Seq:
+      res = seqMod(lhs, rhs, thd);
       break;
     default: {
         Object exn = arrayN(2, lhs, rhs);

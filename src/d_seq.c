@@ -8,8 +8,20 @@
 #include "thread.h"
 
 /*------------------------------------------------------------------*/
-Object seqNew(Object from, Object to, Object step) {
+Object seqNew(Object from, Object to, Object step, Thread* thd) {
   Object seq = objAlloc(D_Seq, SEQ_OBJ_SIZE);
+  ObjType fromType = objGetType(from);
+  if (fromType != D_Int && fromType != D_Real) {
+    threadThrowException(thd, "Error", "'from' field of sequence is not a number", from);
+  }
+  ObjType toType = objGetType(to);
+  if (toType != D_Int && toType != D_Real) {
+    threadThrowException(thd, "Error", "'to' field of sequence is not a number", to);
+  }
+  ObjType stepType = objGetType(step);
+  if (stepType != D_Int && stepType != D_Real) {
+    threadThrowException(thd, "Error", "'step' field of sequence is not a number", step);
+  }
   objSetData(seq, SEQ_FROM_OFS, from.a);
   objSetData(seq, SEQ_TO_OFS, to.a);
   objSetData(seq, SEQ_STEP_OFS, step.a);
@@ -56,6 +68,14 @@ void seqMark(Object seq) {
   objMark(seqGetFrom(seq));
   objMark(seqGetTo(seq));
   objMark(seqGetStep(seq));
+}
+
+/*------------------------------------------------------------------*/
+Object seqMod(Object seq, Object step, Thread* thd) {
+  Object from = seqGetFrom(seq);
+  Object to = seqGetTo(seq);
+  Object seq1 = seqNew(from, to, step, thd);
+  return seq1;
 }
 
 /*------------------------------------------------------------------*/
