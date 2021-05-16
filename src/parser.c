@@ -497,7 +497,7 @@ Object p_angleClose(Thread* thd, Object tokens) {
 
 Object p_bar(Thread* thd, Object tokens) {
   (void)thd;
-  return p_spotSpecific(tokens, T_OPER, "|");
+  return p_spotSpecific(tokens, T_SPECIAL, "|");
 }
 
 Object p_braceOpen(Thread* thd, Object tokens) {

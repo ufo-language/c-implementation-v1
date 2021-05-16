@@ -29,6 +29,7 @@ Transition initialState[] = {
   {'<', '>',     S_OPER,  A_KEEP,      T_NONE},
   {'!', '!',     S_OPER,  A_KEEP,      T_NONE},
   {'.', '.',     S_OPER,  A_KEEP,      T_NONE},
+  {'&', '&',     S_OPER,  A_KEEP,      T_NONE},
   {C_NUL, C_NUL, S_I,     A_IGNORE,    T_EOI},     /* C_NUL is end of input */
   {C_ANY, C_ANY, S_I,     A_KEEP,      T_SPECIAL}  /* C_ANY is wildcard */
 };
