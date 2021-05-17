@@ -16,6 +16,7 @@
 Object oper_colon(Thread* thd, Object args);
 Object oper_dot(Thread* thd, Object args);
 Object oper_doubleDot(Thread* thd, Object args);
+Object oper_equal(Thread* thd, Object args);
 Object oper_equalTo(Thread* thd, Object args);
 Object oper_minus(Thread* thd, Object args);
 Object oper_percent(Thread* thd, Object args);
@@ -28,6 +29,7 @@ void global_defineAll(Object env) {
   hashPut(env, identNew(":"), primMacroNew(oper_colon));
   hashPut(env, identNew("."), primMacroNew(oper_dot));
   hashPut(env, identNew(".."), primNew(oper_doubleDot));
+  hashPut(env, identNew("="), primNew(oper_equal));
   hashPut(env, identNew("=="), primNew(oper_equalTo));
   hashPut(env, identNew("+"), primNew(oper_plus));
   hashPut(env, identNew("-"), primNew(oper_minus));
@@ -70,6 +72,15 @@ Object oper_doubleDot(Thread* thd, Object args) {
   Object rhs = listGetSecond(args);
   Object seq = seqNew(lhs, rhs, intNew(1), thd);
   return seq;
+}
+
+/*------------------------------------------------------------------*/
+Object oper_equal(Thread* thd, Object args) {
+  (void)thd;
+  Object lhs = listGetFirst(args);
+  Object rhs = listGetSecond(args);
+  Object binding = bindingNew(lhs, rhs);
+  return binding;
 }
 
 /*------------------------------------------------------------------*/
