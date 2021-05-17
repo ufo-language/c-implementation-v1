@@ -59,5 +59,5 @@ Object array_set(Thread* thd, Object args) {
   Object elem = listGetThird(args);
   Word index = intGet(indexInt);
   arraySet(array, index, elem, thd);
-  return NOTHING;
+  return array;
 }
