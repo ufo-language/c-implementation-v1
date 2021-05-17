@@ -9,6 +9,7 @@
 #include "e_app.h"
 #include "e_binop.h"
 #include "e_ident.h"
+#include "e_quote.h"
 #include "eval.h"
 #include "object.h"
 #include "thread.h"
@@ -24,10 +25,10 @@ Object methodApply(Object method, Object argList, Thread* thd) {
   strncpy(receiverTypeNameCopy, receiverTypeName, nChars + 1);
   receiverTypeNameCopy[0] = tolower(receiverTypeNameCopy[0]);
   Object namespaceIdent = identNew(receiverTypeNameCopy);
-  Object argList1 = listNew(receiverVal, argList);
+  Object argList1 = listNew(quoteNew(receiverVal), argList);
   Object colonExpr = binopNew(namespaceIdent, identNew(":"), func);
   Object app = appNew(colonExpr, argList1);
-  Object res = eval(app, thd);
+  Object res = appEval(app, thd);
   return res;
 }
 
