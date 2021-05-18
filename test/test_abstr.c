@@ -82,7 +82,7 @@ void test_abstrNew() {
 void test_abstrFreeVars1() {
   Object x = identNew("x");
   Object params = listNew(x, EMPTY_LIST);
-  Object body = x;
+  Object body = listNew(x, EMPTY_LIST);
   Object abstr = abstrNew(params, body);
 
   Object freeVarSet = setNew();

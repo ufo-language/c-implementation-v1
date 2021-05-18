@@ -323,7 +323,8 @@ void test_objMarkLetIn() {
   Object i100 = intNew(100);
   Object bnd = bindingNew(x, i100);
   Object bindings = listNew(bnd, EMPTY_LIST);
-  Object body = identNew("y");
+  Object y = identNew("y");
+  Object body = listNew(y, EMPTY_LIST);
   Object letIn = letInNew(bindings, body);
 
   objMark(letIn);
@@ -332,7 +333,7 @@ void test_objMarkLetIn() {
   EXPECT_T(gcIsMarked(i100));
   EXPECT_T(gcIsMarked(bnd));
   EXPECT_T(gcIsMarked(bindings));
-  EXPECT_T(gcIsMarked(body));
+  EXPECT_T(gcIsMarked(y));
   EXPECT_T(gcIsMarked(letIn));
 }
 

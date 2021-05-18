@@ -62,16 +62,16 @@ void test_appNew() {
   Object i200 = intNew(200);
   Object i300 = intNew(300);
   Object params1 = EMPTY_LIST;
-  Object body1 = i100;
+  Object body1 = listNew(i100, EMPTY_LIST);
   Object abstr1 = abstrNew(params1, body1);
 
   Object params2 = listNew(x, EMPTY_LIST);
-  Object body2 = i200;
+  Object body2 = listNew(i200, EMPTY_LIST);
   Object abstr2 = abstrNew(params2, body2);
   abstrSetNext(abstr1, abstr2);
 
   Object params3 = listNew(x, listNew(y, EMPTY_LIST));
-  Object body3 = arrayNew(3);
+  Object body3 = listNew(arrayNew(3), EMPTY_LIST);
   arraySet_unsafe(body3, 0, x);
   arraySet_unsafe(body3, 1, y);
   arraySet_unsafe(body3, 2, z);
@@ -106,20 +106,20 @@ void test_appEval() {
   Object i200 = intNew(200);
   Object i300 = intNew(300);
   Object params1 = EMPTY_LIST;
-  Object body1 = i100;
-  Object abstr1 = abstrNew(params1, listNew(body1, EMPTY_LIST));
+  Object body1 = listNew(i100, EMPTY_LIST);
+  Object abstr1 = abstrNew(params1, body1);
 
   Object params2 = listNew(x, EMPTY_LIST);
-  Object body2 = i200;
-  Object abstr2 = abstrNew(params2, listNew(body2, EMPTY_LIST));
+  Object body2 = listNew(i200, EMPTY_LIST);
+  Object abstr2 = abstrNew(params2, body2);
   abstrSetNext(abstr1, abstr2);
 
   Object params3 = listNew(x, listNew(y, EMPTY_LIST));
-  Object body3 = arrayNew(3);
+  Object body3 = listNew(arrayNew(3), EMPTY_LIST);
   arraySet_unsafe(body3, 0, x);
   arraySet_unsafe(body3, 1, y);
   arraySet_unsafe(body3, 2, z);
-  Object abstr3 = abstrNew(params3, listNew(body3, EMPTY_LIST));
+  Object abstr3 = abstrNew(params3, body3);
   abstrSetNext(abstr2, abstr3);
 
   Thread* thd = threadNew();
