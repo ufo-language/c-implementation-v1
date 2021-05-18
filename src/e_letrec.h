@@ -10,7 +10,7 @@
 Object letRecNew(Object bindings);
 
 Object letRecEval(Object letRec, Thread* thd);
-void letRecFreeVars(Object letRec, Object freeVarSet);
+void letRecFreeVars(Object letRec, Object freeVarSet, Thread* thd);
 void letRecMark(Object letRec);
 void letRecShow(Object letRec, FILE* stream);
 

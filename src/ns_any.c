@@ -21,15 +21,15 @@ static Object param_Any;
 static Object param_AnyAny;
 
 /*------------------------------------------------------------------*/
-void any_defineAll(Object env) {
+void any_defineAll(Object env, Thread* thd) {
   char* nsName = "any";
   param_Any = primBuildTypeList(1, D_Null);
   param_AnyAny = primBuildTypeList(2, D_Null, D_Null);
   Object ns = hashNew();
-  nsAddPrim(ns, "freeVars", any_freeVars);
-  nsAddPrim(ns, "hashCode", any_hashCode);
-  nsAddPrim(ns, "match", any_match);
-  hashPut(env, identNew(nsName), ns);
+  nsAddPrim(ns, "freeVars", any_freeVars, thd);
+  nsAddPrim(ns, "hashCode", any_hashCode, thd);
+  nsAddPrim(ns, "match", any_match, thd);
+  hashPut(env, identNew(nsName), ns, thd);
 }
 
 /*------------------------------------------------------------------*/
@@ -38,7 +38,7 @@ Object any_freeVars(Thread* thd, Object args) {
   Object* argAry[] = {&arg};
   primCheckArgs2(param_Any, args, argAry, thd);
   Object freeVarSet = setNew();
-  objFreeVars(arg, freeVarSet);
+  objFreeVars(arg, freeVarSet, thd);
   return freeVarSet;
 }
 
@@ -56,5 +56,5 @@ Object any_match(Thread* thd, Object args) {
   Object arg1, arg2;
   Object* argAry[] = {&arg1, &arg2};
   primCheckArgs2(param_AnyAny, args, argAry, thd);
-  return objMatch(arg1, arg1, EMPTY_LIST);
+  return objMatch(arg1, arg1, EMPTY_LIST, thd);
 }

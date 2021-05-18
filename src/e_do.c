@@ -25,11 +25,11 @@ Object doEval(Object doSeq, Thread* thd) {
 }
 
 /*------------------------------------------------------------------*/
-void doFreeVars(Object doSeq, Object freeVarSet) {
+void doFreeVars(Object doSeq, Object freeVarSet, Thread* thd) {
   Object exprs = {objGetData(doSeq, DO_EXPRS_OFS)};
-  listFreeVars(exprs, freeVarSet);
+  listFreeVars(exprs, freeVarSet, thd);
   Object lastExpr = {objGetData(doSeq, DO_LAST_EXPR_OFS)};
-  objFreeVars(lastExpr, freeVarSet);
+  objFreeVars(lastExpr, freeVarSet, thd);
 }
 
 /*------------------------------------------------------------------*/

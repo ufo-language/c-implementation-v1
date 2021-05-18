@@ -586,7 +586,7 @@ Object p_hashTable(Thread* thd, Object tokens) {
   Object bindings = listGetFirst(res);
   while (!listIsEmpty(bindings)) {
     Object binding = listGetFirst(bindings);
-    hashPut(hash, bindingGetLhs(binding), bindingGetRhs(binding));
+    hashPut(hash, bindingGetLhs(binding), bindingGetRhs(binding), thd);
     bindings = listGetRest(bindings);
   }
   tokens = listGetRest(res);
@@ -970,6 +970,11 @@ Object p_parenExpr(Thread* thd, Object tokens) {
   return listNew(expr, tokens);
 }
 
+static void _queueEnq(Object q, Object elem, Thread* thd) {
+  (void)thd;
+  queueEnq(q, elem);
+}
+
 Object p_queue(Thread* thd, Object tokens) {
   Object res = p_spotSpecial(tokens, "~");
   if (res.a == nullObj.a) {
@@ -983,7 +988,7 @@ Object p_queue(Thread* thd, Object tokens) {
   Object elems = listGetFirst(res);
   tokens = listGetRest(res);
   Object q = queueNew();
-  listEach(elems, queueEnq, q);
+  listEach(elems, _queueEnq, q, thd);
   return listNew(q, tokens);
 }
 
@@ -1021,7 +1026,7 @@ Object p_set(Thread* thd, Object tokens) {
   Object elems = listGetFirst(res);
   tokens = listGetRest(res);
   Object set = setNew();
-  arrayEach(elems, setAddElem, set);
+  arrayEach(elems, setAddElem, set, thd);
   return listNew(set, tokens);
 }
 

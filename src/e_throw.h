@@ -12,7 +12,7 @@ extern Object throwPayload;
 Object throwNew(Object expr);
 
 Object throwEval(Object thrw, Thread* thd);
-void throwFreeVars(Object thrw, Object freeVarSet);
+void throwFreeVars(Object thrw, Object freeVarSet, Thread* thd);
 void throwMark(Object thrw);
 void throwShow(Object thrw, FILE* stream);
 

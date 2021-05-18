@@ -27,12 +27,16 @@ static TestEntry testEntries[] = {
 
 /* Before & after --------------------------------------------------*/
 
+static Thread* thd;
+
 static void test_before() {
   memStart();
-  globalsSetup();
+  thd = threadNew();
+  globalsSetup(thd);
 }
 
 static void test_after() {
+  threadDelete(thd);
   memStop();
 }
 
@@ -85,13 +89,13 @@ void test_queueEquals() {
 
   Object q1 = queueNew();
   Object q2 = queueNew();
-  EXPECT_T(queueEquals(q1, q2));
+  EXPECT_T(queueEquals(q1, q2, thd));
 
   queueEnq(q1, i100);
-  EXPECT_F(queueEquals(q1, q2));
+  EXPECT_F(queueEquals(q1, q2, thd));
 
   queueEnq(q2, i100);
-  EXPECT_T(queueEquals(q1, q2));
+  EXPECT_T(queueEquals(q1, q2, thd));
 }
 
 void test_queueEval() {
@@ -100,7 +104,6 @@ void test_queueEval() {
   Object i100 = intNew(100);
   Object i200 = intNew(200);
 
-  Thread* thd = threadNew();
   threadEnvBind(thd, x, i100);
   threadEnvBind(thd, y, i200);
 
@@ -112,5 +115,4 @@ void test_queueEval() {
   EXPECT_EQ(2, queueCount(q1));
   EXPECT_EQ(i100.a, queueDeq_unsafe(q1).a);
   EXPECT_EQ(i200.a, queueDeq_unsafe(q1).a);
-  threadDelete(thd);
 }

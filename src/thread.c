@@ -50,7 +50,7 @@ void threadEnvRebind(Thread* thd, Object var, Object val) {
   while (!listIsEmpty(env)) {
     Object binding = listGetFirst(env);
     Object ident = bindingGetLhs(binding);
-    if (objEquals(var, ident)) {
+    if (objEquals(var, ident, thd)) {
       bindingSetRhs(binding, val);
       return;
     }
@@ -68,7 +68,7 @@ Object threadEval(Thread* thd, Object expr, Object bindings) {
 /*------------------------------------------------------------------*/
 Object threadEnvLocate(Thread* thd, Object key) {
   Object env = threadGetEnv(thd);
-  return listLocate(env, key);
+  return listLocate(env, key, thd);
 }
 
 /*------------------------------------------------------------------*/

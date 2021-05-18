@@ -12,14 +12,14 @@
 Object hashNew(void);
 
 Word hashCount(Object hash);
-bool hashEquals(Object hash, Object other);
+bool hashEquals(Object hash, Object other, Thread* thd);
 Object hashEval(Object hash, Thread* thd);
-void hashFreeVars(Object hash, Object freeVarSet);
+void hashFreeVars(Object hash, Object freeVarSet, Thread* thd);
 Object hashGet(Object hash, Object key, Thread* thd);
-Object hashGet_unsafe(Object hash, Object key);
-Object hashKeys(Object hash);
+Object hashGet_unsafe(Object hash, Object key, Thread* thd);
+Object hashKeys(Object hash, Thread* thd);
 void hashMark(Object hash);
-void hashPut(Object hash, Object key, Object val);
+void hashPut(Object hash, Object key, Object val, Thread* thd);
 void hashShow(Object hash, FILE* stream);
 
 #endif

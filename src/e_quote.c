@@ -16,9 +16,9 @@ Object quoteEval(Object quote, Thread* thd) {
 }
 
 /*------------------------------------------------------------------*/
-void quoteFreeVars(Object quote, Object freeVarSet) {
+void quoteFreeVars(Object quote, Object freeVarSet, Thread* thd) {
   Object expr = {objGetData(quote, QUOTE_EXPR_OFS)};
-  objFreeVars(expr, freeVarSet);
+  objFreeVars(expr, freeVarSet, thd);
 }
 
 /*------------------------------------------------------------------*/

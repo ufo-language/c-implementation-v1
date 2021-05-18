@@ -67,12 +67,16 @@ static TestEntry testEntries[] = {
 
 /* Before & after --------------------------------------------------*/
 
+static Thread* thd;
+
 static void test_before() {
   memStart();
-  globalsSetup();
+  thd = threadNew();
+  globalsSetup(thd);
 }
 
 static void test_after() {
+  threadDelete(thd);
   memStop();
 }
 
@@ -127,7 +131,7 @@ void test_objMarkClosure() {
   Object i100 = intNew(100);
   Object abstr = abstrNew(params, listNew(y, EMPTY_LIST));
   Object lexEnv = listNew(bindingNew(y, i100), EMPTY_LIST);
-  Object clo = closureNew(abstr, lexEnv);
+  Object clo = closureNew(abstr, lexEnv, thd);
   /* the lexical environment created in the closure is not the same
      data structure as the lexical environment that was used to
      construct the closure */
@@ -176,8 +180,8 @@ void test_objMarkHash() {
   Object y = identNew("y");
   Object i100 = intNew(100);
   Object i200 = intNew(200);
-  hashPut(hash, x, i100);
-  hashPut(hash, y, i200);
+  hashPut(hash, x, i100, thd);
+  hashPut(hash, y, i200, thd);
 
   objMark(hash);
 
@@ -222,9 +226,9 @@ void test_objMarkSet() {
   Object i100 = intNew(100);
   Object i200 = intNew(200);
   Object i300 = intNew(300);
-  setAddElem(set, i100);
-  setAddElem(set, i200);
-  setAddElem(set, i300);
+  setAddElem(set, i100, thd);
+  setAddElem(set, i200, thd);
+  setAddElem(set, i300, thd);
 
   objMark(set);
 
@@ -372,9 +376,9 @@ void test_objCopy() {
   arraySet_unsafe(ary0, 2, i300);
   Object ary1 = objCopy(ary0);
   EXPECT_NE(ary0.a, ary1.a);
-  EXPECT_T(objEquals(ary0, ary1));
+  EXPECT_T(objEquals(ary0, ary1, thd));
   Object lst0 = listNew(i100, i200);
   Object lst1 = objCopy(lst0);
   EXPECT_NE(lst0.a, lst1.a);
-  EXPECT_T(objEquals(lst0, lst1));
+  EXPECT_T(objEquals(lst0, lst1, thd));
 }

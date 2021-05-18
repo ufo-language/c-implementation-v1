@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #include "object.h"
+#include "thread.h"
 
 extern Object NOTHING;
 extern Object EMPTY_LIST;
@@ -13,6 +14,6 @@ extern Object GLOBALS;
 extern Object SUPER_GLOBALS;
 
 void globalsMark();
-void globalsSetup();
+void globalsSetup(Thread* thd);
 
 #endif

@@ -15,15 +15,15 @@ Object bindingNew(Object lhs, Object rhs) {
 }
 
 /*------------------------------------------------------------------*/
-bool bindingEquals(Object binding, Object other) {
+bool bindingEquals(Object binding, Object other, Thread* thd) {
   Object lhs1 = bindingGetLhs(binding);
   Object lhs2 = bindingGetLhs(other);
-  if (!objEquals(lhs1, lhs2)) {
+  if (!objEquals(lhs1, lhs2, thd)) {
     return false;
   }
   Object rhs1 = bindingGetRhs(binding);
   Object rhs2 = bindingGetRhs(other);
-  return objEquals(rhs1, rhs2);
+  return objEquals(rhs1, rhs2, thd);
 }
 
 /*------------------------------------------------------------------*/
@@ -34,9 +34,9 @@ Object bindingEval(Object binding, Thread* thd) {
 }
 
 /*------------------------------------------------------------------*/
-void bindingFreeVars(Object binding, Object freeVarSet) {
-  objFreeVars(bindingGetLhs(binding), freeVarSet);
-  objFreeVars(bindingGetRhs(binding), freeVarSet);
+void bindingFreeVars(Object binding, Object freeVarSet, Thread* thd) {
+  objFreeVars(bindingGetLhs(binding), freeVarSet, thd);
+  objFreeVars(bindingGetRhs(binding), freeVarSet, thd);
 }
 
 /*------------------------------------------------------------------*/
@@ -58,16 +58,16 @@ void bindingMark(Object binding) {
 }
 
 /*------------------------------------------------------------------*/
-Object bindingMatch(Object binding, Object other, Object bindingList) {
+Object bindingMatch(Object binding, Object other, Object bindingList, Thread* thd) {
   Object lhs1 = bindingGetLhs(binding);
   Object lhs2 = bindingGetLhs(other);
-  bindingList = objMatch(lhs1, lhs2, bindingList);
+  bindingList = objMatch(lhs1, lhs2, bindingList, thd);
   if (bindingList.a == nullObj.a) {
     return nullObj;
   }
   Object rhs1 = bindingGetRhs(binding);
   Object rhs2 = bindingGetRhs(other);
-  return objMatch(rhs1, rhs2, bindingList);
+  return objMatch(rhs1, rhs2, bindingList, thd);
 }
 
 /*------------------------------------------------------------------*/

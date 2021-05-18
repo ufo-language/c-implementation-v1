@@ -18,14 +18,14 @@ Object tupleFromArray(Object array);
 void tupleDel(Object tuple);
 
 Word tupleCount(Object tuple);
-bool tupleEquals(Object tuple, Object other);
+bool tupleEquals(Object tuple, Object other, Thread* thd);
 Object tupleEval(Object tuple, Thread* thd);
-void tupleFreeVars(Object tuple, Object freeVarSet);
+void tupleFreeVars(Object tuple, Object freeVarSet, Thread* thd);
 Object tupleGet(Object tuple, Word index, Thread* thd);
 Object tupleGet_unsafe(Object tuple, Word index);
 Word tupleHash(Object tuple);
 void tupleMark(Object tuple);
-Object tupleMatch(Object obj, Object other, Object bindingList);
+Object tupleMatch(Object obj, Object other, Object bindingList, Thread* thd);
 void tupleShow(Object tuple, FILE* stream);
 
 #endif

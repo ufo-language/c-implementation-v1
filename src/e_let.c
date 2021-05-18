@@ -20,7 +20,7 @@ Object letEval(Object let, Thread* thd) {
     Object lhs = bindingGetLhs(binding);
     Object rhs = bindingGetRhs(binding);
     Object rhsVal = eval(rhs, thd);
-    env = objMatch(lhs, rhsVal, env);
+    env = objMatch(lhs, rhsVal, env, thd);
     if (env.a == nullObj.a) {
       Object exn = arrayN(3, lhs, rhs, rhsVal);
       threadThrowException(thd, "Error", "Patterh mis-match in let expression", exn);
@@ -32,7 +32,7 @@ Object letEval(Object let, Thread* thd) {
 }
 
 /*------------------------------------------------------------------*/
-void letFreeVars(Object let, Object freeVarSet) {
+void letFreeVars(Object let, Object freeVarSet, Thread* thd) {
   Object lhsVars = setNew();
   Object bindings = {objGetData(let, LET_BINDINGS_OFS)};
   while (!listIsEmpty(bindings)) {
@@ -40,12 +40,12 @@ void letFreeVars(Object let, Object freeVarSet) {
     Object lhs = bindingGetLhs(binding);
     Object rhs = bindingGetRhs(binding);
     /* separate the vars on the left from the vars on the right */
-    objFreeVars(lhs, lhsVars);
-    objFreeVars(rhs, freeVarSet);
+    objFreeVars(lhs, lhsVars, thd);
+    objFreeVars(rhs, freeVarSet, thd);
     bindings = listGetRest(bindings);
   }
   /* remove each var in the lhs set from the rhs set */
-  setRemoveSet(freeVarSet, lhsVars);
+  setRemoveSet(freeVarSet, lhsVars, thd);
 }
 
 /*------------------------------------------------------------------*/

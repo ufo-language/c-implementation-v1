@@ -13,7 +13,7 @@ void abstrFreeVars_rule(Object rule, Object freeVarSet);
 void abstrShow_aux(Object abstr, char* prefix, FILE* stream);
 
 /* Returns a minimal lexical environment for an abstraction rule */
-Object _close(Object closure, Object env);
+Object _close(Object closure, Object env, Thread* thd);
 
 /*------------------------------------------------------------------*/
 Object closureApply(Object closure, Object argList, Thread* thd) {
@@ -23,7 +23,7 @@ Object closureApply(Object closure, Object argList, Thread* thd) {
     Object paramList = {objGetData(closure, CLO_PARAMS_OFS)};
     Object body = {objGetData(closure, CLO_BODY_OFS)};
     Object lexEnv = {objGetData(closure, CLO_LEXENV_OFS)};
-    Object bindings = objMatch(paramList, argList, lexEnv);
+    Object bindings = objMatch(paramList, argList, lexEnv, thd);
     if (bindings.a != nullObj.a) {
       Object res = threadEval(thd, body, bindings);
       return res;
@@ -50,7 +50,7 @@ void closureMark(Object closure) {
 }
 
 /*------------------------------------------------------------------*/
-Object closureNew(Object abstr, Object env) {
+Object closureNew(Object abstr, Object env, Thread* thd) {
   Object firstRule = nullObj;
   Object prevRule = nullObj;
   while (abstr.a != nullObj.a) {
@@ -63,7 +63,7 @@ Object closureNew(Object abstr, Object env) {
     }
     objSetData(rule, CLO_PARAMS_OFS, objGetData(abstr, ABSTR_PARAMS_OFS));
     objSetData(rule, CLO_BODY_OFS, objGetData(abstr, ABSTR_BODY_OFS));
-    Object lexEnv = _close(rule, env);
+    Object lexEnv = _close(rule, env, thd);
     objSetData(rule, CLO_LEXENV_OFS, lexEnv.a);
     prevRule = rule;
     abstr.a = objGetData(abstr, CLO_NEXT_OFS);
@@ -77,7 +77,7 @@ void closureShow(Object closure, FILE* stream) {
 }
 
 /*------------------------------------------------------------------*/
-Object _close(Object rule, Object env) {
+Object _close(Object rule, Object env, Thread* thd) {
   Object freeVarSet = setNew();
   abstrFreeVars_rule(rule, freeVarSet);
   Object freeVarAry = setToArray(freeVarSet);
@@ -85,7 +85,7 @@ Object _close(Object rule, Object env) {
   Object lexEnv = EMPTY_LIST;
   for (Word n=0; n<nElems; n++) {
     Object ident = arrayGet_unsafe(freeVarAry, n);
-    Object binding = listLocate(env, ident);
+    Object binding = listLocate(env, ident, thd);
     if (binding.a != nullObj.a) {
       lexEnv = listNew(binding, lexEnv);
     }

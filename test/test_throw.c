@@ -27,12 +27,16 @@ static TestEntry testEntries[] = {
 
 /* Before & after --------------------------------------------------*/
 
+static Thread* thd;
+
 static void test_before() {
   memStart();
-  globalsSetup();
+  thd = threadNew();
+  globalsSetup(thd);
 }
 
 static void test_after() {
+  threadDelete(thd);
   memStop();
 }
 
@@ -67,8 +71,8 @@ void test_throwFreeVars() {
   Object x = identNew("x");
   Object thrw = throwNew(x);
   Object freeVarSet = setNew();
-  objFreeVars(thrw, freeVarSet);
+  objFreeVars(thrw, freeVarSet, thd);
 
   EXPECT_EQ(1, setCount(freeVarSet));
-  EXPECT_T(setHas(freeVarSet, x));
+  EXPECT_T(setHas(freeVarSet, x, thd));
 }

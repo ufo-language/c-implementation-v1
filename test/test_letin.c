@@ -31,12 +31,16 @@ static TestEntry testEntries[] = {
 
 /* Before & after --------------------------------------------------*/
 
+static Thread* thd;
+
 static void test_before() {
   memStart();
-  globalsSetup();
+  thd = threadNew();
+  globalsSetup(thd);
 }
 
 static void test_after() {
+  threadDelete(thd);
   memStop();
 }
 
@@ -68,7 +72,6 @@ void test_letInEval() {
   Object body = listNew(x, EMPTY_LIST);
   Object letIn = letInNew(bindings, body);
 
-  Thread* thd = threadNew();
   Object origEnv = threadGetEnv(thd);
   Object res = eval(letIn, thd);
 
@@ -83,7 +86,6 @@ void test_letInEval() {
 
   EXPECT_EQ(origEnv.a, threadGetEnv(thd).a);
   EXPECT_EQ(i200.a, res.a);
-  threadDelete(thd);
 }
 
 void test_letInFreeVarsFreeBody() {
@@ -103,9 +105,9 @@ void test_letInFreeVarsFreeBody() {
   Object letIn = letInNew(bindings, body);
   Object freeVarSet = setNew();
 
-  objFreeVars(letIn, freeVarSet);
+  objFreeVars(letIn, freeVarSet, thd);
   EXPECT_EQ(1, setCount(freeVarSet));
-  EXPECT_T(setHas(freeVarSet, a));
+  EXPECT_T(setHas(freeVarSet, a, thd));
 }
 
 void test_letInFreeVarsBoundBody() {
@@ -124,7 +126,7 @@ void test_letInFreeVarsBoundBody() {
   Object letIn = letInNew(bindings, body);
   Object freeVarSet = setNew();
 
-  objFreeVars(letIn, freeVarSet);
+  objFreeVars(letIn, freeVarSet, thd);
   EXPECT_EQ(1, setCount(freeVarSet));
-  EXPECT_T(setHas(freeVarSet, a));
+  EXPECT_T(setHas(freeVarSet, a, thd));
 }

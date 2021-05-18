@@ -8,9 +8,9 @@
 #include "globals.h"
 #include "object.h"
 
-Object hashLocate(Object hash, Object key, Word* bucketNum);
+Object hashLocate(Object hash, Object key, Word* bucketNum, Thread* thd);
 
-static void _resize(Object hash);
+static void _resize(Object hash, Thread* thd);
 
 /*------------------------------------------------------------------*/
 Word hashCount(Object hash) {
@@ -18,7 +18,7 @@ Word hashCount(Object hash) {
 }
 
 /*------------------------------------------------------------------*/
-Object hashFold(Object hash, Object data, Object (*fun)(Object data, Object key, Object val)) {
+Object hashFold(Object hash, Object data, Thread* thd, Object (*fun)(Object data, Object key, Object val, Thread* thd)) {
   Object buckets = {objGetData(hash, HASH_BUCKETS_OFS)};
   Word nBuckets = arrayCount(buckets);
   for (Word n=0; n<nBuckets; n++) {
@@ -27,7 +27,7 @@ Object hashFold(Object hash, Object data, Object (*fun)(Object data, Object key,
       Object binding = listGetFirst(bucket);
       Object key = bindingGetLhs(binding);
       Object val = bindingGetRhs(binding);
-      Object data1 = fun(data, key, val);
+      Object data1 = fun(data, key, val, thd);
       if (data1.a == nullObj.a) {
         return data;
       }
@@ -39,7 +39,7 @@ Object hashFold(Object hash, Object data, Object (*fun)(Object data, Object key,
 }
 
 /*------------------------------------------------------------------*/
-bool hashEquals(Object hash, Object other) {
+bool hashEquals(Object hash, Object other, Thread* thd) {
   if (hashCount(hash) != hashCount(other)) {
     return false;
   }
@@ -51,7 +51,7 @@ bool hashEquals(Object hash, Object other) {
       Object binding = listGetFirst(bucket);
       Object key = bindingGetLhs(binding);
       Object val = bindingGetRhs(binding);
-      if (!objEquals(val, hashGet_unsafe(other, key))) {
+      if (!objEquals(val, hashGet_unsafe(other, key, thd), thd)) {
         return false;
       }
       bucket = listGetRest(bucket);
@@ -72,7 +72,7 @@ Object hashEval(Object hash, Thread* thd) {
       Object key = bindingGetLhs(binding);
       Object val = bindingGetRhs(binding);
       Object val1 = eval(val, thd);
-      hashPut(newHash, key, val1);
+      hashPut(newHash, key, val1, thd);
       bucket = listGetRest(bucket);
     }
   }
@@ -80,14 +80,14 @@ Object hashEval(Object hash, Thread* thd) {
 }
 
 /*------------------------------------------------------------------*/
-Object hashFreeVars_callback(Object freeVarSet, Object key, Object val) {
-  objFreeVars(key, freeVarSet);
-  objFreeVars(val, freeVarSet);
+Object hashFreeVars_callback(Object freeVarSet, Object key, Object val, Thread* thd) {
+  objFreeVars(key, freeVarSet, thd);
+  objFreeVars(val, freeVarSet, thd);
   return freeVarSet;
 }
 
-void hashFreeVars(Object hash, Object freeVarSet) {
-  hashFold(hash, freeVarSet, *hashFreeVars_callback);
+void hashFreeVars(Object hash, Object freeVarSet, Thread* thd) {
+  hashFold(hash, freeVarSet, thd, *hashFreeVars_callback);
 }
 
 #if 0
@@ -111,7 +111,7 @@ void hashFreeVars(Object hash, Object freeVarSet) {
 
 /*------------------------------------------------------------------*/
 Object hashGet(Object hash, Object key, Thread* thd) {
-  Object elem = hashGet_unsafe(hash, key);
+  Object elem = hashGet_unsafe(hash, key, thd);
   if (elem.a == nullObj.a) {
     Object exn = arrayN(2, key, hash);
     threadThrowException(thd, "Error", "Key {} not found in hash {}", exn);
@@ -120,9 +120,9 @@ Object hashGet(Object hash, Object key, Thread* thd) {
 }
 
 /*------------------------------------------------------------------*/
-Object hashGet_unsafe(Object hash, Object key) {
+Object hashGet_unsafe(Object hash, Object key, Thread* thd) {
   Word bucketNum;
-  Object binding = hashLocate(hash, key, &bucketNum);
+  Object binding = hashLocate(hash, key, &bucketNum, thd);
   if (binding.a != nullObj.a) {
     return bindingGetRhs(binding);
   }
@@ -130,16 +130,16 @@ Object hashGet_unsafe(Object hash, Object key) {
 }
 
 /*------------------------------------------------------------------*/
-Object hashKeys_callback(Object keySet, Object key, Object val) {
+Object hashKeys_callback(Object keySet, Object key, Object val, Thread* thd) {
   (void)val;
-  setAddElem(keySet, key);
+  setAddElem(keySet, key, thd);
   return keySet;
 }
 
 /*------------------------------------------------------------------*/
-Object hashKeys(Object hash) {
+Object hashKeys(Object hash, Thread* thd) {
   Object keySet = setNew();
-  hashFold(hash, keySet, hashKeys_callback);
+  hashFold(hash, keySet, thd, hashKeys_callback);
   return keySet;
 }
 
@@ -150,7 +150,7 @@ void hashMark(Object hash) {
 }
 
 /*------------------------------------------------------------------*/
-Object hashLocate(Object hash, Object key, Word* bucketNum) {
+Object hashLocate(Object hash, Object key, Word* bucketNum, Thread* thd) {
   Word hashCode = objHashCode(key);
   Object buckets = {objGetData(hash, HASH_BUCKETS_OFS)};
   Word nBuckets = arrayCount(buckets);
@@ -158,7 +158,7 @@ Object hashLocate(Object hash, Object key, Word* bucketNum) {
   Object bucket = arrayGet_unsafe(buckets, *bucketNum);
   while (!listIsEmpty(bucket)) {
     Object binding = listGetFirst(bucket);
-    if (objEquals(key, bindingGetLhs(binding))) {
+    if (objEquals(key, bindingGetLhs(binding), thd)) {
       return binding;
     }
     bucket = listGetRest(bucket);
@@ -180,9 +180,9 @@ Object hashNew(void) {
 }
 
 /*------------------------------------------------------------------*/
-void hashPut(Object hash, Object key, Object val) {
+void hashPut(Object hash, Object key, Object val, Thread* thd) {
   Word bucketNum;
-  Object binding = hashLocate(hash, key, &bucketNum);
+  Object binding = hashLocate(hash, key, &bucketNum, thd);
   if (binding.a != nullObj.a) {
     bindingSetRhs(binding, val);
   }
@@ -190,8 +190,8 @@ void hashPut(Object hash, Object key, Object val) {
     Word nBindings = objGetData(hash, HASH_NBINDINGS_OFS);
     Word loadingFactor = objGetData(hash, HASH_LOADINGFACTOR_OFS);
     if (nBindings == loadingFactor) {
-      _resize(hash);
-      hashPut(hash, key, val);
+      _resize(hash, thd);
+      hashPut(hash, key, val, thd);
     }
     else {
       Object buckets = {objGetData(hash, HASH_BUCKETS_OFS)};
@@ -227,7 +227,7 @@ void hashShow(Object hash, FILE* stream) {
 }
 
 /*------------------------------------------------------------------*/
-static void _resize(Object hash) {
+static void _resize(Object hash, Thread* thd) {
   /* allocate new buckets array */
   Object buckets = {objGetData(hash, HASH_BUCKETS_OFS)};
   Word nBuckets = arrayCount(buckets);
@@ -245,7 +245,7 @@ static void _resize(Object hash) {
     Object bucket = arrayGet_unsafe(buckets, n);
     while (!listIsEmpty(bucket)) {
       Object binding = listGetFirst(bucket);
-      hashPut(hash, bindingGetLhs(binding), bindingGetRhs(binding));
+      hashPut(hash, bindingGetLhs(binding), bindingGetRhs(binding), thd);
       bucket = listGetRest(bucket);
     }
   }

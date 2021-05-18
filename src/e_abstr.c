@@ -11,30 +11,30 @@ void abstrShow_aux(Object abstr, char* prefix, FILE* stream);
 
 Object abstrEval(Object abstr, Thread* thd) {
   Object lexEnv = threadGetEnv(thd);
-  Object closure = closureNew(abstr, lexEnv);
+  Object closure = closureNew(abstr, lexEnv, thd);
   return closure;
 }
 
 /* The free vars of a rule are the free vars of the body minus the
    free vars of the parameters.
 */
-void abstrFreeVars_rule(Object rule, Object freeVarSet) {
+void abstrFreeVars_rule(Object rule, Object freeVarSet, Thread* thd) {
   Object params = {objGetData(rule, ABSTR_PARAMS_OFS)};
   Object body = {objGetData(rule, ABSTR_BODY_OFS)};
   Object paramFreeVars = setNew();
-  objFreeVars(params, paramFreeVars);
+  objFreeVars(params, paramFreeVars, thd);
   Object bodyFreeVars = setNew();
-  objFreeVars(body, bodyFreeVars);
-  setRemoveSet(bodyFreeVars, paramFreeVars);
-  setUnion(freeVarSet, bodyFreeVars);
+  objFreeVars(body, bodyFreeVars, thd);
+  setRemoveSet(bodyFreeVars, paramFreeVars, thd);
+  setUnion(freeVarSet, bodyFreeVars, thd);
 }
 
 /* The free vars of an abstraction are the union of the free vars of
    all the rules.
 */
-void abstrFreeVars(Object abstr, Object freeVarSet) {
+void abstrFreeVars(Object abstr, Object freeVarSet, Thread* thd) {
   while (abstr.a != nullObj.a) {
-    abstrFreeVars_rule(abstr, freeVarSet);
+    abstrFreeVars_rule(abstr, freeVarSet, thd);
     abstr.a = objGetData(abstr, ABSTR_NEXT_OFS);
   }
 }

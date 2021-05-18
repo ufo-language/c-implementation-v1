@@ -11,7 +11,7 @@
 Object letInNew(Object bindings, Object body);
 
 Object letInEval(Object letIn, Thread* thd);
-void letInFreeVars(Object letIn, Object freeVarSet);
+void letInFreeVars(Object letIn, Object freeVarSet, Thread* thd);
 void letInMark(Object letIn);
 void letInShow(Object letIn, FILE* stream);
 

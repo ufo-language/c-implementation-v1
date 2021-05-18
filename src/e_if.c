@@ -8,23 +8,6 @@
 #include "thread.h"
 
 /*------------------------------------------------------------------*/
-bool ifEqual(Object ifThen, Object other) {
-  Object cond1 = {objGetData(ifThen, IF_COND_OFS)};
-  Object cond2 = {objGetData(other, IF_COND_OFS)};
-  if (!objEquals(cond1, cond2)) {
-    return false;
-  }
-  Object conseq1 = {objGetData(ifThen, IF_CONSEQ_OFS)};
-  Object conseq2 = {objGetData(other, IF_CONSEQ_OFS)};
-  if (!objEquals(conseq1, conseq2)) {
-    return false;
-  }
-  Object alt1 = {objGetData(ifThen, IF_ALT_OFS)};
-  Object alt2 = {objGetData(other, IF_ALT_OFS)};
-  return objEquals(alt1, alt2);
-}
-
-/*------------------------------------------------------------------*/
 Object ifEval(Object ifThen, Thread* thd) {
   Object cond = {objGetData(ifThen, IF_COND_OFS)};
   Object condVal = eval(cond, thd);
@@ -37,13 +20,13 @@ Object ifEval(Object ifThen, Thread* thd) {
 }
 
 /*------------------------------------------------------------------*/
-void ifFreeVars(Object ifThen, Object freeVarSet) {
+void ifFreeVars(Object ifThen, Object freeVarSet, Thread* thd) {
   Object cond = {objGetData(ifThen, IF_COND_OFS)};
   Object conseq = {objGetData(ifThen, IF_CONSEQ_OFS)};
   Object alt = {objGetData(ifThen, IF_ALT_OFS)};
-  objFreeVars(cond, freeVarSet);
-  objFreeVars(conseq, freeVarSet);
-  objFreeVars(alt, freeVarSet);
+  objFreeVars(cond, freeVarSet, thd);
+  objFreeVars(conseq, freeVarSet, thd);
+  objFreeVars(alt, freeVarSet, thd);
 }
 
 /*------------------------------------------------------------------*/

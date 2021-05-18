@@ -39,16 +39,16 @@ Word arrayCount(Object array) {
 }
 
 /*------------------------------------------------------------------*/
-void arrayEach(Object array, void (*fun)(Object data, Object elem), Object data) {
+void arrayEach(Object array, void (*fun)(Object data, Object elem, Thread* thd), Object data, Thread* thd) {
   Word nElems = arrayCount(array);
   for (Word n=0; n<nElems; n++) {
     Object elem = arrayGet_unsafe(array, n);
-    fun(data, elem);
+    fun(data, elem, thd);
   }
 }
 
 /*------------------------------------------------------------------*/
-bool arrayEquals(Object array, Object other) {
+bool arrayEquals(Object array, Object other, Thread* thd) {
   Word len1 = arrayCount(array);
   Word len2 = arrayCount(other);
   if (len1 != len2) {
@@ -57,7 +57,7 @@ bool arrayEquals(Object array, Object other) {
   for (Word n=0; n<len1; n++) {
     Object elem1 = arrayGet_unsafe(array, n);
     Object elem2 = arrayGet_unsafe(other, n);
-    if (!objEquals(elem1, elem2)) {
+    if (!objEquals(elem1, elem2, thd)) {
       return false;
     }
   }
@@ -85,11 +85,11 @@ void arrayFill(Object array, Object elem) {
 }
 
 /*------------------------------------------------------------------*/
-void arrayFreeVars(Object array, Object freeVarSet) {
+void arrayFreeVars(Object array, Object freeVarSet, Thread* thd) {
   Word nElems = arrayCount(array);
   for (Word n=0; n<nElems; n++) {
     Object elem = arrayGet_unsafe(array, n);
-    objFreeVars(elem, freeVarSet);
+    objFreeVars(elem, freeVarSet, thd);
   }
 }
 
@@ -123,7 +123,7 @@ void arrayMark(Object array) {
 }
 
 /*------------------------------------------------------------------*/
-Object arrayMatch(Object array, Object other, Object bindingList) {
+Object arrayMatch(Object array, Object other, Object bindingList, Thread* thd) {
   Word nElems1 = arrayCount(array);
   Word nElems2 = arrayCount(other);
   if (nElems1 != nElems2) {
@@ -132,7 +132,7 @@ Object arrayMatch(Object array, Object other, Object bindingList) {
   for (int n=0; n<nElems1; n++) {
     Object elem1 = arrayGet_unsafe(array, n);
     Object elem2 = arrayGet_unsafe(other, n);
-    bindingList = objMatch(elem1, elem2, bindingList);
+    bindingList = objMatch(elem1, elem2, bindingList, thd);
     if (bindingList.a == nullObj.a) {
       return nullObj;
     }

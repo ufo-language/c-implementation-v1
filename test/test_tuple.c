@@ -25,12 +25,16 @@ static TestEntry testEntries[] = {
 
 /* Before & after --------------------------------------------------*/
 
+static Thread* thd;
+
 static void test_before() {
   memStart();
-  globalsSetup();
+  thd = threadNew();
+  globalsSetup(thd);
 }
 
 static void test_after() {
+  threadDelete(thd);
   memStop();
 }
 

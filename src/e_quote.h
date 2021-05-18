@@ -10,7 +10,7 @@
 Object quoteNew(Object lst);
 
 Object quoteEval(Object quote, Thread* thd);
-void quoteFreeVars(Object quote, Object freeVarSet);
+void quoteFreeVars(Object quote, Object freeVarSet, Thread* thd);
 void quoteMark(Object quote);
 void quoteShow(Object quote, FILE* stream);
 

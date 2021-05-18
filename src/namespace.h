@@ -4,7 +4,7 @@
 #include "d_prim.h"
 #include "object.h"
 
-void nsAddPrim(Object hash, char* name, PrimFunc func);
-Object nsDefineAll();
+void nsAddPrim(Object hash, char* name, PrimFunc func, Thread* thd);
+Object nsDefineAll(Thread* thd);
 
 #endif

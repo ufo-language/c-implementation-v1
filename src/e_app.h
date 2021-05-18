@@ -12,7 +12,7 @@
 Object appNew(Object abstr, Object args);
 
 Object appEval(Object app, Thread* thd);
-void appFreeVars(Object app, Object freeVarSet);
+void appFreeVars(Object app, Object freeVarSet, Thread* thd);
 void appMark(Object app);
 void appShow(Object app, FILE* stream);
 

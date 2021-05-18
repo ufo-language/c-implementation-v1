@@ -22,16 +22,16 @@ static Object param_ArrayInt;
 static Object param_ArrayIntAny;
 
 /*------------------------------------------------------------------*/
-void array_defineAll(Object env) {
+void array_defineAll(Object env, Thread* thd) {
   char* nsName = "array";
   param_Array = primBuildTypeList(1, D_Array);
   param_ArrayInt = primBuildTypeList(2, D_Array, D_Int);
   param_ArrayIntAny = primBuildTypeList(3, D_Array, D_Int, D_Null);
   Object ns = hashNew();
-  nsAddPrim(ns, "count", array_count);
-  nsAddPrim(ns, "get", array_get);
-  nsAddPrim(ns, "set", array_set);
-  hashPut(env, identNew(nsName), ns);
+  nsAddPrim(ns, "count", array_count, thd);
+  nsAddPrim(ns, "get", array_get, thd);
+  nsAddPrim(ns, "set", array_set, thd);
+  hashPut(env, identNew(nsName), ns, thd);
 }
 
 /*------------------------------------------------------------------*/

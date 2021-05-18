@@ -21,15 +21,15 @@ static Object param_Any;
 static Object param_AnySymbol;
 
 /*------------------------------------------------------------------*/
-void type_defineAll(Object env) {
+void type_defineAll(Object env, Thread* thd) {
   char* nsName = "type";
   param_Any = primBuildTypeList(1, D_Null);
   param_AnySymbol = primBuildTypeList(2, D_Null, D_Symbol);
   Object ns = hashNew();
-  nsAddPrim(ns, "check", type_check);
-  nsAddPrim(ns, "hasType", type_hasType);
-  nsAddPrim(ns, "name", type_name);
-  hashPut(env, identNew(nsName), ns);
+  nsAddPrim(ns, "check", type_check, thd);
+  nsAddPrim(ns, "hasType", type_hasType, thd);
+  nsAddPrim(ns, "name", type_name, thd);
+  hashPut(env, identNew(nsName), ns, thd);
 }
 
 /*------------------------------------------------------------------*/
@@ -40,7 +40,7 @@ Object type_check(Thread* thd, Object args) {
   ObjType objType = objGetType(arg);
   char* typeName = ObjTypeNames[objType];
   Object typeSym = symbolNew(typeName);
-  if (!objEquals(typeNameSym, typeSym)) {
+  if (!objEquals(typeNameSym, typeSym, thd)) {
     threadThrowException(thd, "TypeError", "object {}, expected type {}, found type {}",
       listNew(arg, listNew(typeNameSym, listNew(typeSym, EMPTY_LIST))));
   }
@@ -55,7 +55,7 @@ Object type_hasType(Thread* thd, Object args) {
   ObjType objType = objGetType(arg);
   char* typeName = ObjTypeNames[objType];
   Object typeSym = symbolNew(typeName);
-  return objEquals(typeNameSym, typeSym) ? TRUE : FALSE;
+  return objEquals(typeNameSym, typeSym, thd) ? TRUE : FALSE;
 }
 
 /*------------------------------------------------------------------*/

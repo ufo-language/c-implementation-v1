@@ -33,10 +33,10 @@ Object listCreateEmpty() {
 }
 
 /*------------------------------------------------------------------*/
-void listEach(Object list, void (*fun)(Object data, Object elem), Object data) {
+void listEach(Object list, void (*fun)(Object data, Object elem, Thread* thd), Object data, Thread* thd) {
   while (!listIsEmpty(list)) {
     Object elem = listGetFirst(list);
-    fun(data, elem);
+    fun(data, elem, thd);
     list = listGetRest(list);
     if (objGetType(list) != D_List) {
       list = listNew(list, EMPTY_LIST);
@@ -45,7 +45,7 @@ void listEach(Object list, void (*fun)(Object data, Object elem), Object data) {
 }
 
 /*------------------------------------------------------------------*/
-bool listEquals(Object list, Object other) {
+bool listEquals(Object list, Object other, Thread* thd) {
   if (listIsEmpty(list)) {
     return listIsEmpty(other);
   }
@@ -54,12 +54,12 @@ bool listEquals(Object list, Object other) {
   }
   Object first1 = listGetFirst(list);
   Object first2 = listGetFirst(other);
-  if (!objEquals(first1, first2)) {
+  if (!objEquals(first1, first2, thd)) {
     return false;
   }
   Object rest1 = listGetRest(list);
   Object rest2 = listGetRest(other);
-  return objEquals(rest1, rest2);
+  return objEquals(rest1, rest2, thd);
 }
 
 /*------------------------------------------------------------------*/
@@ -73,12 +73,12 @@ Object listEval(Object list, Thread* thd) {
 }
 
 /*------------------------------------------------------------------*/
-void listFreeVars(Object list, Object freeVarSet) {
+void listFreeVars(Object list, Object freeVarSet, Thread* thd) {
   if (listIsEmpty(list)) {
     return;
   }
-  objFreeVars(listGetFirst(list), freeVarSet);
-  objFreeVars(listGetRest(list), freeVarSet);
+  objFreeVars(listGetFirst(list), freeVarSet, thd);
+  objFreeVars(listGetRest(list), freeVarSet, thd);
 }
 
 /*------------------------------------------------------------------*/
@@ -123,11 +123,11 @@ bool listIsEmpty(Object list) {
 }
 
 /*------------------------------------------------------------------*/
-Object listLocate(Object list, Object key) {
+Object listLocate(Object list, Object key, Thread* thd) {
   while (!listIsEmpty(list)) {
     Object binding = listGetFirst(list);
     if (D_Binding == objGetType(binding)) {
-      if (objEquals(key, bindingGetLhs(binding))) {
+      if (objEquals(key, bindingGetLhs(binding), thd)) {
         return binding;
       }
     }
@@ -149,7 +149,7 @@ void listMark(Object list) {
 }
 
 /*------------------------------------------------------------------*/
-Object listMatch(Object list, Object other, Object bindingList) {
+Object listMatch(Object list, Object other, Object bindingList, Thread* thd) {
   if (listIsEmpty(list)) {
     return listIsEmpty(other) ? bindingList : nullObj;
   }
@@ -158,13 +158,13 @@ Object listMatch(Object list, Object other, Object bindingList) {
   }
   Object first1 = listGetFirst(list);
   Object first2 = listGetFirst(other);
-  bindingList = objMatch(first1, first2, bindingList);
+  bindingList = objMatch(first1, first2, bindingList, thd);
   if (bindingList.a == nullObj.a) {
     return nullObj;
   }
   Object rest1 = listGetRest(list);
   Object rest2 = listGetRest(other);
-  return objMatch(rest1, rest2, bindingList);
+  return objMatch(rest1, rest2, bindingList, thd);
 }
 
 /*------------------------------------------------------------------*/

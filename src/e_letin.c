@@ -30,7 +30,7 @@ Object letInEval(Object letIn, Thread* thd) {
 }
 
 /*------------------------------------------------------------------*/
-void letInFreeVars(Object letIn, Object freeVarSet) {
+void letInFreeVars(Object letIn, Object freeVarSet, Thread* thd) {
   Object lhsVars = setNew();
   Object bindings = {objGetData(letIn, LETIN_BINDINGS_OFS)};
   while (!listIsEmpty(bindings)) {
@@ -38,14 +38,14 @@ void letInFreeVars(Object letIn, Object freeVarSet) {
     Object lhs = bindingGetLhs(binding);
     Object rhs = bindingGetRhs(binding);
     /* separate the vars on the left from the vars on the right */
-    objFreeVars(lhs, lhsVars);
-    objFreeVars(rhs, freeVarSet);
+    objFreeVars(lhs, lhsVars, thd);
+    objFreeVars(rhs, freeVarSet, thd);
     bindings = listGetRest(bindings);
   }
   Object body = {objGetData(letIn, LETIN_BODY_OFS)};
-  objFreeVars(body, freeVarSet);
+  objFreeVars(body, freeVarSet, thd);
   /* remove each var in the lhs set from the rhs set */
-  setRemoveSet(freeVarSet, lhsVars);
+  setRemoveSet(freeVarSet, lhsVars, thd);
 }
 
 /*------------------------------------------------------------------*/

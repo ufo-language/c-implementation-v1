@@ -32,12 +32,16 @@ static TestEntry testEntries[] = {
 
 /* Before & after --------------------------------------------------*/
 
+static Thread* thd;
+
 static void test_before() {
   memStart();
-  globalsSetup();
+  thd = threadNew();
+  globalsSetup(thd);
 }
 
 static void test_after() {
+  threadDelete(thd);
   memStop();
 }
 
@@ -57,7 +61,6 @@ void test_doNew() {
 
 void test_doEvalEmpty() {
   Object seq = doNew(EMPTY_LIST);
-  Thread* thd = threadNew();
   Object res = eval(seq, thd);
   EXPECT_EQ(res.a, NOTHING.a);
 }
@@ -65,14 +68,12 @@ void test_doEvalEmpty() {
 void test_doEvalSingle() {
   Object x = identNew("x");
   Object i100 = intNew(100);
-  Thread* thd = threadNew();
   threadEnvBind(thd, x, i100);
 
   Object elems = listNew(x, EMPTY_LIST);
   Object seq = doNew(elems);
   Object res = eval(seq, thd);
   EXPECT_EQ(res.a, i100.a);
-  threadDelete(thd);
 }
 
 void test_doEvalMultiple() {
@@ -80,7 +81,6 @@ void test_doEvalMultiple() {
   Object y = identNew("y");
   Object i100 = intNew(100);
   Object i200 = intNew(200);
-  Thread* thd = threadNew();
   threadEnvBind(thd, x, i100);
   threadEnvBind(thd, y, i200);
 
@@ -89,7 +89,6 @@ void test_doEvalMultiple() {
   Object seq = doNew(elems);
   Object res = eval(seq, thd);
   EXPECT_EQ(res.a, i200.a);
-  threadDelete(thd);
 }
 
 void test_doFreeVars() {
@@ -100,8 +99,8 @@ void test_doFreeVars() {
   elems = listNew(x, elems);
   Object seq = doNew(elems);
   Object freeVarSet = setNew();
-  objFreeVars(seq, freeVarSet);
+  objFreeVars(seq, freeVarSet, thd);
   EXPECT_EQ(2, setCount(freeVarSet));
-  EXPECT_T(setHas(freeVarSet, x));
-  EXPECT_T(setHas(freeVarSet, y));
+  EXPECT_T(setHas(freeVarSet, x, thd));
+  EXPECT_T(setHas(freeVarSet, y, thd));
 }

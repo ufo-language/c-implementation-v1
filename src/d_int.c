@@ -46,8 +46,73 @@ Object intNew(int i) {
 }
 
 /*------------------------------------------------------------------*/
-bool intEquals(Object integer, Object other) {
-  return intGet(integer) == intGet(other);
+bool intEquals(Object integer, Object other, Thread* thd) {
+  switch (objGetType(other)) {
+    case D_Int:
+      return intGet(integer) == intGet(other);
+    default: {
+        Object exn = arrayN(4, integer, ObjTypeNameSyms[objGetType(integer)],
+                               other, ObjTypeNameSyms[objGetType(other)]);
+        threadThrowException(thd, "Error", "Unable to compare {} : {} >= {} : {}", exn);
+      }
+  }
+  return false;
+}
+
+/*------------------------------------------------------------------*/
+bool intGreaterThan(Object integer, Object other, Thread* thd) {
+  switch (objGetType(other)) {
+    case D_Int:
+      return intGet(integer) > intGet(other);
+    default: {
+        Object exn = arrayN(4, integer, ObjTypeNameSyms[objGetType(integer)],
+                               other, ObjTypeNameSyms[objGetType(other)]);
+        threadThrowException(thd, "Error", "Unable to compare {} : {} >= {} : {}", exn);
+      }
+  }
+  return false;
+}
+
+/*------------------------------------------------------------------*/
+bool intGreaterThanOrEqual(Object integer, Object other, Thread* thd) {
+  switch (objGetType(other)) {
+    case D_Int:
+      return intGet(integer) >= intGet(other);
+    default: {
+        Object exn = arrayN(4, integer, ObjTypeNameSyms[objGetType(integer)],
+                               other, ObjTypeNameSyms[objGetType(other)]);
+        threadThrowException(thd, "Error", "Unable to compare {} : {} >= {} : {}", exn);
+      }
+  }
+  return false;
+}
+
+/*------------------------------------------------------------------*/
+bool intLessThan(Object integer, Object other, Thread* thd) {
+  switch (objGetType(other)) {
+    case D_Int:
+      return intGet(integer) < intGet(other);
+    default: {
+        Object exn = arrayN(4, integer, ObjTypeNameSyms[objGetType(integer)],
+                               other, ObjTypeNameSyms[objGetType(other)]);
+        threadThrowException(thd, "Error", "Unable to compare {} : {} >= {} : {}", exn);
+      }
+  }
+  return false;
+}
+
+/*------------------------------------------------------------------*/
+bool intLessThanOrEqual(Object integer, Object other, Thread* thd) {
+  switch (objGetType(other)) {
+    case D_Int:
+      return intGet(integer) <= intGet(other);
+    default: {
+        Object exn = arrayN(4, integer, ObjTypeNameSyms[objGetType(integer)],
+                               other, ObjTypeNameSyms[objGetType(other)]);
+        threadThrowException(thd, "Error", "Unable to compare {} : {} >= {} : {}", exn);
+      }
+  }
+  return false;
 }
 
 /*------------------------------------------------------------------*/

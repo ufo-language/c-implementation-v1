@@ -21,13 +21,13 @@ Object binopEval(Object binop, Thread* thd) {
 }
 
 /*------------------------------------------------------------------*/
-void binopFreeVars(Object binop, Object freeVarSet) {
+void binopFreeVars(Object binop, Object freeVarSet, Thread* thd) {
   Object lhs = {objGetData(binop, BINOP_LHS_OFS)};
   Object oper = {objGetData(binop, BINOP_OPER_OFS)};
   Object rhs = {objGetData(binop, BINOP_RHS_OFS)};
-  objFreeVars(lhs, freeVarSet);
-  objFreeVars(oper, freeVarSet);
-  objFreeVars(rhs, freeVarSet);
+  objFreeVars(lhs, freeVarSet, thd);
+  objFreeVars(oper, freeVarSet, thd);
+  objFreeVars(rhs, freeVarSet, thd);
 }
 
 /*------------------------------------------------------------------*/

@@ -21,15 +21,15 @@ static Object param_Queue;
 static Object param_QueueAny;
 
 /*------------------------------------------------------------------*/
-void queue_defineAll(Object env) {
+void queue_defineAll(Object env, Thread* thd) {
   char* nsName = "queue";
   param_Queue = primBuildTypeList(1, D_Queue);
   param_QueueAny = primBuildTypeList(2, D_Queue, D_Null);
   Object ns = hashNew();
-  nsAddPrim(ns, "count", queue_count);
-  nsAddPrim(ns, "deq", queue_deq);
-  nsAddPrim(ns, "enq", queue_enq);
-  hashPut(env, identNew(nsName), ns);
+  nsAddPrim(ns, "count", queue_count, thd);
+  nsAddPrim(ns, "deq", queue_deq, thd);
+  nsAddPrim(ns, "enq", queue_enq, thd);
+  hashPut(env, identNew(nsName), ns, thd);
 }
 
 /*------------------------------------------------------------------*/

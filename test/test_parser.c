@@ -72,8 +72,8 @@ static Thread* thd;
 
 static void test_before() {
   memStart();
-  globalsSetup();
   thd = threadNew();
+  globalsSetup(thd);
 }
 
 static void test_after() {
@@ -212,7 +212,7 @@ void test_parseMaybe() {
   res = p_maybe(thd, tokens, p_int);
   EXPECT_NE(nullObj.a, res.a);
   Object token = listGetFirst(res);
-  EXPECT_T(objEquals(NOTHING, token));
+  EXPECT_T(objEquals(NOTHING, token, thd));
 }
 
 void test_parseOneOf() {
@@ -250,7 +250,7 @@ void test_parseSome() {
   ASSERT_NE(nullObj.a, res.a);
   Object resObj = listGetFirst(res);
   Object exp = listNew(intNew(100), listNew(intNew(200), listNew(intNew(300), EMPTY_LIST)));
-  ASSERT_T(objEquals(exp, resObj));
+  ASSERT_T(objEquals(exp, resObj, thd));
   /* test a parse failure */
   input = "1 2 x";
   inputStr = stringNew(input);
@@ -273,10 +273,10 @@ void test_parseSeq() {
   ASSERT_EQ(D_List, objGetType(resObj));
   Object obj = listGetFirst(resObj);
   Object exp = intNew(100);
-  EXPECT_T(objEquals(exp, obj));
+  EXPECT_T(objEquals(exp, obj, thd));
   obj = listGetFirst(listGetRest(resObj));
   exp = stringNew("abc");
-  EXPECT_T(objEquals(exp, obj));
+  EXPECT_T(objEquals(exp, obj, thd));
   /* test a parse failure */
   input = "100 200 \"abc\"";
   inputStr = stringNew(input);
@@ -310,7 +310,7 @@ void test_parseSeqWithIgnore() {
   Object res = p_seqOf(thd, tokens, parsers);
   ASSERT_NE(nullObj.a, res.a);
   Object resObj = listGetFirst(res);
-  EXPECT_T(objEquals(intNew(200), resObj));
+  EXPECT_T(objEquals(intNew(200), resObj, thd));
 }
 
 void test_parseReserved() {
@@ -451,7 +451,7 @@ void test_parseSepBy() {
   ASSERT_NE(nullObj.a, res.a);
   Object exp = listNew(intNew(100), listNew(intNew(200), listNew(intNew(300), EMPTY_LIST)));
   Object resObj = listGetFirst(res);
-  EXPECT_T(objEquals(exp, resObj));
+  EXPECT_T(objEquals(exp, resObj, thd));
   /* test parse success, single element */
   input = "100";
   inputStr = stringNew(input);
@@ -461,7 +461,7 @@ void test_parseSepBy() {
   ASSERT_NE(nullObj.a, res.a);
   exp = listNew(intNew(100), EMPTY_LIST);
   resObj = listGetFirst(res);
-  EXPECT_T(objEquals(exp, resObj));
+  EXPECT_T(objEquals(exp, resObj, thd));
   /* test parse success, no elements */
   input = "";
   inputStr = stringNew(input);
@@ -471,7 +471,7 @@ void test_parseSepBy() {
   ASSERT_NE(nullObj.a, res.a);
   exp = EMPTY_LIST;
   resObj = listGetFirst(res);
-  EXPECT_T(objEquals(exp, resObj));
+  EXPECT_T(objEquals(exp, resObj, thd));
   /* parse failure not tested because it throws an exception, and I
      don't yet know how to handle that here */
 }

@@ -38,12 +38,16 @@ static TestEntry testEntries[] = {
 
 /* Before & after --------------------------------------------------*/
 
+static Thread* thd;
+
 static void test_before() {
   memStart();
-  globalsSetup();
+  thd = threadNew();
+  globalsSetup(thd);
 }
 
 static void test_after() {
+  threadDelete(thd);
   memStop();
 }
 
@@ -86,7 +90,7 @@ void test_abstrFreeVars1() {
   Object abstr = abstrNew(params, body);
 
   Object freeVarSet = setNew();
-  objFreeVars(abstr, freeVarSet);
+  objFreeVars(abstr, freeVarSet, thd);
   EXPECT_EQ(0, setCount(freeVarSet));
 }
 
@@ -97,9 +101,9 @@ void test_abstrFreeVars2() {
   Object abstr = abstrNew(params, body);
 
   Object freeVarSet = setNew();
-  objFreeVars(abstr, freeVarSet);
+  objFreeVars(abstr, freeVarSet, thd);
   EXPECT_EQ(1, setCount(freeVarSet));
-  EXPECT_T(setHas(freeVarSet, x));
+  EXPECT_T(setHas(freeVarSet, x, thd));
 }
 
 void test_abstrFreeVars3() {
@@ -110,9 +114,9 @@ void test_abstrFreeVars3() {
   Object abstr = abstrNew(params, body);
 
   Object freeVarSet = setNew();
-  objFreeVars(abstr, freeVarSet);
+  objFreeVars(abstr, freeVarSet, thd);
   EXPECT_EQ(1, setCount(freeVarSet));
-  EXPECT_T(setHas(freeVarSet, y));
+  EXPECT_T(setHas(freeVarSet, y, thd));
 }
 
 void test_abstrFreeVars4() {
@@ -127,11 +131,11 @@ void test_abstrFreeVars4() {
   abstrSetNext(abstr1, abstr2);
 
   Object freeVarSet = setNew();
-  objFreeVars(abstr1, freeVarSet);
+  objFreeVars(abstr1, freeVarSet, thd);
   EXPECT_EQ(3, setCount(freeVarSet));
-  EXPECT_T(setHas(freeVarSet, x));
-  EXPECT_T(setHas(freeVarSet, y));
-  EXPECT_T(setHas(freeVarSet, z));
+  EXPECT_T(setHas(freeVarSet, x, thd));
+  EXPECT_T(setHas(freeVarSet, y, thd));
+  EXPECT_T(setHas(freeVarSet, z, thd));
 }
 
 void test_abstrMark() {
@@ -163,10 +167,7 @@ void test_abstrEval() {
   Object body = listNew(x, listNew(y, EMPTY_LIST));
   Object abstr = abstrNew(params, body);
 
-  Thread* thd = threadNew();
   Object clo = objEval(abstr, thd);
 
   ASSERT_EQ(D_Closure, objGetType(clo));
-
-  threadDelete(thd);
 }

@@ -49,7 +49,7 @@ Word tupleCount(Object tuple) {
 }
 
 /*------------------------------------------------------------------*/
-bool tupleEquals(Object tuple, Object other) {
+bool tupleEquals(Object tuple, Object other, Thread* thd) {
   Word len1 = tupleCount(tuple);
   Word len2 = tupleCount(other);
   if (len1 != len2) {
@@ -58,7 +58,7 @@ bool tupleEquals(Object tuple, Object other) {
   for (Word n=0; n<len1; n++) {
     Object elem1 = tupleGet_unsafe(tuple, n);
     Object elem2 = tupleGet_unsafe(other, n);
-    if (!objEquals(elem1, elem2)) {
+    if (!objEquals(elem1, elem2, thd)) {
       return false;
     }
   }
@@ -79,11 +79,11 @@ Object tupleEval(Object tuple, Thread* thd) {
 }
 
 /*------------------------------------------------------------------*/
-void tupleFreeVars(Object tuple, Object freeVarSet) {
+void tupleFreeVars(Object tuple, Object freeVarSet, Thread* thd) {
   Word nElems = tupleCount(tuple);
   for (Word n=0; n<nElems; n++) {
     Object elem = tupleGet_unsafe(tuple, n);
-    objFreeVars(elem, freeVarSet);
+    objFreeVars(elem, freeVarSet, thd);
   }
 }
 
@@ -133,7 +133,7 @@ void tupleMark(Object tuple) {
 }
 
 /*------------------------------------------------------------------*/
-Object tupleMatch(Object tuple, Object other, Object bindingList) {
+Object tupleMatch(Object tuple, Object other, Object bindingList, Thread* thd) {
   Word nElems1 = tupleCount(tuple);
   Word nElems2 = tupleCount(other);
   if (nElems1 != nElems2) {
@@ -142,7 +142,7 @@ Object tupleMatch(Object tuple, Object other, Object bindingList) {
   for (int n=0; n<nElems1; n++) {
     Object elem1 = tupleGet_unsafe(tuple, n);
     Object elem2 = tupleGet_unsafe(other, n);
-    bindingList = objMatch(elem1, elem2, bindingList);
+    bindingList = objMatch(elem1, elem2, bindingList, thd);
     if (bindingList.a == nullObj.a) {
       return nullObj;
     }

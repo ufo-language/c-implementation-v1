@@ -65,12 +65,11 @@ void getLines(Object stringBuffer) {
 }
 
 /*------------------------------------------------------------------*/
-void repl(void) {
+void repl(Thread* thd) {
   replInit(&theRepl);
   intro();
   Object it = identNew("it");
-  hashPut(SUPER_GLOBALS, it, NOTHING);
-  Thread* thd = threadNew();
+  hashPut(SUPER_GLOBALS, it, NOTHING, thd);
   while (theRepl.contin) {
     int jumpRes = setjmp(thd->jumpBuf);
     if (jumpRes != 0) {
@@ -112,7 +111,7 @@ void repl(void) {
             if (val.a != NOTHING.a) {
               objShow(val, stdout);
               printf(" :: %s\n", ObjTypeNames[objGetType(val)]);
-              hashPut(SUPER_GLOBALS, it, val);
+              hashPut(SUPER_GLOBALS, it, val, thd);
             }
           }
         }

@@ -31,12 +31,16 @@ static TestEntry testEntries[] = {
 
 /* Before & after --------------------------------------------------*/
 
+static Thread* thd;
+
 static void test_before() {
   memStart();
-  globalsSetup();
+  thd = threadNew();
+  globalsSetup(thd);
 }
 
 static void test_after() {
+  threadDelete(thd);
   memStop();
 }
 
@@ -61,14 +65,12 @@ void test_letEvalSingle() {
   Object bindings = listNew(binding, EMPTY_LIST);
   Object let = letNew(bindings);
 
-  Thread* thd = threadNew();
   eval(let, thd);
 
   Object bindingRes = threadEnvLocate(thd, x);
   EXPECT_NE(nullObj.a, bindingRes.a);
   Object val = bindingGetRhs(bindingRes);
   EXPECT_EQ(i100.a, val.a);
-  threadDelete(thd);
 }
 
 void test_letEvalMultiple() {
@@ -82,7 +84,6 @@ void test_letEvalMultiple() {
   bindings = listNew(binding, bindings);
   Object let = letNew(bindings);
 
-  Thread* thd = threadNew();
   eval(let, thd);
 
   Object bindingRes = threadEnvLocate(thd, x);
@@ -94,7 +95,6 @@ void test_letEvalMultiple() {
   EXPECT_NE(nullObj.a, bindingRes.a);
   val = bindingGetRhs(bindingRes);
   EXPECT_EQ(i200.a, val.a);
-  threadDelete(thd);
 }
 
 void test_letFreeVars() {
@@ -113,7 +113,7 @@ void test_letFreeVars() {
 
   Object freeVarSet = setNew();
 
-  objFreeVars(let, freeVarSet);
+  objFreeVars(let, freeVarSet, thd);
   EXPECT_EQ(1, setCount(freeVarSet));
-  EXPECT_T(setHas(freeVarSet, a));
+  EXPECT_T(setHas(freeVarSet, a, thd));
 }

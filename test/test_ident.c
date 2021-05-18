@@ -21,12 +21,16 @@ static TestEntry testEntries[] = {
 
 /* Before & after --------------------------------------------------*/
 
+static Thread* thd;
+
 static void test_before() {
   memStart();
-  globalsSetup();
+  thd = threadNew();
+  globalsSetup(thd);
 }
 
 static void test_after() {
+  threadDelete(thd);
   memStop();
 }
 
@@ -45,7 +49,6 @@ void test_identEval() {
   Object i100 = intNew(100);
   Object i200 = intNew(200);
   Object i300 = intNew(300);
-  Thread* thd = threadNew();
   threadEnvBind(thd, x, i100);
   threadEnvBind(thd, y, i200);
   threadEnvBind(thd, z, i300);

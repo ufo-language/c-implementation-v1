@@ -2,6 +2,7 @@
 #define REPL_H
 
 #include "object.h"
+#include "thread.h"
 
 #define READ_BUF_SIZE 256
 
@@ -17,7 +18,7 @@ typedef struct Repl_struct {
 
 int getLine(char* buffer, int len);
 void getLines(Object stringBuffer);
-void repl(void);
+void repl(Thread* thd);
 void replInit(ReplObj* repl);
 void replMark();
 

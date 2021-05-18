@@ -11,18 +11,18 @@
 
 Object setNew(void);
 
-void setAddElem(Object set, Object elem);
+void setAddElem(Object set, Object elem, Thread* thd);
 Word setCount(Object set);
-bool setEquals(Object set, Object other);
+bool setEquals(Object set, Object other, Thread* thd);
 Object setEval(Object set, Thread* thd);
-void setFreeVars(Object set, Object freeVarSet);
-bool setHas(Object set, Object elem);
+void setFreeVars(Object set, Object freeVarSet, Thread* thd);
+bool setHas(Object set, Object elem, Thread* thd);
 void setMark(Object set);
-bool setRemoveElem(Object set, Object elem);
-void setRemoveSet(Object set, Object otherSet);
+bool setRemoveElem(Object set, Object elem, Thread* thd);
+void setRemoveSet(Object set, Object otherSet, Thread* thd);
 void setShow(Object set, FILE* stream);
 Object setToArray(Object set);
-void setUnion(Object set, Object otherSet);
+void setUnion(Object set, Object otherSet, Thread* thd);
 
 #endif
 

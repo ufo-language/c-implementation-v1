@@ -34,25 +34,25 @@ static Object param_ListAny;
 static Object param_ListInt;
 
 /*------------------------------------------------------------------*/
-void list_defineAll(Object env) {
+void list_defineAll(Object env, Thread* thd) {
   char* nsName = "list";
   param_List = primBuildTypeList(1, D_List);
   param_ListAny = primBuildTypeList(2, D_List, D_Null);
   param_ListInt = primBuildTypeList(2, D_List, D_Int);
   Object ns = hashNew();
-  nsAddPrim(ns, "accept", list_accept);
-  nsAddPrim(ns, "drop", list_drop);
-  nsAddPrim(ns, "count", list_count);
-  nsAddPrim(ns, "first", list_first);
-  nsAddPrim(ns, "keys", list_keys);
-  nsAddPrim(ns, "map", list_map);
-  nsAddPrim(ns, "reject", list_reject);
-  nsAddPrim(ns, "rest", list_rest);
-  nsAddPrim(ns, "setFirst", list_setFirst);
-  nsAddPrim(ns, "setRest", list_setRest);
-  nsAddPrim(ns, "reverse", list_reverse);
-  nsAddPrim(ns, "take", list_take);
-  hashPut(env, identNew(nsName), ns);
+  nsAddPrim(ns, "accept", list_accept, thd);
+  nsAddPrim(ns, "drop", list_drop, thd);
+  nsAddPrim(ns, "count", list_count, thd);
+  nsAddPrim(ns, "first", list_first, thd);
+  nsAddPrim(ns, "keys", list_keys, thd);
+  nsAddPrim(ns, "map", list_map, thd);
+  nsAddPrim(ns, "reject", list_reject, thd);
+  nsAddPrim(ns, "rest", list_rest, thd);
+  nsAddPrim(ns, "setFirst", list_setFirst, thd);
+  nsAddPrim(ns, "setRest", list_setRest, thd);
+  nsAddPrim(ns, "reverse", list_reverse, thd);
+  nsAddPrim(ns, "take", list_take, thd);
+  hashPut(env, identNew(nsName), ns, thd);
 }
 
 /*------------------------------------------------------------------*/
@@ -107,9 +107,9 @@ Object list_first(Thread* thd, Object args) {
 }
 
 /*------------------------------------------------------------------*/
-static void list_keys_callback(Object keySet, Object elem) {
+static void list_keys_callback(Object keySet, Object elem, Thread* thd) {
   if (D_Binding == objGetType(elem)) {
-    setAddElem(keySet, bindingGetLhs(elem));
+    setAddElem(keySet, bindingGetLhs(elem), thd);
   }
 }
 
@@ -119,7 +119,7 @@ Object list_keys(Thread* thd, Object args) {
   Object* argAry[] = {&list};
   primCheckArgs2(param_List, args, argAry, thd);
   Object keySet = setNew();
-  listEach(list, list_keys_callback, keySet);
+  listEach(list, list_keys_callback, keySet, thd);
   return keySet;
 }
 

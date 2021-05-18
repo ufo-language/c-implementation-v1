@@ -17,12 +17,12 @@ Object seq_new(Thread* thd, Object args);
 static Object param_AnyAny;
 
 /*------------------------------------------------------------------*/
-void seq_defineAll(Object env) {
+void seq_defineAll(Object env, Thread* thd) {
   char* nsName = "seq";
   param_AnyAny = primBuildTypeList(2, D_Null, D_Null);
   Object ns = hashNew();
-  nsAddPrim(ns, "new", seq_new);
-  hashPut(env, identNew(nsName), ns);
+  nsAddPrim(ns, "new", seq_new, thd);
+  hashPut(env, identNew(nsName), ns, thd);
 }
 
 /*------------------------------------------------------------------*/

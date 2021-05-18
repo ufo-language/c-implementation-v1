@@ -33,12 +33,16 @@ static TestEntry testEntries[] = {
 
 /* Before & after --------------------------------------------------*/
 
+static Thread* thd;
+
 static void test_before() {
   memStart();
-  globalsSetup();
+  thd = threadNew();
+  globalsSetup(thd);
 }
 
 static void test_after() {
+  threadDelete(thd);
   memStop();
 }
 
@@ -90,34 +94,34 @@ void test_arrayCount() {
 void test_arrayEquals() {
   Object ary0a = arrayNew(0);
   Object ary0b = arrayNew(0);
-  EXPECT_T(arrayEquals(ary0a, ary0b));
+  EXPECT_T(arrayEquals(ary0a, ary0b, thd));
 
   Object ary1a = arrayNew(1);
   Object ary1b = arrayNew(1);
-  EXPECT_T(arrayEquals(ary1a, ary1b));
-  EXPECT_F(arrayEquals(ary0a, ary1a));
-  EXPECT_F(arrayEquals(ary1a, ary0a));
+  EXPECT_T(arrayEquals(ary1a, ary1b, thd));
+  EXPECT_F(arrayEquals(ary0a, ary1a, thd));
+  EXPECT_F(arrayEquals(ary1a, ary0a, thd));
   
   Object i100a = intNew(100);
-  EXPECT_F(arrayEquals(ary1a, i100a));
+  EXPECT_F(arrayEquals(ary1a, i100a, thd));
   arraySet_unsafe(ary1a, 0, i100a);
-  EXPECT_F(arrayEquals(ary1a, ary1b));
-  EXPECT_F(arrayEquals(ary1b, ary1a));
+  EXPECT_F(arrayEquals(ary1a, ary1b, thd));
+  EXPECT_F(arrayEquals(ary1b, ary1a, thd));
   Object i100b = intNew(100);
   arraySet_unsafe(ary1b, 0, i100b);
-  EXPECT_T(arrayEquals(ary1a, ary1b));
+  EXPECT_T(arrayEquals(ary1a, ary1b, thd));
 }
 
 void test_arrayMatch() {
   Object bindingList = EMPTY_LIST;
   Object ary0a = arrayNew(0);
   Object ary0b = arrayNew(0);
-  Object bindingList0 = objMatch(ary0a, ary0b, bindingList);
+  Object bindingList0 = objMatch(ary0a, ary0b, bindingList, thd);
   EXPECT_EQ(bindingList.a, bindingList0.a);
 
   Object ary1a = arrayNew(1);
   Object ary1b = arrayNew(1);
-  Object bindingList1 = objMatch(ary1a, ary1b, bindingList);
+  Object bindingList1 = objMatch(ary1a, ary1b, bindingList, thd);
   EXPECT_EQ(bindingList.a, bindingList1.a);
 
   Object x = identNew("x");
@@ -130,17 +134,17 @@ void test_arrayMatch() {
   Object ary2b = arrayNew(2);
   arraySet_unsafe(ary2b, 0, i200);
   arraySet_unsafe(ary2b, 1, y);
-  Object bindingList2 = objMatch(ary2a, ary2b, bindingList);
+  Object bindingList2 = objMatch(ary2a, ary2b, bindingList, thd);
   EXPECT_NE(bindingList.a, bindingList2.a);
-  Object res = listLocate(bindingList2, x);
-  EXPECT_T(objEquals(bindingNew(x, i200), res));
-  res = listLocate(bindingList2, y);
-  EXPECT_T(objEquals(bindingNew(y, i100), res));
+  Object res = listLocate(bindingList2, x, thd);
+  EXPECT_T(objEquals(bindingNew(x, i200), res, thd));
+  res = listLocate(bindingList2, y, thd);
+  EXPECT_T(objEquals(bindingNew(y, i100), res, thd));
 
   Object ary3 = arrayNew(3);
   Object ary4 = arrayNew(4);
-  Object bindingList34 = objMatch(ary3, ary4, bindingList);
+  Object bindingList34 = objMatch(ary3, ary4, bindingList, thd);
   EXPECT_EQ(nullObj.a, bindingList34.a);
-  bindingList34 = objMatch(ary4, ary3, bindingList);
+  bindingList34 = objMatch(ary4, ary3, bindingList, thd);
   EXPECT_EQ(nullObj.a, bindingList34.a);
 }

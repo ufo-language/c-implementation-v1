@@ -97,7 +97,7 @@ void objDisp(Object obj, FILE* stream) {
 }
 
 /*------------------------------------------------------------------*/
-bool objEquals(Object obj1, Object obj2) {
+bool objEquals(Object obj1, Object obj2, Thread* thd) {
   if (obj1.a == obj2.a) {
     return true;
   }
@@ -108,33 +108,33 @@ bool objEquals(Object obj1, Object obj2) {
   }
   switch (obj1Type) {
     case D_Array:
-      return arrayEquals(obj1, obj2);
+      return arrayEquals(obj1, obj2, thd);
     case D_Binding:
-      return bindingEquals(obj1, obj2);
+      return bindingEquals(obj1, obj2, thd);
     case D_Bool:
       return boolEquals(obj1, obj2);
     case D_Exn:
-      return exnEquals(obj1, obj2);
+      return exnEquals(obj1, obj2, thd);
     case D_Hash:
-      return hashEquals(obj1, obj2);
+      return hashEquals(obj1, obj2, thd);
     case D_Int:
-      return intEquals(obj1, obj2);
+      return intEquals(obj1, obj2, thd);
     case D_List:
-      return listEquals(obj1, obj2);
+      return listEquals(obj1, obj2, thd);
     case D_Queue:
-      return queueEquals(obj1, obj2);
+      return queueEquals(obj1, obj2, thd);
     case D_Real:
       return realEquals(obj1, obj2);
     case D_Seq:
-      return seqEquals(obj1, obj2);
+      return seqEquals(obj1, obj2, thd);
     case D_Set:
-      return setEquals(obj1, obj2);
+      return setEquals(obj1, obj2, thd);
     case D_String:
       return stringEquals(obj1, obj2);
     case D_Symbol:
       return symbolEquals(obj1, obj2);
     case D_Tuple:
-      return tupleEquals(obj1, obj2);
+      return tupleEquals(obj1, obj2, thd);
     case E_Ident:
       return identEquals(obj1, obj2);
     default:
@@ -233,65 +233,65 @@ Object objEval(Object obj, Thread* thd) {
 }
 
 /*------------------------------------------------------------------*/
-void objFreeVars(Object obj, Object freeVarSet) {
+void objFreeVars(Object obj, Object freeVarSet, Thread* thd) {
   switch (objGetType(obj)) {
     case D_Array:
-      arrayFreeVars(obj, freeVarSet);
+      arrayFreeVars(obj, freeVarSet, thd);
       break;
     case D_Binding:
-      bindingFreeVars(obj, freeVarSet);
+      bindingFreeVars(obj, freeVarSet, thd);
       break;
     case D_Hash:
-      hashFreeVars(obj, freeVarSet);
+      hashFreeVars(obj, freeVarSet, thd);
       break;
     case D_List:
-      listFreeVars(obj, freeVarSet);
+      listFreeVars(obj, freeVarSet, thd);
       break;
     case D_Queue:
-      queueFreeVars(obj, freeVarSet);
+      queueFreeVars(obj, freeVarSet, thd);
       break;
     case D_Set:
-      setFreeVars(obj, freeVarSet);
+      setFreeVars(obj, freeVarSet, thd);
       break;
     case D_Tuple:
-      tupleFreeVars(obj, freeVarSet);
+      tupleFreeVars(obj, freeVarSet,thd);
       break;
     case E_Abstr:
-      abstrFreeVars(obj, freeVarSet);
+      abstrFreeVars(obj, freeVarSet, thd);
       break;
     case E_App:
-      appFreeVars(obj, freeVarSet);
+      appFreeVars(obj, freeVarSet, thd);
       break;
     case E_Binop:
-      binopFreeVars(obj, freeVarSet);
+      binopFreeVars(obj, freeVarSet, thd);
       break;
     case E_DoSeq:
-      doFreeVars(obj, freeVarSet);
+      doFreeVars(obj, freeVarSet, thd);
       break;
     case E_Ident:
-      setAddElem(freeVarSet, obj);
+      setAddElem(freeVarSet, obj, thd);
       break;
     case E_If:
-      ifFreeVars(obj, freeVarSet);
+      ifFreeVars(obj, freeVarSet, thd);
       break;
     case E_Let:
-      letFreeVars(obj, freeVarSet);
+      letFreeVars(obj, freeVarSet, thd);
       break;
     case E_LetIn:
-      letInFreeVars(obj, freeVarSet);
+      letInFreeVars(obj, freeVarSet, thd);
       break;
     case E_LetRec:
-      letRecFreeVars(obj, freeVarSet);
+      letRecFreeVars(obj, freeVarSet, thd);
       break;
     case E_Quote:
-      quoteFreeVars(obj, freeVarSet);
+      quoteFreeVars(obj, freeVarSet, thd);
       break;
     case E_Throw:
-      throwFreeVars(obj, freeVarSet);
+      throwFreeVars(obj, freeVarSet, thd);
       break;
     case S_Trampoline: {
         Object obj1 = {objGetData(obj, 0)};
-        objFreeVars(obj1, freeVarSet);
+        objFreeVars(obj1, freeVarSet, thd);
       }
       break;
     default:
@@ -438,7 +438,7 @@ void objMark(Object obj) {
 }
 
 /*------------------------------------------------------------------*/
-Object objMatch(Object obj, Object other, Object bindingList) {
+Object objMatch(Object obj, Object other, Object bindingList, Thread* thd) {
   ObjType objType1 = objGetType(obj);
   if (objType1 == E_Ident) {
     return identMatch(obj, other, bindingList);
@@ -452,15 +452,15 @@ Object objMatch(Object obj, Object other, Object bindingList) {
   }
   switch (objType1) {
     case D_Array:
-      return arrayMatch(obj, other, bindingList);
+      return arrayMatch(obj, other, bindingList, thd);
     case D_Binding:
-      return bindingMatch(obj, other, bindingList);
+      return bindingMatch(obj, other, bindingList, thd);
     case D_List:
-      return listMatch(obj, other, bindingList);
+      return listMatch(obj, other, bindingList, thd);
     case D_Tuple:
-      return tupleMatch(obj, other, bindingList);
+      return tupleMatch(obj, other, bindingList, thd);
     default:
-      return objEquals(obj, other) ? bindingList : nullObj;
+      return objEquals(obj, other, thd) ? bindingList : nullObj;
   }
 }
 

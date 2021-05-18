@@ -17,9 +17,9 @@ Object queueDeq(Object q, Thread* thd);
 Object queueDeq_unsafe(Object q);
 void queueEnq(Object q, Object elem);
 Word queueCount(Object q);
-bool queueEquals(Object q, Object other);
+bool queueEquals(Object q, Object other, Thread* thd);
 Object queueEval(Object q, Thread* thd);
-void queueFreeVars(Object q, Object freeVarSet);
+void queueFreeVars(Object q, Object freeVarSet, Thread* thd);
 void queueMark(Object q);
 void queueShow(Object q, FILE* stream);
 

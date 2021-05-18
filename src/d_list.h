@@ -15,19 +15,19 @@ Object listNew(Object first, Object rest);
 
 Word listCount(Object list);
 void listDel(Object list);
-void listEach(Object list, void (*fun)(Object data, Object elem), Object data);
-bool listEquals(Object list, Object other);
+void listEach(Object list, void (*fun)(Object data, Object elem, Thread* thd), Object data, Thread* thd);
+bool listEquals(Object list, Object other, Thread* thd);
 Object listEval(Object list, Thread* thd);
-void listFreeVars(Object list, Object freeVarSet);
+void listFreeVars(Object list, Object freeVarSet, Thread* thd);
 Object listGetFirst(Object list);
 Object listGetSecond(Object list);
 Object listGetThird(Object list);
 Object listGetRest(Object list);
 Object listGetLastPair(Object list);
 bool listIsEmpty(Object list);
-Object listLocate(Object list, Object key); /* expects the list to contain only bindings */
+Object listLocate(Object list, Object key, Thread* thd); /* expects the list to contain only bindings */
 void listMark(Object list);
-Object listMatch(Object list, Object other, Object bindingList);
+Object listMatch(Object list, Object other, Object bindingList, Thread* thd);
 Object listReverse(Object list);
 void listSetFirst(Object list, Object obj);
 void listSetRest(Object list, Object obj);

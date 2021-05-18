@@ -14,7 +14,7 @@
 
 Object seqNew(Object from, Object to, Object step, Thread* thd);
 
-bool seqEquals(Object seq, Object other);
+bool seqEquals(Object seq, Object other, Thread* thd);
 Object seqEval(Object seq, Thread* thd);
 Object seqGetFrom(Object seq);
 Object seqGetTo(Object seq);

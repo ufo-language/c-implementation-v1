@@ -19,7 +19,12 @@ Word intSubtract(Word lhs, Word rhs);
 
 Object intBinop(Object integer, Object rhs, WordWordBinOp binOp, Thread* thd);
 
-bool intEquals(Object integer, Object other);
+bool intEquals(Object integer, Object other, Thread* thd);
+bool intGreaterThan(Object integer, Object other, Thread* thd);
+bool intGreaterThanOrEqual(Object integer, Object other, Thread* thd);
+bool intLessThan(Object integer, Object other, Thread* thd);
+bool intLessThanOrEqual(Object integer, Object other, Thread* thd);
+
 int intGet(Object integer);
 int intHash(Object integer);
 void intShow(Object integer, FILE* stream);

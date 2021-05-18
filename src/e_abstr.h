@@ -14,7 +14,7 @@
 Object abstrNew(Object params, Object body);
 
 Object abstrEval(Object abstr, Thread* thd);
-void abstrFreeVars(Object abstr, Object freeVarSet);
+void abstrFreeVars(Object abstr, Object freeVarSet, Thread* thd);
 Object abstrGetBody(Object abstr);
 Object abstrGetNext(Object abstr);
 Object abstrGetParams(Object abstr);

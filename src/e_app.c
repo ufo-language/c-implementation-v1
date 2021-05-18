@@ -43,11 +43,11 @@ Object appEval(Object app, Thread* thd) {
 }
 
 /*------------------------------------------------------------------*/
-void appFreeVars(Object app, Object freeVarSet) {
+void appFreeVars(Object app, Object freeVarSet, Thread* thd) {
   Object abstr = {objGetData(app, APP_ABSTR_OFS)};
   Object args = {objGetData(app, APP_ARGS_OFS)};
-  objFreeVars(abstr, freeVarSet);
-  objFreeVars(args, freeVarSet);
+  objFreeVars(abstr, freeVarSet, thd);
+  objFreeVars(args, freeVarSet, thd);
 }
 
 /*------------------------------------------------------------------*/

@@ -22,12 +22,16 @@ static TestEntry testEntries[] = {
 
 /* Before & after --------------------------------------------------*/
 
+static Thread* thd;
+
 static void test_before() {
   memStart();
-  globalsSetup();
+  thd = threadNew();
+  globalsSetup(thd);
 }
 
 static void test_after() {
+  threadDelete(thd);
   memStop();
 }
 
@@ -54,7 +58,6 @@ void test_ifEval() {
   Object i100 = intNew(100);
   Object i200 = intNew(200);
   Object ifThen1 = ifNew(t, i100, i200);
-  Thread* thd = 0;
   Object res1 = ifEval(ifThen1, thd);
   EXPECT_EQ(res1.a, i100.a);
 

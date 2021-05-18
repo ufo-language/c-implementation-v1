@@ -7,19 +7,19 @@
 #include "globals.h"
 #include "object.h"
 
-static void _resize(Object set);
+static void _resize(Object set, Thread* thd);
 
-bool setLocate(Object set, Object elem, Word* bucketNum);
+bool setLocate(Object set, Object elem, Word* bucketNum, Thread* thd);
 
 /*------------------------------------------------------------------*/
-void setAddElem(Object set, Object elem) {
+void setAddElem(Object set, Object elem, Thread* thd) {
   Word bucketNum;
-  if (!setLocate(set, elem, &bucketNum)) {
+  if (!setLocate(set, elem, &bucketNum, thd)) {
     Word nElems = objGetData(set, SET_NELEMS_OFS);
     Word loadingFactor = objGetData(set, SET_LOADINGFACTOR_OFS);
     if (nElems == loadingFactor) {
-      _resize(set);
-      setAddElem(set, elem);
+      _resize(set, thd);
+      setAddElem(set, elem, thd);
     }
     else {
       Object buckets = {objGetData(set, SET_BUCKETS_OFS)};
@@ -36,7 +36,7 @@ Word setCount(Object set) {
 }
 
 /*------------------------------------------------------------------*/
-bool setEquals(Object set, Object other) {
+bool setEquals(Object set, Object other, Thread* thd) {
   if (setCount(set) != setCount(other)) {
     return false;
   }
@@ -46,7 +46,7 @@ bool setEquals(Object set, Object other) {
     Object bucket = arrayGet_unsafe(buckets, n);
     while (!listIsEmpty(bucket)) {
       Object elem = listGetFirst(bucket);
-      if (!setHas(other, elem)) {
+      if (!setHas(other, elem, thd)) {
         return false;
       }
       bucket = listGetRest(bucket);
@@ -65,7 +65,7 @@ Object setEval(Object set, Thread* thd) {
     while (!listIsEmpty(bucket)) {
       Object elem = listGetFirst(bucket);
       Object elemVal = eval(elem, thd);
-      setAddElem(newSet, elemVal);
+      setAddElem(newSet, elemVal, thd);
       bucket = listGetRest(bucket);
     }
   }
@@ -73,34 +73,34 @@ Object setEval(Object set, Thread* thd) {
 }
 
 /*------------------------------------------------------------------*/
-void setFreeVars(Object set, Object freeVarSet) {
+void setFreeVars(Object set, Object freeVarSet, Thread* thd) {
   Object buckets = {objGetData(set, SET_BUCKETS_OFS)};
   Word nBuckets = arrayCount(buckets);
   for (Word n=0; n<nBuckets; n++) {
     Object bucket = arrayGet_unsafe(buckets, n);
     while (!listIsEmpty(bucket)) {
       Object elem = listGetFirst(bucket);
-      objFreeVars(elem, freeVarSet);
+      objFreeVars(elem, freeVarSet, thd);
       bucket = listGetRest(bucket);
     }
   }  
 }
 
 /*------------------------------------------------------------------*/
-bool setHas(Object set, Object elem) {
+bool setHas(Object set, Object elem, Thread* thd) {
   Word bucketNum;
-  return setLocate(set, elem, &bucketNum);
+  return setLocate(set, elem, &bucketNum, thd);
 }
 
 /*------------------------------------------------------------------*/
-bool setLocate(Object set, Object elem, Word* bucketNum) {
+bool setLocate(Object set, Object elem, Word* bucketNum, Thread* thd) {
   Word hashCode = objHashCode(elem);
   Object buckets = {objGetData(set, SET_BUCKETS_OFS)};
   Word nBuckets = arrayCount(buckets);
   *bucketNum = hashCode % nBuckets;
   Object bucket = arrayGet_unsafe(buckets, *bucketNum);
   while (!listIsEmpty(bucket)) {
-    if (objEquals(elem, listGetFirst(bucket))) {
+    if (objEquals(elem, listGetFirst(bucket), thd)) {
       return true;
     }
     bucket = listGetRest(bucket);
@@ -128,15 +128,15 @@ Object setNew(void) {
 }
 
 /*------------------------------------------------------------------*/
-bool setRemoveElem(Object set, Object elem) {
+bool setRemoveElem(Object set, Object elem, Thread* thd) {
   Word bucketNum;
-  if (setLocate(set, elem, &bucketNum)) {
+  if (setLocate(set, elem, &bucketNum, thd)) {
     Object buckets = {objGetData(set, SET_BUCKETS_OFS)};
     Object bucket = arrayGet_unsafe(buckets, bucketNum);
     Object newBucket = EMPTY_LIST;
     while (!listIsEmpty(bucket)) {
       Object elem1 = listGetFirst(bucket);
-      if (!objEquals(elem, elem1)) {
+      if (!objEquals(elem, elem1, thd)) {
         newBucket = listNew(elem1, newBucket);
       }
       bucket = listGetRest(bucket);
@@ -149,14 +149,14 @@ bool setRemoveElem(Object set, Object elem) {
 }
 
 /*------------------------------------------------------------------*/
-void setRemoveSet(Object set, Object otherSet) {
+void setRemoveSet(Object set, Object otherSet, Thread* thd) {
   Object buckets = {objGetData(otherSet, SET_BUCKETS_OFS)};
   Word nBuckets = arrayCount(buckets);
   for (Word n=0; n<nBuckets; n++) {
     Object bucket = arrayGet_unsafe(buckets, n);
     while (!listIsEmpty(bucket)) {
       Object elem = listGetFirst(bucket);
-      setRemoveElem(set, elem);
+      setRemoveElem(set, elem, thd);
       bucket = listGetRest(bucket);
     }
   }
@@ -204,21 +204,21 @@ Object setToArray(Object set) {
 }
 
 /*------------------------------------------------------------------*/
-void setUnion(Object set, Object otherSet) {
+void setUnion(Object set, Object otherSet, Thread* thd) {
   Object buckets = {objGetData(otherSet, SET_BUCKETS_OFS)};
   Word nBuckets = arrayCount(buckets);
   for (Word n=0; n<nBuckets; n++) {
     Object bucket = arrayGet_unsafe(buckets, n);
     while (!listIsEmpty(bucket)) {
       Object elem = listGetFirst(bucket);
-      setAddElem(set, elem);
+      setAddElem(set, elem, thd);
       bucket = listGetRest(bucket);
     }
   } 
 }
 
 /*------------------------------------------------------------------*/
-static void _resize(Object set) {
+static void _resize(Object set, Thread* thd) {
   /* allocate new buckets array */
   Object buckets = {objGetData(set, SET_BUCKETS_OFS)};
   Word nBuckets = arrayCount(buckets);
@@ -235,7 +235,7 @@ static void _resize(Object set) {
     Object bucket = arrayGet_unsafe(buckets, n);
     while (!listIsEmpty(bucket)) {
       Object elem = listGetFirst(bucket);
-      setAddElem(set, elem);
+      setAddElem(set, elem, thd);
       bucket = listGetRest(bucket);
     }
   }

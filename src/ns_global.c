@@ -17,28 +17,39 @@ Object oper_colon(Thread* thd, Object args);
 Object oper_dot(Thread* thd, Object args);
 Object oper_doubleDot(Thread* thd, Object args);
 Object oper_equal(Thread* thd, Object args);
-Object oper_equalTo(Thread* thd, Object args);
 Object oper_minus(Thread* thd, Object args);
 Object oper_percent(Thread* thd, Object args);
 Object oper_plus(Thread* thd, Object args);
 Object oper_slash(Thread* thd, Object args);
 Object oper_times(Thread* thd, Object args);
 
+Object oper_lessThan(Thread* thd, Object args);
+Object oper_lessThanOrEqual(Thread* thd, Object args);
+Object oper_equalTo(Thread* thd, Object args);
+Object oper_greaterThanOrEqual(Thread* thd, Object args);
+Object oper_greaterThan(Thread* thd, Object args);
+Object oper_notEqual(Thread* thd, Object args);
+
 static Object param_AnyAny;
 
 /*------------------------------------------------------------------*/
-void global_defineAll(Object env) {
+void global_defineAll(Object env, Thread* thd) {
   param_AnyAny = primBuildTypeList(2, D_Null, D_Null);
-  hashPut(env, identNew(":"), primMacroNew(oper_colon));
-  hashPut(env, identNew("."), primMacroNew(oper_dot));
-  hashPut(env, identNew(".."), primNew(oper_doubleDot));
-  hashPut(env, identNew("="), primNew(oper_equal));
-  hashPut(env, identNew("=="), primNew(oper_equalTo));
-  hashPut(env, identNew("+"), primNew(oper_plus));
-  hashPut(env, identNew("-"), primNew(oper_minus));
-  hashPut(env, identNew("*"), primNew(oper_times));
-  hashPut(env, identNew("/"), primNew(oper_slash));
-  hashPut(env, identNew("%"), primNew(oper_percent));
+  hashPut(env, identNew(":"), primMacroNew(oper_colon), thd);
+  hashPut(env, identNew("."), primMacroNew(oper_dot), thd);
+  hashPut(env, identNew(".."), primNew(oper_doubleDot), thd);
+  hashPut(env, identNew("="), primNew(oper_equal), thd);
+  hashPut(env, identNew("+"), primNew(oper_plus), thd);
+  hashPut(env, identNew("-"), primNew(oper_minus), thd);
+  hashPut(env, identNew("*"), primNew(oper_times), thd);
+  hashPut(env, identNew("/"), primNew(oper_slash), thd);
+  hashPut(env, identNew("%"), primNew(oper_percent), thd);
+
+  hashPut(env, identNew("<"), primNew(oper_lessThan), thd);
+  hashPut(env, identNew("<="), primNew(oper_lessThanOrEqual), thd);
+  hashPut(env, identNew("=="), primNew(oper_equalTo), thd);
+  hashPut(env, identNew(">="), primNew(oper_greaterThanOrEqual), thd);
+  hashPut(env, identNew(">"), primNew(oper_greaterThan), thd);
 }
 
 /*------------------------------------------------------------------*/
@@ -92,8 +103,76 @@ Object oper_equalTo(Thread* thd, Object args) {
   Object lhs, rhs;
   Object* argAry[] = {&lhs, &rhs};
   primCheckArgs2(param_AnyAny, args, argAry, thd);
-  bool eq = objEquals(lhs, rhs);
+  bool eq = objEquals(lhs, rhs, thd);
   return eq ? TRUE : FALSE;
+}
+
+/*------------------------------------------------------------------*/
+Object oper_greaterThan(Thread* thd, Object args) {
+  Object lhs, rhs;
+  Object* argAry[] = {&lhs, &rhs};
+  primCheckArgs2(param_AnyAny, args, argAry, thd);
+  switch (objGetType(lhs)) {
+    case D_Int:
+      return intGreaterThan(lhs, rhs, thd) ? TRUE : FALSE;
+    default: {
+        Object exn = arrayN(4, lhs, ObjTypeNameSyms[objGetType(lhs)],
+                               rhs, ObjTypeNameSyms[objGetType(rhs)]);
+        threadThrowException(thd, "Error", "Unable to compare {} : {} > {} : {}", exn);
+      }
+  }
+  return nullObj;
+}
+
+/*------------------------------------------------------------------*/
+Object oper_greaterThanOrEqual(Thread* thd, Object args) {
+  Object lhs, rhs;
+  Object* argAry[] = {&lhs, &rhs};
+  primCheckArgs2(param_AnyAny, args, argAry, thd);
+  switch (objGetType(lhs)) {
+    case D_Int:
+      return intGreaterThanOrEqual(lhs, rhs, thd) ? TRUE : FALSE;
+    default: {
+        Object exn = arrayN(4, lhs, ObjTypeNameSyms[objGetType(lhs)],
+                               rhs, ObjTypeNameSyms[objGetType(rhs)]);
+        threadThrowException(thd, "Error", "Unable to compare {} : {} >= {} : {}", exn);
+      }
+  }
+  return nullObj;
+}
+
+/*------------------------------------------------------------------*/
+Object oper_lessThan(Thread* thd, Object args) {
+  Object lhs, rhs;
+  Object* argAry[] = {&lhs, &rhs};
+  primCheckArgs2(param_AnyAny, args, argAry, thd);
+  switch (objGetType(lhs)) {
+    case D_Int:
+      return intLessThan(lhs, rhs, thd) ? TRUE : FALSE;
+    default: {
+        Object exn = arrayN(4, lhs, ObjTypeNameSyms[objGetType(lhs)],
+                               rhs, ObjTypeNameSyms[objGetType(rhs)]);
+        threadThrowException(thd, "Error", "Unable to compare {} : {} < {} : {}", exn);
+      }
+  }
+  return nullObj;
+}
+
+/*------------------------------------------------------------------*/
+Object oper_lessThanOrEqual(Thread* thd, Object args) {
+  Object lhs, rhs;
+  Object* argAry[] = {&lhs, &rhs};
+  primCheckArgs2(param_AnyAny, args, argAry, thd);
+  switch (objGetType(lhs)) {
+    case D_Int:
+      return intLessThanOrEqual(lhs, rhs, thd) ? TRUE : FALSE;
+    default: {
+        Object exn = arrayN(4, lhs, ObjTypeNameSyms[objGetType(lhs)],
+                               rhs, ObjTypeNameSyms[objGetType(rhs)]);
+        threadThrowException(thd, "Error", "Unable to compare {} : {} <= {} : {}", exn);
+      }
+  }
+  return nullObj;
 }
 
 /*------------------------------------------------------------------*/

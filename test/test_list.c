@@ -34,12 +34,16 @@ static TestEntry testEntries[] = {
 
 /* Before & after --------------------------------------------------*/
 
+static Thread* thd;
+
 static void test_before() {
   memStart();
-  globalsSetup();
+  thd = threadNew();
+  globalsSetup(thd);
 }
 
 static void test_after() {
+  threadDelete(thd);
   memStop();
 }
 
@@ -71,23 +75,23 @@ void test_listEmptySet() {
 }
 
 void test_listEquals() {
-  EXPECT_T(listEquals(EMPTY_LIST, EMPTY_LIST));
+  EXPECT_T(listEquals(EMPTY_LIST, EMPTY_LIST, thd));
 
   Object i100 = intNew(100);
   Object i200 = intNew(200);
 
   Object list1 = listNew(i100, EMPTY_LIST);
-  EXPECT_T(listEquals(list1, list1));
+  EXPECT_T(listEquals(list1, list1, thd));
 
   Object list2 = listNew(i100, EMPTY_LIST);
-  EXPECT_T(listEquals(list1, list2));
-  EXPECT_T(listEquals(list2, list1));
+  EXPECT_T(listEquals(list1, list2, thd));
+  EXPECT_T(listEquals(list2, list1, thd));
 
   Object list3 = listNew(i200, EMPTY_LIST);
-  EXPECT_F(listEquals(list1, list3));
-  EXPECT_F(listEquals(list2, list3));
-  EXPECT_F(listEquals(list3, list1));
-  EXPECT_F(listEquals(list3, list2));
+  EXPECT_F(listEquals(list1, list3, thd));
+  EXPECT_F(listEquals(list2, list3, thd));
+  EXPECT_F(listEquals(list3, list1, thd));
+  EXPECT_F(listEquals(list3, list2, thd));
 }
 
 void test_listGet() {
@@ -117,12 +121,12 @@ void test_listMatch() {
   Object lst2 = listNew(i100, i200);
 
   Object bindingList = EMPTY_LIST;
-  Object bindingList1 = objMatch(lst1, lst2, bindingList);
+  Object bindingList1 = objMatch(lst1, lst2, bindingList, thd);
 
-  Object res = listLocate(bindingList1, x);
-  EXPECT_T(objEquals(bindingNew(x, i100), res));
-  res = listLocate(bindingList1, y);
-  EXPECT_T(objEquals(bindingNew(y, i200), res));
+  Object res = listLocate(bindingList1, x, thd);
+  EXPECT_T(objEquals(bindingNew(x, i100), res, thd));
+  res = listLocate(bindingList1, y, thd);
+  EXPECT_T(objEquals(bindingNew(y, i200), res, thd));
 }
 
 void test_listSet() {

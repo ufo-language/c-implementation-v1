@@ -14,13 +14,13 @@
 Object bindingNew(Object lhs, Object rhs);
 
 void bindingDel(Object binding);
-bool bindingEquals(Object binding, Object other);
+bool bindingEquals(Object binding, Object other, Thread* thd);
 Object bindingEval(Object binding, Thread* thd);
-void bindingFreeVars(Object binding, Object freeVarSet);
+void bindingFreeVars(Object binding, Object freeVarSet, Thread* thd);
 Object bindingGetLhs(Object binding);
 Object bindingGetRhs(Object binding);
 void bindingMark(Object binding);
-Object bindingMatch(Object binding, Object other, Object bindingList);
+Object bindingMatch(Object binding, Object other, Object bindingList, Thread* thd);
 void bindingSetRhs(Object binding, Object rhs);
 void bindingShow(Object binding, FILE* stream);
 

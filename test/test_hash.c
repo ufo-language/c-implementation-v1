@@ -43,12 +43,16 @@ static TestEntry testEntries[] = {
 
 /* Before & after --------------------------------------------------*/
 
+static Thread* thd;
+
 static void test_before() {
   memStart();
-  globalsSetup();
+  thd = threadNew();
+  globalsSetup(thd);
 }
 
 static void test_after() {
+  threadDelete(thd);
   memStop();
 }
 
@@ -116,17 +120,17 @@ void test_hashPut1() {
   Object i200 = intNew(200);
 
   Object hash = hashNew();
-  hashPut(hash, x, i100);
+  hashPut(hash, x, i100, thd);
 
   EXPECT_EQ(1, objGetData(hash, 0)); /* nBindings */
   EXPECT_EQ(1, hashCount(hash));
-  EXPECT_EQ(i100.a, hashGet_unsafe(hash, x).a);
+  EXPECT_EQ(i100.a, hashGet_unsafe(hash, x, thd).a);
 
-  hashPut(hash, x, i200);
+  hashPut(hash, x, i200, thd);
 
   EXPECT_EQ(1, objGetData(hash, 0)); /* nBindings */
   EXPECT_EQ(1, hashCount(hash));
-  EXPECT_EQ(i200.a, hashGet_unsafe(hash, x).a);
+  EXPECT_EQ(i200.a, hashGet_unsafe(hash, x, thd).a);
 }
 
 void test_hashPut2() {
@@ -139,9 +143,9 @@ void test_hashPut2() {
   Object i200 = intNew(200);
   Object i300 = intNew(300);
 
-  hashPut(hash, x, i100);
-  hashPut(hash, y, i200);
-  hashPut(hash, z, i300);
+  hashPut(hash, x, i100, thd);
+  hashPut(hash, y, i200, thd);
+  hashPut(hash, z, i300, thd);
 
   Word nBindings = objGetData(hash, 0);
   Word loadingFactor = objGetData(hash, 1);
@@ -163,10 +167,10 @@ void test_hashPut2() {
   Object i600 = intNew(600);
   Object i700 = intNew(700);
 
-  hashPut(hash, a, i400);
-  hashPut(hash, b, i500);
-  hashPut(hash, c, i600);
-  hashPut(hash, d, i700);
+  hashPut(hash, a, i400, thd);
+  hashPut(hash, b, i500, thd);
+  hashPut(hash, c, i600, thd);
+  hashPut(hash, d, i700, thd);
 }
 
 void test_hashCount() {
@@ -181,18 +185,18 @@ void test_hashCount() {
   Object i200 = intNew(200);
   Object i300 = intNew(300);
 
-  hashPut(hash, x, i100);
+  hashPut(hash, x, i100, thd);
   EXPECT_EQ(1, hashCount(hash));
-  hashPut(hash, y, i200);
+  hashPut(hash, y, i200, thd);
   EXPECT_EQ(2, hashCount(hash));
-  hashPut(hash, z, i300);
+  hashPut(hash, z, i300, thd);
   EXPECT_EQ(3, hashCount(hash));
 
-  hashPut(hash, x, NOTHING);
+  hashPut(hash, x, NOTHING, thd);
   EXPECT_EQ(3, hashCount(hash));
-  hashPut(hash, y, NOTHING);
+  hashPut(hash, y, NOTHING, thd);
   EXPECT_EQ(3, hashCount(hash));
-  hashPut(hash, z, NOTHING);
+  hashPut(hash, z, NOTHING, thd);
   EXPECT_EQ(3, hashCount(hash));
 }
 
@@ -206,19 +210,19 @@ void test_hashGet() {
   Object i200 = intNew(200);
   Object i300 = intNew(300);
 
-  hashPut(hash, x, i100);
-  hashPut(hash, y, i200);
-  hashPut(hash, z, i300);
+  hashPut(hash, x, i100, thd);
+  hashPut(hash, y, i200, thd);
+  hashPut(hash, z, i300, thd);
 
-  EXPECT_EQ(i100.a, hashGet_unsafe(hash, x).a);
-  EXPECT_EQ(i200.a, hashGet_unsafe(hash, y).a);
-  EXPECT_EQ(i300.a, hashGet_unsafe(hash, z).a);
+  EXPECT_EQ(i100.a, hashGet_unsafe(hash, x, thd).a);
+  EXPECT_EQ(i200.a, hashGet_unsafe(hash, y, thd).a);
+  EXPECT_EQ(i300.a, hashGet_unsafe(hash, z, thd).a);
 }
 
 void test_hashEqual() {
   Object hash1 = hashNew();
   Object hash2 = hashNew();
-  EXPECT_T(objEquals(hash1, hash2));
+  EXPECT_T(objEquals(hash1, hash2, thd));
 
   Object x = identNew("x");
   Object y = identNew("y");
@@ -227,21 +231,21 @@ void test_hashEqual() {
   Object i200 = intNew(200);
   Object i300 = intNew(300);
 
-  hashPut(hash1, x, i100);
-  hashPut(hash1, y, i200);
-  hashPut(hash1, z, i300);
+  hashPut(hash1, x, i100, thd);
+  hashPut(hash1, y, i200, thd);
+  hashPut(hash1, z, i300, thd);
 
-  hashPut(hash2, x, i100);
-  hashPut(hash2, y, i200);
-  hashPut(hash2, z, i300);
+  hashPut(hash2, x, i100, thd);
+  hashPut(hash2, y, i200, thd);
+  hashPut(hash2, z, i300, thd);
 
-  EXPECT_T(objEquals(hash1, hash2));
-  EXPECT_T(objEquals(hash2, hash1));
+  EXPECT_T(objEquals(hash1, hash2, thd));
+  EXPECT_T(objEquals(hash2, hash1, thd));
 
-  hashPut(hash1, x, i200);
+  hashPut(hash1, x, i200, thd);
 
-  EXPECT_F(objEquals(hash1, hash2));
-  EXPECT_F(objEquals(hash2, hash1));
+  EXPECT_F(objEquals(hash1, hash2, thd));
+  EXPECT_F(objEquals(hash2, hash1, thd));
 }
 
 static void test_hashEval() {
@@ -254,18 +258,16 @@ static void test_hashEval() {
   Object i100 = intNew(100);
   Object i200 = intNew(200);
 
-  Thread* thd = threadNew();
   threadEnvBind(thd, x, i100);
   threadEnvBind(thd, y, i200);
 
-  hashPut(hash1, a, x);
-  hashPut(hash1, b, y);
+  hashPut(hash1, a, x, thd);
+  hashPut(hash1, b, y, thd);
 
   Object hash2 = objEval(hash1, thd);
 
-  EXPECT_EQ(i100.a, hashGet_unsafe(hash2, a).a);
-  EXPECT_EQ(i200.a, hashGet_unsafe(hash2, b).a);
-  threadDelete(thd);
+  EXPECT_EQ(i100.a, hashGet_unsafe(hash2, a, thd).a);
+  EXPECT_EQ(i200.a, hashGet_unsafe(hash2, b, thd).a);
 }
 
 static void test_hashFreeVars() {
@@ -283,16 +285,16 @@ static void test_hashFreeVars() {
   Object se = symbolNew("E");
   Object sf = symbolNew("F");
 
-  hashPut(hash1, ia, sa);
-  hashPut(hash1, ib, sb);
-  hashPut(hash1, sc, ic);
-  hashPut(hash1, sd, id);
-  hashPut(hash1, se, sf);
+  hashPut(hash1, ia, sa, thd);
+  hashPut(hash1, ib, sb, thd);
+  hashPut(hash1, sc, ic, thd);
+  hashPut(hash1, sd, id, thd);
+  hashPut(hash1, se, sf, thd);
   EXPECT_EQ(5, hashCount(hash1));
 
   Object freeVarSet = setNew();
   EXPECT_EQ(0, setCount(freeVarSet));
 
-  objFreeVars(hash1, freeVarSet);
+  objFreeVars(hash1, freeVarSet, thd);
   EXPECT_EQ(4, setCount(freeVarSet));
 }

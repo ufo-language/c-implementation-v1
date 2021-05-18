@@ -45,10 +45,10 @@ Object queueDeq_unsafe(Object q) {
 }
 
 /*------------------------------------------------------------------*/
-bool queueEquals(Object q, Object other) {
+bool queueEquals(Object q, Object other, Thread* thd) {
   Object elems1 = {objGetData(q, Q_HEAD_OFS)};
   Object elems2 = {objGetData(other, Q_HEAD_OFS)};
-  return listEquals(elems1, elems2);
+  return listEquals(elems1, elems2, thd);
 }
 
 /*------------------------------------------------------------------*/
@@ -80,11 +80,11 @@ Object queueEval(Object q, Thread* thd) {
 }
 
 /*------------------------------------------------------------------*/
-void queueFreeVars(Object q, Object freeVarSet) {
+void queueFreeVars(Object q, Object freeVarSet, Thread* thd) {
   Object elems = {objGetData(q, Q_HEAD_OFS)};
   while (!listIsEmpty(elems)) {
     Object elem = listGetFirst(elems);
-    objFreeVars(elem, freeVarSet);
+    objFreeVars(elem, freeVarSet, thd);
     elems = listGetRest(elems);
   }
 }

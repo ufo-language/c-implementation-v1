@@ -12,7 +12,7 @@
 
 Object exnNew(Object payload);
 
-bool exnEquals(Object exn, Object other);
+bool exnEquals(Object exn, Object other, Thread* thd);
 Object exnEval(Object exn, Thread* thd);
 Object exnGetPayload(Object exn);
 void exnMark(Object exn);

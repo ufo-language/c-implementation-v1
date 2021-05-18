@@ -13,11 +13,11 @@
 Object ns_global(Thread* thd, Object args);
 
 /*------------------------------------------------------------------*/
-void ns_defineAll(Object env) {
+void ns_defineAll(Object env, Thread* thd) {
   char* nsName = "ns";
   Object ns = hashNew();
-  nsAddPrim(ns, "global", ns_global);
-  hashPut(env, identNew(nsName), ns);
+  nsAddPrim(ns, "global", ns_global, thd);
+  hashPut(env, identNew(nsName), ns, thd);
 }
 
 /*------------------------------------------------------------------*/

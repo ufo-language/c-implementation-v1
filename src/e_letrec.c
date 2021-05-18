@@ -19,7 +19,7 @@ Object letRecEval(Object letRec, Thread* thd) {
   while (!listIsEmpty(bindings)) {
     Object binding = listGetFirst(bindings);
     Object lhs = bindingGetLhs(binding);
-    objFreeVars(lhs, varSet);
+    objFreeVars(lhs, varSet, thd);
     bindings = listGetRest(bindings);
   }
   /* bind all lhs variables to nothing */
@@ -36,7 +36,7 @@ Object letRecEval(Object letRec, Thread* thd) {
     Object lhs = bindingGetLhs(binding);
     Object rhsExpr = bindingGetRhs(binding);
     Object rhsVal = eval(rhsExpr, thd);
-    Object evaluatedBindings = objMatch(lhs, rhsVal, EMPTY_LIST);
+    Object evaluatedBindings = objMatch(lhs, rhsVal, EMPTY_LIST, thd);
     /* rebind variables in the envionment */
     while (!listIsEmpty(evaluatedBindings)) {
       Object evaluatedBinding = listGetFirst(evaluatedBindings);
@@ -51,7 +51,7 @@ Object letRecEval(Object letRec, Thread* thd) {
 }
 
 /*------------------------------------------------------------------*/
-void letRecFreeVars(Object letRec, Object freeVarSet) {
+void letRecFreeVars(Object letRec, Object freeVarSet, Thread* thd) {
   Object lhsVars = setNew();
   Object bindings = {objGetData(letRec, LETREC_BINDINGS_OFS)};
   while (!listIsEmpty(bindings)) {
@@ -59,12 +59,12 @@ void letRecFreeVars(Object letRec, Object freeVarSet) {
     Object lhs = bindingGetLhs(binding);
     Object rhs = bindingGetRhs(binding);
     /* separate the vars on the left from the vars on the right */
-    objFreeVars(lhs, lhsVars);
-    objFreeVars(rhs, freeVarSet);
+    objFreeVars(lhs, lhsVars, thd);
+    objFreeVars(rhs, freeVarSet, thd);
     bindings = listGetRest(bindings);
   }
   /* remove each var in the lhs set from the rhs set */
-  setRemoveSet(freeVarSet, lhsVars);
+  setRemoveSet(freeVarSet, lhsVars, thd);
 }
 
 /*------------------------------------------------------------------*/

@@ -15,8 +15,8 @@ Object exnNew(Object payload) {
 }
 
 /*------------------------------------------------------------------*/
-bool exnEquals(Object exn, Object other) {
-  return objEquals(exnGetPayload(exn), exnGetPayload(other));
+bool exnEquals(Object exn, Object other, Thread* thd) {
+  return objEquals(exnGetPayload(exn), exnGetPayload(other), thd);
 }
 
 /*------------------------------------------------------------------*/

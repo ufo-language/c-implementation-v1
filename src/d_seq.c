@@ -29,20 +29,20 @@ Object seqNew(Object from, Object to, Object step, Thread* thd) {
 }
 
 /*------------------------------------------------------------------*/
-bool seqEquals(Object seq, Object other) {
+bool seqEquals(Object seq, Object other, Thread* thd) {
   Object from1 = seqGetFrom(seq);
   Object from2 = seqGetFrom(other);
-  if (!objEquals(from1, from2)) {
+  if (!objEquals(from1, from2, thd)) {
     return false;
   }
   Object to1 = seqGetTo(seq);
   Object to2 = seqGetTo(other);
-  if (!objEquals(to1, to2)) {
+  if (!objEquals(to1, to2, thd)) {
     return false;
   }
   Object step1 = seqGetStep(seq);
   Object step2 = seqGetStep(other);
-  return objEquals(step1, step2);
+  return objEquals(step1, step2, thd);
 }
 
 /*------------------------------------------------------------------*/

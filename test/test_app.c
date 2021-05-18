@@ -36,12 +36,16 @@ static TestEntry testEntries[] = {
 
 /* Before & after --------------------------------------------------*/
 
+static Thread* thd;
+
 static void test_before() {
   memStart();
-  globalsSetup();
+  thd = threadNew();
+  globalsSetup(thd);
 }
 
 static void test_after() {
+  threadDelete(thd);
   memStop();
 }
 
@@ -78,12 +82,11 @@ void test_appNew() {
   Object abstr3 = abstrNew(params3, body3);
   abstrSetNext(abstr2, abstr3);
 
-  Thread* thd = threadNew();
   threadEnvBind(thd, x, i100);
   threadEnvBind(thd, y, i200);
   threadEnvBind(thd, z, i300);
   Object env = threadGetEnv(thd);
-  Object closure = closureNew(abstr1, env);
+  Object closure = closureNew(abstr1, env, thd);
 
   /* create the application */
   Object app = appNew(closure, EMPTY_LIST);
@@ -93,8 +96,6 @@ void test_appNew() {
 
   EXPECT_EQ(closure.a, objGetData(app, ABSTR_OFS));
   EXPECT_EQ(EMPTY_LIST.a, objGetData(app, ARGS_OFS));
-
-  threadDelete(thd);
 }
 
 void test_appEval() {
@@ -122,12 +123,11 @@ void test_appEval() {
   Object abstr3 = abstrNew(params3, body3);
   abstrSetNext(abstr2, abstr3);
 
-  Thread* thd = threadNew();
   threadEnvBind(thd, x, i100);
   threadEnvBind(thd, y, i200);
   threadEnvBind(thd, z, i300);
   Object env = threadGetEnv(thd);
-  Object closure = closureNew(abstr1, env);
+  Object closure = closureNew(abstr1, env, thd);
 
   /* create the application */
   Object app = appNew(closure, EMPTY_LIST);
@@ -136,8 +136,6 @@ void test_appEval() {
   Object res = eval(app, thd);
 
   EXPECT_EQ(i100.a, res.a);
-
-  threadDelete(thd);
 }
 
 void test_appFreeVars() {
@@ -146,11 +144,11 @@ void test_appFreeVars() {
   Object app = appNew(x, y);
 
   Object freeVarSet = setNew();
-  objFreeVars(app, freeVarSet);
+  objFreeVars(app, freeVarSet, thd);
 
   EXPECT_EQ(2, setCount(freeVarSet));
-  EXPECT_T(setHas(freeVarSet, x));
-  EXPECT_T(setHas(freeVarSet, y));
+  EXPECT_T(setHas(freeVarSet, x, thd));
+  EXPECT_T(setHas(freeVarSet, y, thd));
 }
 
 void test_appMark() {

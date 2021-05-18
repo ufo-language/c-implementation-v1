@@ -16,12 +16,12 @@ Object string_substring(Thread* thd, Object args);
 static Object param_StringIntInt;
 
 /*------------------------------------------------------------------*/
-void string_defineAll(Object env) {
+void string_defineAll(Object env, Thread* thd) {
   char* nsName = "string";
   param_StringIntInt = primBuildTypeList(3, D_String, D_Int, D_Int);
   Object ns = hashNew();
-  nsAddPrim(ns, "substring", string_substring);
-  hashPut(env, identNew(nsName), ns);
+  nsAddPrim(ns, "substring", string_substring, thd);
+  hashPut(env, identNew(nsName), ns, thd);
 }
 
 /*------------------------------------------------------------------*/

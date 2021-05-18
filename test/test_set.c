@@ -38,12 +38,16 @@ static TestEntry testEntries[] = {
 
 /* Before & after --------------------------------------------------*/
 
+static Thread* thd;
+
 static void test_before() {
   memStart();
-  globalsSetup();
+  thd = threadNew();
+  globalsSetup(thd);
 }
 
 static void test_after() {
+  threadDelete(thd);
   memStop();
 }
 
@@ -77,24 +81,24 @@ void test_setAddCount() {
   Object i100 = intNew(100);
 
   Object set = setNew();
-  setAddElem(set, x);
+  setAddElem(set, x, thd);
 
   EXPECT_EQ(1, objGetData(set, 0)); /* nElems */
   EXPECT_EQ(1, setCount(set));
-  EXPECT_T(setHas(set, x));
+  EXPECT_T(setHas(set, x, thd));
 
-  setAddElem(set, i100);
-
-  EXPECT_EQ(2, objGetData(set, 0)); /* nElems */
-  EXPECT_EQ(2, setCount(set));
-  EXPECT_T(setHas(set, i100));
-
-  setAddElem(set, x);
-  setAddElem(set, i100);
+  setAddElem(set, i100, thd);
 
   EXPECT_EQ(2, objGetData(set, 0)); /* nElems */
   EXPECT_EQ(2, setCount(set));
-  EXPECT_T(setHas(set, i100));
+  EXPECT_T(setHas(set, i100, thd));
+
+  setAddElem(set, x, thd);
+  setAddElem(set, i100, thd);
+
+  EXPECT_EQ(2, objGetData(set, 0)); /* nElems */
+  EXPECT_EQ(2, setCount(set));
+  EXPECT_T(setHas(set, i100, thd));
 }
 
 void test_setHas() {
@@ -104,35 +108,35 @@ void test_setHas() {
   Object y = identNew("y");
   Object z = identNew("z");
 
-  setAddElem(set, x);
-  setAddElem(set, y);
+  setAddElem(set, x, thd);
+  setAddElem(set, y, thd);
 
-  EXPECT_T(setHas(set, x));
-  EXPECT_T(setHas(set, y));
-  EXPECT_F(setHas(set, z));
+  EXPECT_T(setHas(set, x, thd));
+  EXPECT_T(setHas(set, y, thd));
+  EXPECT_F(setHas(set, z, thd));
 }
 
 void test_setEqual() {
   Object set1 = setNew();
   Object set2 = setNew();
-  EXPECT_T(objEquals(set1, set2));
+  EXPECT_T(objEquals(set1, set2, thd));
 
   Object x = identNew("x");
   Object y = identNew("y");
   Object z = identNew("z");
 
-  setAddElem(set1, x);
-  setAddElem(set1, y);
-  setAddElem(set1, z);
+  setAddElem(set1, x, thd);
+  setAddElem(set1, y, thd);
+  setAddElem(set1, z, thd);
 
-  setAddElem(set2, x);
-  setAddElem(set2, y);
+  setAddElem(set2, x, thd);
+  setAddElem(set2, y, thd);
 
-  EXPECT_F(objEquals(set1, set2));
+  EXPECT_F(objEquals(set1, set2, thd));
 
-  setAddElem(set2, z);
+  setAddElem(set2, z, thd);
 
-  EXPECT_T(objEquals(set2, set1));
+  EXPECT_T(objEquals(set2, set1, thd));
 }
 
 static void test_setEval() {
@@ -143,17 +147,16 @@ static void test_setEval() {
   Object i100 = intNew(100);
   Object i200 = intNew(200);
 
-  Thread* thd = threadNew();
   threadEnvBind(thd, x, i100);
   threadEnvBind(thd, y, i200);
 
-  setAddElem(set1, x);
-  setAddElem(set1, y);
+  setAddElem(set1, x, thd);
+  setAddElem(set1, y, thd);
 
   Object set2 = objEval(set1, thd);
 
-  EXPECT_T(setHas(set2, i100));
-  EXPECT_T(setHas(set2, i200));
+  EXPECT_T(setHas(set2, i100, thd));
+  EXPECT_T(setHas(set2, i200, thd));
 }
 
 static void test_setRemove1() {
@@ -163,28 +166,28 @@ static void test_setRemove1() {
   Object y = identNew("y");
   Object z = identNew("z");
 
-  setAddElem(set, x);
-  setAddElem(set, y);
-  setAddElem(set, z);
+  setAddElem(set, x, thd);
+  setAddElem(set, y, thd);
+  setAddElem(set, z, thd);
 
-  EXPECT_T(setHas(set, x));
-  EXPECT_T(setHas(set, y));
-  EXPECT_T(setHas(set, z));
+  EXPECT_T(setHas(set, x, thd));
+  EXPECT_T(setHas(set, y, thd));
+  EXPECT_T(setHas(set, z, thd));
 
-  setRemoveElem(set, x);
-  EXPECT_F(setHas(set, x));
-  EXPECT_T(setHas(set, y));
-  EXPECT_T(setHas(set, z));
+  setRemoveElem(set, x, thd);
+  EXPECT_F(setHas(set, x, thd));
+  EXPECT_T(setHas(set, y, thd));
+  EXPECT_T(setHas(set, z, thd));
 
-  setRemoveElem(set, y);
-  EXPECT_F(setHas(set, x));
-  EXPECT_F(setHas(set, y));
-  EXPECT_T(setHas(set, z));
+  setRemoveElem(set, y, thd);
+  EXPECT_F(setHas(set, x, thd));
+  EXPECT_F(setHas(set, y, thd));
+  EXPECT_T(setHas(set, z, thd));
 
-  setRemoveElem(set, z);
-  EXPECT_F(setHas(set, x));
-  EXPECT_F(setHas(set, y));
-  EXPECT_F(setHas(set, z));
+  setRemoveElem(set, z, thd);
+  EXPECT_F(setHas(set, x, thd));
+  EXPECT_F(setHas(set, y, thd));
+  EXPECT_F(setHas(set, z, thd));
 }
 
 static void test_setRemove2() {
@@ -193,26 +196,26 @@ static void test_setRemove2() {
   /* 0 and 8 share the same bucket */
   Object i0 = intNew(0);
   Object i8 = intNew(8);
-  setAddElem(set1, i0);
-  setAddElem(set1, i8);
+  setAddElem(set1, i0, thd);
+  setAddElem(set1, i8, thd);
 
-  setRemoveElem(set1, i0);
+  setRemoveElem(set1, i0, thd);
 
   EXPECT_EQ(1, setCount(set1));
-  EXPECT_F(setHas(set1, i0));
-  EXPECT_T(setHas(set1, i8));
+  EXPECT_F(setHas(set1, i0, thd));
+  EXPECT_T(setHas(set1, i8, thd));
   
   Object set2 = setNew();
 
   /* 0 and 8 share the same bucket */
-  setAddElem(set2, i0);
-  setAddElem(set2, i8);
+  setAddElem(set2, i0, thd);
+  setAddElem(set2, i8, thd);
 
-  setRemoveElem(set2, i8);
+  setRemoveElem(set2, i8, thd);
 
   EXPECT_EQ(1, setCount(set1));
-  EXPECT_T(setHas(set2, i0));
-  EXPECT_F(setHas(set2, i8));
+  EXPECT_T(setHas(set2, i0, thd));
+  EXPECT_F(setHas(set2, i8, thd));
 }
 
 static void test_setToArray() {
@@ -220,13 +223,13 @@ static void test_setToArray() {
 
   /* 0 and 8 sharea the same bucket */
   for (int n=0; n<4; n++) {
-    setAddElem(set, intNew(n * 100));
+    setAddElem(set, intNew(n * 100), thd);
   }
   EXPECT_EQ(4, setCount(set));
 
   Object array = setToArray(set);
   EXPECT_EQ(4, arrayCount(array));
   for (int n=0; n<4; n++) {
-    EXPECT_T(setHas(set, intNew(n * 100)));
+    EXPECT_T(setHas(set, intNew(n * 100), thd));
   }
 }

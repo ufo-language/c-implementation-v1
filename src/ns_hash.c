@@ -20,16 +20,16 @@ static Object param_HashAny;
 static Object param_HashAnyAny;
 
 /*------------------------------------------------------------------*/
-void hash_defineAll(Object env) {
+void hash_defineAll(Object env, Thread* thd) {
   char* nsName = "hash";
   param_Hash = primBuildTypeList(1, D_Hash);
   param_HashAny = primBuildTypeList(2, D_Hash, D_Null);
   param_HashAnyAny = primBuildTypeList(3, D_Hash, D_Null, D_Null);
   Object ns = hashNew();
-  nsAddPrim(ns, "get", hash_get);
-  nsAddPrim(ns, "keys", hash_keys);
-  nsAddPrim(ns, "put", hash_put);
-  hashPut(env, identNew(nsName), ns);
+  nsAddPrim(ns, "get", hash_get, thd);
+  nsAddPrim(ns, "keys", hash_keys, thd);
+  nsAddPrim(ns, "put", hash_put, thd);
+  hashPut(env, identNew(nsName), ns, thd);
 }
 
 /*------------------------------------------------------------------*/
@@ -45,7 +45,7 @@ Object hash_keys(Thread* thd, Object args) {
   Object hash;
   Object* argAry[] = {&hash};
   primCheckArgs2(param_Hash, args, argAry, thd);
-  return hashKeys(hash);
+  return hashKeys(hash, thd);
 }
 
 /*------------------------------------------------------------------*/
@@ -53,6 +53,6 @@ Object hash_put(Thread* thd, Object args) {
   Object hash, key, val;
   Object* argAry[] = {&hash, &key, &val};
   primCheckArgs2(param_HashAnyAny, args, argAry, thd);
-  hashPut(hash, key, val);
+  hashPut(hash, key, val, thd);
   return hash;
 }

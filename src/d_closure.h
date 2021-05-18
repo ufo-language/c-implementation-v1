@@ -14,7 +14,7 @@
 #define CLO_LEXENV_OFS 3
 #define CLO_OBJ_SIZE 4
 
-Object closureNew(Object abstr, Object lexEnv);
+Object closureNew(Object abstr, Object lexEnv, Thread* thd);
 
 Object closureApply(Object closure, Object argList, Thread* thd);
 void closureMark(Object closure);

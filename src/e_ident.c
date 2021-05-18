@@ -22,15 +22,15 @@ bool identEquals(Object ident, Object obj) {
 /*------------------------------------------------------------------*/
 Object identEval(Object ident, Thread* thd) {
   Object env = threadGetEnv(thd);
-  Object binding = listLocate(env, ident);
+  Object binding = listLocate(env, ident, thd);
   if (binding.a != nullObj.a) {
     return bindingGetRhs(binding);
   }
-  Object val = hashGet_unsafe(GLOBALS, ident);
+  Object val = hashGet_unsafe(GLOBALS, ident, thd);
   if (val.a != nullObj.a) {
     return val;
   }
-  val = hashGet_unsafe(SUPER_GLOBALS, ident);
+  val = hashGet_unsafe(SUPER_GLOBALS, ident, thd);
   if (val.a == nullObj.a) {
     threadThrowException(thd, "EvaluatorError", "unbound identifier", ident);
   }

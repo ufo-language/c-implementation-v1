@@ -22,17 +22,17 @@ static Object param_Sb;
 static Object param_SbString;
 
 /*------------------------------------------------------------------*/
-void stringBuffer_defineAll(Object env) {
+void stringBuffer_defineAll(Object env, Thread* thd) {
   char* nsName = "stringBuffer";
   param_Sb = primBuildTypeList(1, D_StringBuffer);
   param_SbString = primBuildTypeList(2, D_StringBuffer, D_String);
   Object ns = hashNew();
-  nsAddPrim(ns, "count", stringBuffer_count);
-  nsAddPrim(ns, "new", stringBuffer_new);
-  nsAddPrim(ns, "readChar", stringBuffer_readChar);
-  nsAddPrim(ns, "toString", stringBuffer_toString);
-  nsAddPrim(ns, "write", stringBuffer_write);
-  hashPut(env, identNew(nsName), ns);
+  nsAddPrim(ns, "count", stringBuffer_count, thd);
+  nsAddPrim(ns, "new", stringBuffer_new, thd);
+  nsAddPrim(ns, "readChar", stringBuffer_readChar, thd);
+  nsAddPrim(ns, "toString", stringBuffer_toString, thd);
+  nsAddPrim(ns, "write", stringBuffer_write, thd);
+  hashPut(env, identNew(nsName), ns, thd);
 }
 
 /*------------------------------------------------------------------*/

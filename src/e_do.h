@@ -11,7 +11,7 @@
 Object doNew(Object exprList);
 
 Object doEval(Object doExpr, Thread* thd);
-void doFreeVars(Object doExpr, Object freeVarSet);
+void doFreeVars(Object doExpr, Object freeVarSet, Thread* thd);
 void doMark(Object doExpr);
 void doShow(Object doExpr, FILE* stream);
 void doShowWith(char* start, Object doExpr, char* end, FILE* stream);

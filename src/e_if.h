@@ -11,9 +11,8 @@
 
 Object ifNew(Object cond, Object conseq, Object alt);
 
-bool ifEqual(Object ifThen, Object other);
 Object ifEval(Object ifThen, Thread* thd);
-void ifFreeVars(Object ifThen, Object freeVarSet);
+void ifFreeVars(Object ifThen, Object freeVarSet, Thread* thd);
 void ifMark(Object ifThen);
 void ifShow(Object ifThen, FILE* stream);
 

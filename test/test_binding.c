@@ -32,9 +32,12 @@ static TestEntry testEntries[] = {
 
 /* Before & after --------------------------------------------------*/
 
+static Thread* thd;
+
 static void test_before() {
   memStart();
-  globalsSetup();
+  thd = threadNew();
+  globalsSetup(thd);
 }
 
 static void test_after() {
@@ -76,16 +79,16 @@ void test_bindingEquals() {
   Object bndx1 = bindingNew(x, i100);
 
   Object bndx2 = bindingNew(x, i100);
-  EXPECT_T(objEquals(bndx1, bndx2));
+  EXPECT_T(objEquals(bndx1, bndx2, thd));
 
   Object i200 = intNew(200);
   bindingSetRhs(bndx2, i200);
-  EXPECT_F(objEquals(bndx1, bndx2));
+  EXPECT_F(objEquals(bndx1, bndx2, thd));
 
   Object y = identNew("x");
   Object bndy1 = bindingNew(y, i200);
 
-  EXPECT_F(bindingEquals(bndx1, bndy1));
+  EXPECT_F(bindingEquals(bndx1, bndy1, thd));
 }
 
 void test_bindingEval() {
@@ -118,10 +121,10 @@ void test_bindingMatch() {
   Object bnd2 = bindingNew(i100, i200);
 
   Object bindingList = EMPTY_LIST;
-  Object bindingList1 = objMatch(bnd1, bnd2, bindingList);
+  Object bindingList1 = objMatch(bnd1, bnd2, bindingList, thd);
 
-  Object res = listLocate(bindingList1, x);
-  EXPECT_T(objEquals(bindingNew(x, i100), res));
-  res = listLocate(bindingList1, y);
-  EXPECT_T(objEquals(bindingNew(y, i200), res));
+  Object res = listLocate(bindingList1, x, thd);
+  EXPECT_T(objEquals(bindingNew(x, i100), res, thd));
+  res = listLocate(bindingList1, y, thd);
+  EXPECT_T(objEquals(bindingNew(y, i200), res, thd));
 }

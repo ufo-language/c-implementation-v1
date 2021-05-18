@@ -21,7 +21,7 @@ static void test_closureLexEnv();
 static void test_closureMark();
 static void test_closureNew();
 
-Object _close(Object rule, Object env);
+Object _close(Object rule, Object env, Thread* thd);
 bool _isMarked(RawBlock blk);
 RawBlock objToRawBlock(Object obj);
 
@@ -38,12 +38,15 @@ static TestEntry testEntries[] = {
 
 /* Before & after --------------------------------------------------*/
 
+static Thread* thd;
 static void test_before() {
   memStart();
-  globalsSetup();
+  thd = threadNew();
+  globalsSetup(thd);
 }
 
 static void test_after() {
+  threadDelete(thd);
   memStop();
 }
 
@@ -66,7 +69,7 @@ void test_closureNew() {
   Object body2 = listNew(z, listNew(y, listNew(x, EMPTY_LIST)));
   Object abstr2 = abstrNew(params2, body2);
   abstrSetNext(abstr1, abstr2);
-  Object closure = closureNew(abstr1, EMPTY_LIST);
+  Object closure = closureNew(abstr1, EMPTY_LIST, thd);
 
   Object rule1 = closure;
   Object params1a = {objGetData(rule1, CLO_PARAMS_OFS)};
@@ -90,9 +93,9 @@ void test_closureClose() {
   Object yBinding = bindingNew(y, i200);
   Object env = listNew(xBinding, listNew(yBinding, EMPTY_LIST));
 
-  Object lexEnv = _close(rule, env);
+  Object lexEnv = _close(rule, env, thd);
   ASSERT_EQ(1, listCount(lexEnv));
-  Object binding = listLocate(lexEnv, y);
+  Object binding = listLocate(lexEnv, y, thd);
   EXPECT_EQ(y.a, bindingGetLhs(binding).a);
   EXPECT_EQ(i200.a, bindingGetRhs(binding).a);
 }
@@ -113,7 +116,7 @@ void test_closureMark() {
   Object env = listNew(bindingNew(a, intNew(100)),
                  listNew(bindingNew(b, intNew(200)),
                    EMPTY_LIST));
-  Object closure = closureNew(abstr1, env);
+  Object closure = closureNew(abstr1, env, thd);
 
   objMark(closure);
 
@@ -143,24 +146,24 @@ void test_closureLexEnv() {
                  listNew(bindingNew(y, i200),
                    listNew(bindingNew(z, i300),
                      EMPTY_LIST)));
-  Object closure = closureNew(abstr1, env);
+  Object closure = closureNew(abstr1, env, thd);
 
   const Word NEXT_OFS = 2;
   const Word LEXENV_OFS = 3;
 
   Object lexEnv1 = {objGetData(closure, LEXENV_OFS)};
   ASSERT_EQ(2, listCount(lexEnv1));
-  Object yBinding = listLocate(lexEnv1, y);
+  Object yBinding = listLocate(lexEnv1, y, thd);
   EXPECT_NE(nullObj.a, yBinding.a);
-  Object zBinding = listLocate(lexEnv1, z);
+  Object zBinding = listLocate(lexEnv1, z, thd);
   EXPECT_NE(nullObj.a, zBinding.a);
 
   Object rule2 = {objGetData(closure, NEXT_OFS)};
   Object lexEnv2 = {objGetData(rule2, LEXENV_OFS)};
   ASSERT_EQ(2, listCount(lexEnv2));
-  Object xBinding = listLocate(lexEnv2, x);
+  Object xBinding = listLocate(lexEnv2, x, thd);
   EXPECT_NE(nullObj.a, xBinding.a);
-  zBinding = listLocate(lexEnv2, z);
+  zBinding = listLocate(lexEnv2, z, thd);
   EXPECT_NE(nullObj.a, zBinding.a);
 }
 
@@ -194,7 +197,7 @@ void test_closureApply() {
   threadEnvBind(thd, y, i200);
   threadEnvBind(thd, z, i300);
   Object env = threadGetEnv(thd);
-  Object closure = closureNew(abstr1, env);
+  Object closure = closureNew(abstr1, env, thd);
 
   Object args1 = EMPTY_LIST;
   Object res1 = closureApply(closure, args1, thd);

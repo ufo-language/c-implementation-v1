@@ -10,9 +10,9 @@ Object throwEval(Object thrw, Thread* thd) {
 }
 
 /*------------------------------------------------------------------*/
-void throwFreeVars(Object thrw, Object freeVarSet) {
+void throwFreeVars(Object thrw, Object freeVarSet, Thread* thd) {
   Object payload = {objGetData(thrw, THR_PAYLOAD_OFS)};
-  objFreeVars(payload, freeVarSet);
+  objFreeVars(payload, freeVarSet, thd);
 }
 
 /*------------------------------------------------------------------*/

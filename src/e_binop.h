@@ -12,7 +12,7 @@
 Object binopNew(Object lhs, Object oper, Object rhs);
 
 Object binopEval(Object binop, Thread* thd);
-void binopFreeVars(Object binop, Object freeVarSet);
+void binopFreeVars(Object binop, Object freeVarSet, Thread* thd);
 void binopMark(Object binop);
 void binopShow(Object binop, FILE* stream);
 

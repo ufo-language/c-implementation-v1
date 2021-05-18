@@ -16,11 +16,11 @@ int main_argc;
 char** main_argv;
 
 /*------------------------------------------------------------------*/
-void ufo_defineAll(Object env) {
+void ufo_defineAll(Object env, Thread* thd) {
   char* nsName = "ufo";
   Object ns = hashNew();
-  nsAddPrim(ns, "args", ufo_args);
-  hashPut(env, identNew(nsName), ns);
+  nsAddPrim(ns, "args", ufo_args, thd);
+  hashPut(env, identNew(nsName), ns, thd);
 }
 
 /*------------------------------------------------------------------*/
