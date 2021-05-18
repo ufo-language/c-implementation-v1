@@ -34,25 +34,27 @@ void queue_defineAll(Object env) {
 
 /*------------------------------------------------------------------*/
 Object queue_count(Thread* thd, Object args) {
-  primCheckArgs(param_Queue, args, thd);
-  Object queue = listGetFirst(args);
+  Object queue;
+  Object* argAry[] = {&queue};
+  primCheckArgs2(param_Queue, args, argAry, thd);
   Word nElems = queueCount(queue);
   return intNew(nElems);
 }
 
 /*------------------------------------------------------------------*/
 Object queue_deq(Thread* thd, Object args) {
-  primCheckArgs(param_Queue, args, thd);
-  Object queue = listGetFirst(args);
+  Object queue;
+  Object* argAry[] = {&queue};
+  primCheckArgs2(param_Queue, args, argAry, thd);
   Object elem = queueDeq(queue, thd);
   return elem;
 }
 
 /*------------------------------------------------------------------*/
 Object queue_enq(Thread* thd, Object args) {
-  primCheckArgs(param_QueueAny, args, thd);
-  Object queue = listGetFirst(args);
-  Object elem = listGetSecond(args);
+  Object queue, elem;
+  Object* argAry[] = {&queue, &elem};
+  primCheckArgs2(param_QueueAny, args, argAry, thd);
   queueEnq(queue, elem);
   return queue;
 }

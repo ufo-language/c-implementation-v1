@@ -36,27 +36,27 @@ void array_defineAll(Object env) {
 
 /*------------------------------------------------------------------*/
 Object array_count(Thread* thd, Object args) {
-  primCheckArgs(param_Array, args, thd);
-  Object array = listGetFirst(args);
+  Object array;
+  Object* argAry[] = {&array};
+  primCheckArgs2(param_Array, args, argAry, thd);
   Word nElems = arrayCount(array);
   return intNew(nElems);
 }
 
 /*------------------------------------------------------------------*/
 Object array_get(Thread* thd, Object args) {
-  primCheckArgs(param_ArrayInt, args, thd);
-  Object array = listGetFirst(args);
-  Object indexInt = listGetSecond(args);
+  Object array, indexInt;
+  Object* argAry[] = {&array, &indexInt};
+  primCheckArgs2(param_ArrayInt, args, argAry, thd);
   Word index = intGet(indexInt);
   return arrayGet(array, index, thd);
 }
 
 /*------------------------------------------------------------------*/
 Object array_set(Thread* thd, Object args) {
-  primCheckArgs(param_ArrayIntAny, args, thd);
-  Object array = listGetFirst(args);
-  Object indexInt = listGetSecond(args);
-  Object elem = listGetThird(args);
+  Object array, indexInt, elem;
+  Object* argAry[] = {&array, &indexInt, &elem};
+  primCheckArgs2(param_ArrayIntAny, args, argAry, thd);
   Word index = intGet(indexInt);
   arraySet(array, index, elem, thd);
   return array;

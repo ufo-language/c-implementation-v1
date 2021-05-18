@@ -33,16 +33,18 @@ void tuple_defineAll(Object env) {
 
 /*------------------------------------------------------------------*/
 Object tuple_count(Thread* thd, Object args) {
-  primCheckArgs(param_Tuple, args, thd);
-  Object tuple = listGetFirst(args);
+  Object tuple;
+  Object* argAry[] = {&tuple};
+  primCheckArgs2(param_Tuple, args, argAry, thd);
   Word nElems = tupleCount(tuple);
   return intNew(nElems);
 }
 
 /*------------------------------------------------------------------*/
 Object tuple_get(Thread* thd, Object args) {
-  primCheckArgs(param_TupleInt, args, thd);
-  Object tuple = listGetFirst(args);
+  Object tuple;
+  Object* argAry[] = {&tuple};
+  primCheckArgs2(param_TupleInt, args, argAry, thd);
   Object indexInt = listGetSecond(args);
   Word index = intGet(indexInt);
   return tupleGet(tuple, index, thd);

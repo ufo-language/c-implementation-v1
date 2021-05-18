@@ -24,8 +24,11 @@ Object oper_plus(Thread* thd, Object args);
 Object oper_slash(Thread* thd, Object args);
 Object oper_times(Thread* thd, Object args);
 
+static Object param_AnyAny;
+
 /*------------------------------------------------------------------*/
 void global_defineAll(Object env) {
+  param_AnyAny = primBuildTypeList(2, D_Null, D_Null);
   hashPut(env, identNew(":"), primMacroNew(oper_colon));
   hashPut(env, identNew("."), primMacroNew(oper_dot));
   hashPut(env, identNew(".."), primNew(oper_doubleDot));
@@ -40,9 +43,10 @@ void global_defineAll(Object env) {
 
 /*------------------------------------------------------------------*/
 Object oper_colon(Thread* thd, Object args) {
-  Object lhs = listGetFirst(args);
+  Object lhs, rhs;
+  Object* argAry[] = {&lhs, &rhs};
+  primCheckArgs2(param_AnyAny, args, argAry, thd);
   Object lhsVal = eval(lhs, thd);
-  Object rhs = listGetSecond(args);
   Object res = nullObj;
   switch (objGetType(lhsVal)) {
     case D_Hash:
@@ -58,45 +62,45 @@ Object oper_colon(Thread* thd, Object args) {
 
 /*------------------------------------------------------------------*/
 Object oper_dot(Thread* thd, Object args) {
-  (void)thd;
-  Object receiver = listGetFirst(args);
-  Object func = listGetSecond(args);
+  Object receiver, func;
+  Object* argAry[] = {&receiver, &func};
+  primCheckArgs2(param_AnyAny, args, argAry, thd);
   Object method = methodNew(receiver, func);
   return method;
 }
 
 /*------------------------------------------------------------------*/
 Object oper_doubleDot(Thread* thd, Object args) {
-  (void)thd;
-  Object lhs = listGetFirst(args);
-  Object rhs = listGetSecond(args);
-  Object seq = seqNew(lhs, rhs, intNew(1), thd);
+  Object from, to;
+  Object* argAry[] = {&from, &to};
+  primCheckArgs2(param_AnyAny, args, argAry, thd);
+  Object seq = seqNew(from, to, intNew(1), thd);
   return seq;
 }
 
 /*------------------------------------------------------------------*/
 Object oper_equal(Thread* thd, Object args) {
-  (void)thd;
-  Object lhs = listGetFirst(args);
-  Object rhs = listGetSecond(args);
+  Object lhs, rhs;
+  Object* argAry[] = {&lhs, &rhs};
+  primCheckArgs2(param_AnyAny, args, argAry, thd);
   Object binding = bindingNew(lhs, rhs);
   return binding;
 }
 
 /*------------------------------------------------------------------*/
 Object oper_equalTo(Thread* thd, Object args) {
-  (void)thd;
-  Object lhs = listGetFirst(args);
-  Object rhs = listGetSecond(args);
+  Object lhs, rhs;
+  Object* argAry[] = {&lhs, &rhs};
+  primCheckArgs2(param_AnyAny, args, argAry, thd);
   bool eq = objEquals(lhs, rhs);
   return eq ? TRUE : FALSE;
 }
 
 /*------------------------------------------------------------------*/
 Object oper_minus(Thread* thd, Object args) {
-  (void)thd;
-  Object lhs = listGetFirst(args);
-  Object rhs = listGetSecond(args);
+  Object lhs, rhs;
+  Object* argAry[] = {&lhs, &rhs};
+  primCheckArgs2(param_AnyAny, args, argAry, thd);
   Object res = NOTHING;
   switch (objGetType(lhs)) {
     case D_Int:
@@ -113,9 +117,9 @@ Object oper_minus(Thread* thd, Object args) {
 
 /*------------------------------------------------------------------*/
 Object oper_percent(Thread* thd, Object args) {
-  (void)thd;
-  Object lhs = listGetFirst(args);
-  Object rhs = listGetSecond(args);
+  Object lhs, rhs;
+  Object* argAry[] = {&lhs, &rhs};
+  primCheckArgs2(param_AnyAny, args, argAry, thd);
   Object res = NOTHING;
   switch (objGetType(lhs)) {
     case D_Int:
@@ -135,9 +139,9 @@ Object oper_percent(Thread* thd, Object args) {
 
 /*------------------------------------------------------------------*/
 Object oper_plus(Thread* thd, Object args) {
-  (void)thd;
-  Object lhs = listGetFirst(args);
-  Object rhs = listGetSecond(args);
+  Object lhs, rhs;
+  Object* argAry[] = {&lhs, &rhs};
+  primCheckArgs2(param_AnyAny, args, argAry, thd);
   Object res = NOTHING;
   switch (objGetType(lhs)) {
     case D_Int:
@@ -154,9 +158,9 @@ Object oper_plus(Thread* thd, Object args) {
 
 /*------------------------------------------------------------------*/
 Object oper_slash(Thread* thd, Object args) {
-  (void)thd;
-  Object lhs = listGetFirst(args);
-  Object rhs = listGetSecond(args);
+  Object lhs, rhs;
+  Object* argAry[] = {&lhs, &rhs};
+  primCheckArgs2(param_AnyAny, args, argAry, thd);
   Object res = NOTHING;
   switch (objGetType(lhs)) {
     case D_Int:
@@ -173,9 +177,9 @@ Object oper_slash(Thread* thd, Object args) {
 
 /*------------------------------------------------------------------*/
 Object oper_times(Thread* thd, Object args) {
-  (void)thd;
-  Object lhs = listGetFirst(args);
-  Object rhs = listGetSecond(args);
+  Object lhs, rhs;
+  Object* argAry[] = {&lhs, &rhs};
+  primCheckArgs2(param_AnyAny, args, argAry, thd);
   Object res = NOTHING;
   switch (objGetType(lhs)) {
     case D_Int:

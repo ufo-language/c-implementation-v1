@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #include "d_array.h"
 #include "d_binding.h"
 #include "d_hash.h"
@@ -17,8 +15,6 @@ Object ufo_args(Thread* thd, Object args);
 int main_argc;
 char** main_argv;
 
-static Object argAry = {0};
-
 /*------------------------------------------------------------------*/
 void ufo_defineAll(Object env) {
   char* nsName = "ufo";
@@ -29,14 +25,11 @@ void ufo_defineAll(Object env) {
 
 /*------------------------------------------------------------------*/
 Object ufo_args(Thread* thd, Object args) {
-  primCheckArgs(EMPTY_LIST, args, thd);
-  if (argAry.a != nullObj.a) {
-    return argAry;
-  }
-  argAry = arrayNew(main_argc);
+  primCheckArgs2(EMPTY_LIST, args, NULL, thd);
+  Object cmdLineArgs = arrayNew(main_argc);
   for (int n=0; n<main_argc; n++) {
     Object argString = stringNew(main_argv[n]);
-    arraySet_unsafe(argAry, n, argString);
+    arraySet_unsafe(cmdLineArgs, n, argString);
   }
-  return argAry;
+  return cmdLineArgs;
 }

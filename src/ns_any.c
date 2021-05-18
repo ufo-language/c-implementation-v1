@@ -34,26 +34,27 @@ void any_defineAll(Object env) {
 
 /*------------------------------------------------------------------*/
 Object any_freeVars(Thread* thd, Object args) {
-  (void)thd;
-  primCheckArgs(param_Any, args, thd);
+  Object arg;
+  Object* argAry[] = {&arg};
+  primCheckArgs2(param_Any, args, argAry, thd);
   Object freeVarSet = setNew();
-  Object arg = listGetFirst(args);
   objFreeVars(arg, freeVarSet);
   return freeVarSet;
 }
 
 /*------------------------------------------------------------------*/
 Object any_hashCode(Thread* thd, Object args) {
-  (void)thd;
-  primCheckArgs(param_Any, args, thd);
-  Object arg = listGetFirst(args);
+  Object arg;
+  Object* argAry[] = {&arg};
+  primCheckArgs2(param_Any, args, argAry, thd);
   Word hashCode = objHashCode(arg);
   return intNew(hashCode);
 }
 
 /*------------------------------------------------------------------*/
 Object any_match(Thread* thd, Object args) {
-  (void)thd;
-  primCheckArgs(param_AnyAny, args, thd);
-  return objMatch(listGetFirst(args), listGetSecond(args), EMPTY_LIST);
+  Object arg1, arg2;
+  Object* argAry[] = {&arg1, &arg2};
+  primCheckArgs2(param_AnyAny, args, argAry, thd);
+  return objMatch(arg1, arg1, EMPTY_LIST);
 }

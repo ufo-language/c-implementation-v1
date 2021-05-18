@@ -26,10 +26,9 @@ void string_defineAll(Object env) {
 
 /*------------------------------------------------------------------*/
 Object string_substring(Thread* thd, Object args) {
-  primCheckArgs(param_StringIntInt, args, thd);
-  Object string = listGetFirst(args);
-  Object start = listGetSecond(args);
-  Object end = listGetThird(args);
+  Object string, start, end;
+  Object* argAry[] = {&string, &start, &end};
+  primCheckArgs2(param_StringIntInt, args, argAry, thd);
   Object substr = stringSubstring(string, (Word)intGet(start), (Word)intGet(end));
   return substr;
 }

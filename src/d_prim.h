@@ -13,7 +13,14 @@ Object primMacroNew(PrimFunc func);
 
 Object primApply(Object closure, Object argList, Thread* thd);
 Object primBuildTypeList(int nArgs, ...);
-void primCheckArgs(Object params, Object args, Thread* thd);
+
+// TODO replace after primCheckArgs2 is finished
+//void primCheckArgs(Object params, Object args, Thread* thd);
+//int primCheckArgs_unsafe(Object paramTypes, Object args);
+
+void primCheckArgs2(Object paramTypes, Object args, Object** argVars, Thread* thd);
+int primCheckArgs2_unsafe(Object paramTypes, Object args, Object** argVars);
+
 PrimFunc primGet(Object prim);
 void primShow(Object prim, FILE* stream);
 

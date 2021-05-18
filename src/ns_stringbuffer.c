@@ -37,39 +37,42 @@ void stringBuffer_defineAll(Object env) {
 
 /*------------------------------------------------------------------*/
 Object stringBuffer_count(Thread* thd, Object args) {
-  primCheckArgs(param_Sb, args, thd);
-  Object sb = listGetFirst(args);
+  Object sb;
+  Object* argAry[] = {&sb};
+  primCheckArgs2(param_Sb, args, argAry, thd);
   return intNew(stringBufferCount(sb));
 }
 
 /*------------------------------------------------------------------*/
 Object stringBuffer_new(Thread* thd, Object args) {
-  primCheckArgs(EMPTY_LIST, args, thd);
+  primCheckArgs2(EMPTY_LIST, args, NULL, thd);
   Object sb = stringBufferNew();
   return sb;
 }
 
 /*------------------------------------------------------------------*/
 Object stringBuffer_readChar(Thread* thd, Object args) {
-  primCheckArgs(param_Sb, args, thd);
-  Object sb = listGetFirst(args);
+  Object sb;
+  Object* argAry[] = {&sb};
+  primCheckArgs2(param_Sb, args, argAry, thd);
   Object string = stringBufferReadChar(sb, thd);
   return string;
 }
 
 /*------------------------------------------------------------------*/
 Object stringBuffer_toString(Thread* thd, Object args) {
-  primCheckArgs(param_Sb, args, thd);
-  Object sb = listGetFirst(args);
+  Object sb;
+  Object* argAry[] = {&sb};
+  primCheckArgs2(param_Sb, args, argAry, thd);
   Object string = stringBufferToString(sb);
   return string;
 }
 
 /*------------------------------------------------------------------*/
 Object stringBuffer_write(Thread* thd, Object args) {
-  primCheckArgs(param_SbString, args, thd);
-  Object sb = listGetFirst(args);
-  Object string = listGetSecond(args);
+  Object sb, string;
+  Object* argAry[] = {&sb, &string};
+  primCheckArgs2(param_SbString, args, argAry, thd);
   stringBufferWrite(sb, string);
   return sb;
 }

@@ -43,7 +43,7 @@ typedef enum {
   E_Quote,
   E_Throw,
   S_Trampoline,
-  X_Count
+  X_Count /* this enumeration value = the number of enumerations in this set */
 } ObjType;
 
 typedef struct {

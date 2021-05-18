@@ -39,10 +39,22 @@ Object primBuildTypeList(int nArgs, ...) {
 }
 
 /*------------------------------------------------------------------*/
-void primCheckArgs(Object paramTypes, Object args, Thread* thd) {
+void primArgError(Word n, Object paramTypes, Object args, Thread* thd) {
+    Object exn = arrayN(3, intNew(n), paramTypes, args);
+    threadThrowException(thd, "ArgumentError", "parameter/argument mismatch", exn);
+}
+
+/*------------------------------------------------------------------*/
+void primCheckArgs2(Object paramTypes, Object args, Object** argVars, Thread* thd) {
+  int n = primCheckArgs2_unsafe(paramTypes, args, argVars);
+  if (n > -1) {
+    primArgError((Word)n, paramTypes, args, thd);
+  }
+}
+
+/*------------------------------------------------------------------*/
+int primCheckArgs2_unsafe(Object paramTypes, Object args, Object** argVars) {
   bool error = false;
-  Object paramTypesOrig = paramTypes;
-  Object argsOrig = args;
   Word n = 0;
   while (!error) {
     n++;
@@ -56,17 +68,19 @@ void primCheckArgs(Object paramTypes, Object args, Thread* thd) {
     }
     Object paramType = listGetFirst(paramTypes);
     Object arg = listGetFirst(args);
-    if (!objHasType(arg, paramType)) {
+    Object* argVar = *argVars;
+    if (objHasType(arg, paramType)) {
+      *argVar = arg;
+    }
+    else {
       error = true;
       break;
     }
     paramTypes = listGetRest(paramTypes);
     args = listGetRest(args);
+    argVars++;
   }
-  if (error) {
-    Object exn = arrayN(3, intNew(n), paramTypesOrig, argsOrig);
-    threadThrowException(thd, "ArgumentError", "parameter/argument mismatch", exn);
-  }
+  return error ? n : -1;
 }
 
 /*------------------------------------------------------------------*/
