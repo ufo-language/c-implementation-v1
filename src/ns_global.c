@@ -50,6 +50,7 @@ void global_defineAll(Object env, Thread* thd) {
   hashPut(env, identNew("=="), primNew(oper_equalTo), thd);
   hashPut(env, identNew(">="), primNew(oper_greaterThanOrEqual), thd);
   hashPut(env, identNew(">"), primNew(oper_greaterThan), thd);
+  hashPut(env, identNew("!="), primNew(oper_notEqual), thd);
 }
 
 /*------------------------------------------------------------------*/
@@ -192,6 +193,15 @@ Object oper_minus(Thread* thd, Object args) {
       break;
   }
   return res;
+}
+
+/*------------------------------------------------------------------*/
+Object oper_notEqual(Thread* thd, Object args) {
+  Object lhs, rhs;
+  Object* argAry[] = {&lhs, &rhs};
+  primCheckArgs2(param_AnyAny, args, argAry, thd);
+  bool eq = objEquals(lhs, rhs, thd);
+  return eq ? FALSE : TRUE;
 }
 
 /*------------------------------------------------------------------*/
