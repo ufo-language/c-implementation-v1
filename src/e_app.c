@@ -1,5 +1,3 @@
-#include <assert.h>
-
 #include "d_array.h"
 #include "d_closure.h"
 #include "d_list.h"
@@ -70,7 +68,6 @@ Object appNew(Object abstr, Object args) {
 void appShow(Object app, FILE* stream) {
   Object abstr = {objGetData(app, APP_ABSTR_OFS)};
   Object args = {objGetData(app, APP_ARGS_OFS)};
-  assert(objGetType(args) == D_List);
   if (objGetType(abstr) == E_Ident) {
     identShow(abstr, stream);
   }
