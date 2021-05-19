@@ -13,7 +13,8 @@ extern Object FALSE;
 extern Object GLOBALS;
 extern Object SUPER_GLOBALS;
 
-void globalsMark();
-void globalsSetup(Thread* thd);
+void globalsMark(void);
+void globalsSetup(void);
+void namespacesSetup(Thread* thd);
 
 #endif

@@ -20,6 +20,6 @@ int getLine(char* buffer, int len);
 void getLines(Object stringBuffer);
 void repl(Thread* thd);
 void replInit(ReplObj* repl);
-void replMark();
+void replMark(void);
 
 #endif

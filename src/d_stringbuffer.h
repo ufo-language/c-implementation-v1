@@ -12,7 +12,7 @@
 #define STRBUF_Q_OFS 2
 #define STRBUF_OBJ_SIZE 3
 
-Object stringBufferNew();
+Object stringBufferNew(void);
 
 Word stringBufferCount(Object sb);
 void stringBufferMark(Object sb);
