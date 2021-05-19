@@ -16,5 +16,6 @@ extern Object SUPER_GLOBALS;
 void globalsMark(void);
 void globalsSetup(void);
 void namespacesSetup(Thread* thd);
+Object registerGlobal(Object obj);
 
 #endif

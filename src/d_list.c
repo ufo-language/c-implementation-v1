@@ -4,6 +4,7 @@
 #include "d_list.h"
 #include "delegate.h"
 #include "eval.h"
+#include "gc.h"
 #include "globals.h"
 #include "object.h"
 #include "thread.h"
@@ -142,10 +143,21 @@ Object listLocate(Object list, Object key, Thread* thd) {
 
 /*------------------------------------------------------------------*/
 void listMark(Object list) {
-  Object first = {objGetData(list, LST_FIRST_OFS)};
-  Object rest = {objGetData(list, LST_REST_OFS)};
-  objMark(first);
-  objMark(rest);
+  while (!listIsEmpty(list)) {
+    gcSetObjMarkedFlag(list);
+    Object first = listGetFirst(list);
+    objMark(first);
+    list = listGetRest(list);
+    if (objGetType(list) != D_List) {
+      objMark(list);
+      break;
+    }
+  }
+  
+//  Object first = {objGetData(list, LST_FIRST_OFS)};
+//  Object rest = {objGetData(list, LST_REST_OFS)};
+//  objMark(first);
+//  objMark(rest);
 }
 
 /*------------------------------------------------------------------*/

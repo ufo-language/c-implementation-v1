@@ -1,16 +1,10 @@
-#include <stdlib.h>
-#include <stdio.h>  /* TODO remove after debugging */
-#include <string.h>
+#include <stdio.h>
 
-#include "d_symbol.h"
 #include "defines.h"
-#include "eval.h"
 #include "gc.h"
 #include "globals.h"
-#include "mem.h"
 #include "object.h"
-#include "delegate.h"
-#include "mem.h"
+#include "vmem.h"
 
 /* There must be a 1-to-1 correspondence with the ObjType enumerations
    in object.h */
@@ -64,16 +58,6 @@ char* ObjTypeNames[] = {
 */
 
 Object nullObj = {0};
-
-Object ObjTypeNameSyms[X_Count];
-Object SYM_ANY;
-
-void objStaticInit() {
-  SYM_ANY = symbolNew("Any");
-  for (int n=0; n<X_Count; n++) {
-    ObjTypeNameSyms[n] = symbolNew(ObjTypeNames[n]);
-  }
-}
 
 /* Object functions ------------------------------------------------*/
 

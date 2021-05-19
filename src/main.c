@@ -8,15 +8,10 @@
 extern int main_argc;
 extern char** main_argv;
 
-void staticInit() {
-  objStaticInit();
-}
-
 int main(int argc, char** argv) {
   main_argc = argc;
   main_argv = argv;
   memStart();
-  staticInit();
   globalsSetup();
   Thread* thd = threadNew();
   namespacesSetup(thd);

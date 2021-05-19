@@ -234,9 +234,7 @@ void test_gcSweep2() {
   Object obj;
   for (int n=0; n<10; n++) {
     int size = rand() % 255 + 1;
-    //obj = objAlloc_unsafe(D_Unknown, size);
     obj = arrayNew(size);
-    //ASSERT_NE(0, obj.a);
   }
 
   gcCommit();
@@ -250,7 +248,6 @@ void test_gcSweep3() {
   /* Allocate all of memory a few times over. This should trigger
      mark/sweep several times. */
   for (int n=0; n<256; n++) {
-    //objAlloc_unsafe(D_Unknown, 2000);
     arrayNew(2000);
     gcCommit();
   }

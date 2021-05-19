@@ -16,6 +16,8 @@
 #include "d_real.h"
 #include "d_seq.h"
 #include "d_set.h"
+#include "d_streamin.h"
+#include "d_streamout.h"
 #include "d_string.h"
 #include "d_stringbuffer.h"
 #include "d_symbol.h"
@@ -389,8 +391,17 @@ void objMark(Object obj) {
     case D_Queue:
       queueMark(obj);
       break;
+    case D_Seq:
+      seqMark(obj);
+      break;
     case D_Set:
       setMark(obj);
+      break;
+    case D_StreamIn:
+      streamInMark(obj);
+      break;
+    case D_StreamOut:
+      streamOutMark(obj);
       break;
     case D_StringBuffer:
       stringBufferMark(obj);
@@ -431,7 +442,17 @@ void objMark(Object obj) {
     case S_Trampoline:
       trampMark(obj);
       break;
-    default:
+    case D_Null:
+    case D_Bool:
+    case D_Int:
+    case D_Nothing:
+    case D_Prim:
+    case D_PrimMacro:
+    case D_Real:
+    case D_String:
+    case D_Symbol:
+    case E_Ident:
+    case X_Count:
       ;  /* do nothing */
   }
 }

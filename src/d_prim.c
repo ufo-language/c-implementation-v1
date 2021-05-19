@@ -35,7 +35,7 @@ Object primBuildTypeList(int nArgs, ...) {
     queueEnq(q, typeSym);
   }
   va_end(argList);
-  return queueAsList(q);
+  return registerGlobal(queueAsList(q));
 }
 
 /*------------------------------------------------------------------*/

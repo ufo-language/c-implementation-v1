@@ -1,3 +1,5 @@
 #include "d_streamout.h"
 
-void streamOutFoo() {}
+void streamOutMark(Object stream) {
+  (void)stream;
+}

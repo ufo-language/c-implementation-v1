@@ -7,4 +7,6 @@ Object streamOutNew(Object sink);
 
 void streamOutWrite(Object stream, Object obj);
 
+void streamOutMark(Object stream);
+
 #endif

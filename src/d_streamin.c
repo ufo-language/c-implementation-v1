@@ -1,3 +1,5 @@
 #include "d_streamin.h"
 
-void streamInFoo() {}
+void streamInMark(Object stream) {
+  (void)stream;
+}

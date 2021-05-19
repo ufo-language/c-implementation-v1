@@ -61,8 +61,6 @@ extern Object nullObj;
 
 /* function prototypes ---------------------------------------------*/
 
-void objStaticInit(void);
-
 /* pointer conversions */
 Object objRawBlockToObj(RawBlock rawBlk);
 Object objBlockToObj(Block blk);

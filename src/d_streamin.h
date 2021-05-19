@@ -7,4 +7,6 @@ Object streamInNew(Object source);
 
 Object streamInRead(Object stream);
 
+void streamInMark(Object stream);
+
 #endif
