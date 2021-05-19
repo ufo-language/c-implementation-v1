@@ -39,6 +39,7 @@ Features:
   * tuple (immutable array)
 * Namespaces for primitive functions
 * Plenty of undocumented features! (i.e., bugs)
+* Oh yeah, integers are unsigned. That's a mis-feature that I plan to fix.
 
 CS quiz: What's so useful about an immuatable array (or any immutable data type, for that matter)? No fair peeking at my source code before you answer it. Hint: I said "CS quiz" and not "software engineering quiz".
 
