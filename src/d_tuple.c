@@ -128,8 +128,11 @@ Word tupleHash_aux(Object tuple) {
 
 /*------------------------------------------------------------------*/
 void tupleMark(Object tuple) {
-  Object elems = {objGetData(tuple, TUP_ELEMS_OFS)};
-  objMark(elems);
+  Word nElems = tupleCount(tuple);
+  for (int n=0; n<nElems; n++) {
+    Object elem = tupleGet_unsafe(tuple, n);
+    objMark(elem);
+  }
 }
 
 /*------------------------------------------------------------------*/
