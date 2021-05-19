@@ -97,7 +97,6 @@ void test_bindingEval() {
   Object i100 = intNew(100);
   Object i200 = intNew(200);
 
-  Thread* thd = threadNew();
   threadEnvBind(thd, x, i100);
   threadEnvBind(thd, y, i200);
 
@@ -108,7 +107,6 @@ void test_bindingEval() {
   EXPECT_EQ(D_Binding, objGetType(res));
   EXPECT_EQ(i100.a, bindingGetLhs(res).a);
   EXPECT_EQ(i200.a, bindingGetRhs(res).a);
-  threadDelete(thd);
 }
 
 void test_bindingMatch() {

@@ -192,7 +192,6 @@ void test_closureApply() {
   Object abstr3 = abstrNew(params3, body3);
   abstrSetNext(abstr2, abstr3);
 
-  Thread* thd = threadNew();
   threadEnvBind(thd, x, i100);
   threadEnvBind(thd, y, i200);
   threadEnvBind(thd, z, i300);
@@ -217,6 +216,4 @@ void test_closureApply() {
   Object res3 = closureApply(closure, args3, thd);
 
   ASSERT_EQ(S_Trampoline, objGetType(res3));
-
-  threadDelete(thd);
 }

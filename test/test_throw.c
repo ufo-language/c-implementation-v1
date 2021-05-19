@@ -60,11 +60,8 @@ void test_throwEval() {
   Object errSym = symbolNew("TestErrorSymbol");
   Object thrw = throwNew(errSym);
 
-  Thread* thd = threadNew();
   /*Object res =*/ evaluate(thrw, thd);
   printf("******** test_throwEval is not finished\n");
-
-  threadDelete(thd);
 }
 
 void test_throwFreeVars() {
