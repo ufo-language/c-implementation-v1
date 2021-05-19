@@ -17,8 +17,9 @@ int main(int argc, char** argv) {
   main_argv = argv;
   memStart();
   staticInit();
+  globalsSetup();
   Thread* thd = threadNew();
-  globalsSetup(thd);
+  namespacesSetup(thd);
   repl(thd);
   return 0;
 }

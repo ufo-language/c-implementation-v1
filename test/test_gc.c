@@ -7,6 +7,7 @@
 #include "../src/d_array.h"
 #include "../src/d_int.h"
 #include "../src/d_list.h"
+#include "../src/d_tuple.h"
 #include "../src/delegate.h"
 #include "../src/gc.h"
 #include "../src/object.h"
@@ -15,6 +16,7 @@ static void test_gcMarkFlag();
 static void test_gcMarkUnmark_integer();
 static void test_gcMarkUnmark_list();
 static void test_gcMarkUnmark_array();
+static void test_gcMarkUnmark_tuple();
 static void test_gcSweep1();
 static void test_gcSweep2();
 static void test_gcSweep3();
@@ -34,6 +36,7 @@ static TestEntry testEntries[] = {
   {"test_gcMarkUnmark_integer", test_gcMarkUnmark_integer},
   {"test_gcMarkUnmark_list", test_gcMarkUnmark_list},
   {"test_gcMarkUnmark_array", test_gcMarkUnmark_array},
+  {"test_gcMarkUnmark_tupel", test_gcMarkUnmark_tuple},
   {"test_gcCommit1", test_gcCommit1},
   {"test_gcSweep1", test_gcSweep1},
   {"test_gcSweep2", test_gcSweep2},
@@ -125,30 +128,41 @@ void test_gcMarkUnmark_list() {
 }
 
 void test_gcMarkUnmark_array() {
-  Object int1_obj = intNew(100);
-  //RawBlock int1_raw = objToRawBlock(int1_obj);
-  Object int2_obj = intNew(200);
-  //RawBlock int2_raw = objToRawBlock(int2_obj);
-  Object int3_obj = intNew(300);
-  //RawBlock int3_raw = objToRawBlock(int3_obj);
+  Object i100 = intNew(100);
+  Object i200 = intNew(200);
+  Object i300 = intNew(300);
+  Object array = arrayN(3, i100, i200, i300);
 
-  Object ary1_obj = arrayNew(3);
-  arraySet_unsafe(ary1_obj, 0, int1_obj);
-  arraySet_unsafe(ary1_obj, 1, int2_obj);
-  arraySet_unsafe(ary1_obj, 2, int3_obj);
-  //RawBlock ary1_raw = objToRawBlock(ary1_obj);
+  EXPECT_F(gcIsMarked(i100));
+  EXPECT_F(gcIsMarked(i200));
+  EXPECT_F(gcIsMarked(i300));
+  EXPECT_F(gcIsMarked(array));
 
-  EXPECT_F(gcIsMarked(int1_obj));
-  EXPECT_F(gcIsMarked(int2_obj));
-  EXPECT_F(gcIsMarked(int3_obj));
-  EXPECT_F(gcIsMarked(ary1_obj));
+  objMark(array);
 
-  objMark(ary1_obj);
+  EXPECT_T(gcIsMarked(i100));
+  EXPECT_T(gcIsMarked(i200));
+  EXPECT_T(gcIsMarked(i300));
+  EXPECT_T(gcIsMarked(array));
+}
 
-  EXPECT_T(gcIsMarked(ary1_obj));
-  EXPECT_T(gcIsMarked(int1_obj));
-  EXPECT_T(gcIsMarked(int2_obj));
-  EXPECT_T(gcIsMarked(int3_obj));
+void test_gcMarkUnmark_tuple() {
+  Object i100 = intNew(100);
+  Object i200 = intNew(200);
+  Object i300 = intNew(300);
+  Object tuple = tupleN(3, i100, i200, i300);
+
+  EXPECT_F(gcIsMarked(i100));
+  EXPECT_F(gcIsMarked(i200));
+  EXPECT_F(gcIsMarked(i300));
+  EXPECT_F(gcIsMarked(tuple));
+
+  objMark(tuple);
+
+  EXPECT_T(gcIsMarked(i100));
+  EXPECT_T(gcIsMarked(i200));
+  EXPECT_T(gcIsMarked(i300));
+  EXPECT_T(gcIsMarked(tuple));
 }
 
 void test_gcCommit1() {

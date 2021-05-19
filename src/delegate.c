@@ -1,4 +1,3 @@
-#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -335,7 +334,7 @@ Word objHashCode(Object obj) {
     case E_Ident:
       return identHash(obj);
     default:
-      fprintf(stderr, "WARNING: object type %s not handled in objHashCode\n",
+      fprintf(stderr, "WARNING: object type %s not handled in objHashCode, returning object address\n",
         ObjTypeNames[objGetType(obj)]);
   }
   return obj.a;

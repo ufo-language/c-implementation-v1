@@ -15,13 +15,16 @@ Object SUPER_GLOBALS;
 
 Object listCreateEmpty();
 
-void globalsSetup(Thread* thd) {
+void globalsSetup() {
   NOTHING = nothingNew();
   EMPTY_LIST = listCreateEmpty();
   TRUE = boolNew(true);
   FALSE = boolNew(false);
-  GLOBALS = nsDefineAll(thd);
   SUPER_GLOBALS = hashNew();
+}
+
+void namespacesSetup(Thread* thd) {
+  GLOBALS = nsDefineAll(thd);
 }
 
 void globalsMark() {

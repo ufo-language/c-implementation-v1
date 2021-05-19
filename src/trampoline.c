@@ -11,7 +11,19 @@ Object trampEval(Object tramp, Thread* thd) {
   return res;
 }
 
+#include <assert.h>
+#include "stacktrace.h"
+
 Object trampNew(Object expr, Object env) {
+  if (expr.a == 0) {
+    stackTrace();
+    assert(expr.a != 0);
+  }
+  if (env.a == 0) {
+    stackTrace();
+    assert(env.a != 0);
+  }
+
   Object tramp = objAlloc(S_Trampoline, TRAMP_OBJ_SIZE);
   objSetData(tramp, TRAMP_EXPR_OFS, expr.a);
   objSetData(tramp, TRAMP_ENV_OFS, env.a);
