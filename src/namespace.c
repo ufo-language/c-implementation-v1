@@ -13,6 +13,7 @@ void list_defineAll(Object env, Thread* thd);
 void ns_defineAll(Object env, Thread* thd);
 void queue_defineAll(Object env, Thread* thd);
 void seq_defineAll(Object env, Thread* thd);
+void set_defineAll(Object env, Thread* thd);
 void string_defineAll(Object env, Thread* thd);
 void stringBuffer_defineAll(Object env, Thread* thd);
 void tuple_defineAll(Object env, Thread* thd);
@@ -36,6 +37,7 @@ Object nsDefineAll(Thread* thd) {
   ns_defineAll(env, thd);
   queue_defineAll(env, thd);
   seq_defineAll(env, thd);
+  set_defineAll(env, thd);
   string_defineAll(env, thd);
   stringBuffer_defineAll(env, thd);
   tuple_defineAll(env, thd);
