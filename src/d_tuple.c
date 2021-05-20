@@ -121,7 +121,7 @@ Word tupleHash_aux(Object tuple) {
   Word nElems = tupleCount(tuple);
   for (Word n=0; n<nElems; n++) {
     Object elem = tupleGet_unsafe(tuple, n);
-    hashCode = hashRotateLeft(hashCode) ^ elem.a;
+    hashCode = hashRotateLeft(hashCode) ^ objHashCode(elem);
   }
   return hashCode ^ hashPrimes(objGetType(tuple));
 }
