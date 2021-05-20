@@ -648,7 +648,6 @@ Object p_pattern(Thread* thd, Object tokens) {
 
 Object p_binding(Thread* thd, Object tokens) {
   Parser parsers[] = {p_pattern, p_equalSign, p_any, NULL};
-  //Parser parsers[] = {p_expr, p_equalSign, p_any, NULL};
   Object res = p_seqOf(thd, tokens, parsers);
   if (res.a == nullObj.a) {
     return nullObj;
