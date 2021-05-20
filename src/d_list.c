@@ -47,20 +47,30 @@ void listEach(Object list, void (*fun)(Object data, Object elem, Thread* thd), O
 
 /*------------------------------------------------------------------*/
 bool listEquals(Object list, Object other, Thread* thd) {
-  if (listIsEmpty(list)) {
-    return listIsEmpty(other);
+  while (true) {
+    if (listIsEmpty(list)) {
+      return listIsEmpty(other);
+    }
+    if (listIsEmpty(other)) {
+      return false;
+    }
+    Object first1 = listGetFirst(list);
+    Object first2 = listGetFirst(other);
+    if (!objEquals(first1, first2, thd)) {
+      return false;
+    }
+    list = listGetRest(list);
+    other = listGetRest(other);
+    if (objGetType(list) != D_List) {
+      if (objGetType(other) != D_List) {
+        return objEquals(list, other, thd);
+      }
+      return false;
+    }
+    if (objGetType(other) != D_List) {
+      return false;
+    }
   }
-  if (listIsEmpty(other)) {
-    return false;
-  }
-  Object first1 = listGetFirst(list);
-  Object first2 = listGetFirst(other);
-  if (!objEquals(first1, first2, thd)) {
-    return false;
-  }
-  Object rest1 = listGetRest(list);
-  Object rest2 = listGetRest(other);
-  return objEquals(rest1, rest2, thd);
 }
 
 /*------------------------------------------------------------------*/
