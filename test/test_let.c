@@ -115,5 +115,5 @@ void test_letFreeVars() {
 
   objFreeVars(let, freeVarSet, thd);
   EXPECT_EQ(1, setCount(freeVarSet));
-  EXPECT_T(setHas(freeVarSet, a, thd));
+  EXPECT_T(setContains(freeVarSet, a, thd));
 }

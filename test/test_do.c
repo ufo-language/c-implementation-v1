@@ -101,6 +101,6 @@ void test_doFreeVars() {
   Object freeVarSet = setNew();
   objFreeVars(seq, freeVarSet, thd);
   EXPECT_EQ(2, setCount(freeVarSet));
-  EXPECT_T(setHas(freeVarSet, x, thd));
-  EXPECT_T(setHas(freeVarSet, y, thd));
+  EXPECT_T(setContains(freeVarSet, x, thd));
+  EXPECT_T(setContains(freeVarSet, y, thd));
 }

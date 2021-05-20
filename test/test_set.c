@@ -15,7 +15,7 @@
 
 static void test_setNew();
 static void test_setAddCount();
-static void test_setHas();
+static void test_setContains();
 static void test_setEqual();
 static void test_setEval();
 static void test_setRemove1();
@@ -27,7 +27,7 @@ static void test_setToArray();
 static TestEntry testEntries[] = {
   {"test_setNew", test_setNew},
   {"test_setAddCount", test_setAddCount},
-  {"test_setHas", test_setHas},
+  {"test_setContains", test_setContains},
   {"test_setEqual", test_setEqual},
   {"test_setEval", test_setEval},
   {"test_setRemove1", test_setRemove1},
@@ -85,23 +85,23 @@ void test_setAddCount() {
 
   EXPECT_EQ(1, objGetData(set, 0)); /* nElems */
   EXPECT_EQ(1, setCount(set));
-  EXPECT_T(setHas(set, x, thd));
+  EXPECT_T(setContains(set, x, thd));
 
   setAddElem(set, i100, thd);
 
   EXPECT_EQ(2, objGetData(set, 0)); /* nElems */
   EXPECT_EQ(2, setCount(set));
-  EXPECT_T(setHas(set, i100, thd));
+  EXPECT_T(setContains(set, i100, thd));
 
   setAddElem(set, x, thd);
   setAddElem(set, i100, thd);
 
   EXPECT_EQ(2, objGetData(set, 0)); /* nElems */
   EXPECT_EQ(2, setCount(set));
-  EXPECT_T(setHas(set, i100, thd));
+  EXPECT_T(setContains(set, i100, thd));
 }
 
-void test_setHas() {
+void test_setContains() {
   Object set = setNew();
 
   Object x = identNew("x");
@@ -111,9 +111,9 @@ void test_setHas() {
   setAddElem(set, x, thd);
   setAddElem(set, y, thd);
 
-  EXPECT_T(setHas(set, x, thd));
-  EXPECT_T(setHas(set, y, thd));
-  EXPECT_F(setHas(set, z, thd));
+  EXPECT_T(setContains(set, x, thd));
+  EXPECT_T(setContains(set, y, thd));
+  EXPECT_F(setContains(set, z, thd));
 }
 
 void test_setEqual() {
@@ -155,8 +155,8 @@ static void test_setEval() {
 
   Object set2 = objEval(set1, thd);
 
-  EXPECT_T(setHas(set2, i100, thd));
-  EXPECT_T(setHas(set2, i200, thd));
+  EXPECT_T(setContains(set2, i100, thd));
+  EXPECT_T(setContains(set2, i200, thd));
 }
 
 static void test_setRemove1() {
@@ -170,24 +170,24 @@ static void test_setRemove1() {
   setAddElem(set, y, thd);
   setAddElem(set, z, thd);
 
-  EXPECT_T(setHas(set, x, thd));
-  EXPECT_T(setHas(set, y, thd));
-  EXPECT_T(setHas(set, z, thd));
+  EXPECT_T(setContains(set, x, thd));
+  EXPECT_T(setContains(set, y, thd));
+  EXPECT_T(setContains(set, z, thd));
 
   setRemoveElem(set, x, thd);
-  EXPECT_F(setHas(set, x, thd));
-  EXPECT_T(setHas(set, y, thd));
-  EXPECT_T(setHas(set, z, thd));
+  EXPECT_F(setContains(set, x, thd));
+  EXPECT_T(setContains(set, y, thd));
+  EXPECT_T(setContains(set, z, thd));
 
   setRemoveElem(set, y, thd);
-  EXPECT_F(setHas(set, x, thd));
-  EXPECT_F(setHas(set, y, thd));
-  EXPECT_T(setHas(set, z, thd));
+  EXPECT_F(setContains(set, x, thd));
+  EXPECT_F(setContains(set, y, thd));
+  EXPECT_T(setContains(set, z, thd));
 
   setRemoveElem(set, z, thd);
-  EXPECT_F(setHas(set, x, thd));
-  EXPECT_F(setHas(set, y, thd));
-  EXPECT_F(setHas(set, z, thd));
+  EXPECT_F(setContains(set, x, thd));
+  EXPECT_F(setContains(set, y, thd));
+  EXPECT_F(setContains(set, z, thd));
 }
 
 static void test_setRemove2() {
@@ -202,8 +202,8 @@ static void test_setRemove2() {
   setRemoveElem(set1, i0, thd);
 
   EXPECT_EQ(1, setCount(set1));
-  EXPECT_F(setHas(set1, i0, thd));
-  EXPECT_T(setHas(set1, i8, thd));
+  EXPECT_F(setContains(set1, i0, thd));
+  EXPECT_T(setContains(set1, i8, thd));
   
   Object set2 = setNew();
 
@@ -214,8 +214,8 @@ static void test_setRemove2() {
   setRemoveElem(set2, i8, thd);
 
   EXPECT_EQ(1, setCount(set1));
-  EXPECT_T(setHas(set2, i0, thd));
-  EXPECT_F(setHas(set2, i8, thd));
+  EXPECT_T(setContains(set2, i0, thd));
+  EXPECT_F(setContains(set2, i8, thd));
 }
 
 static void test_setToArray() {
@@ -230,6 +230,6 @@ static void test_setToArray() {
   Object array = setToArray(set);
   EXPECT_EQ(4, arrayCount(array));
   for (int n=0; n<4; n++) {
-    EXPECT_T(setHas(set, intNew(n * 100), thd));
+    EXPECT_T(setContains(set, intNew(n * 100), thd));
   }
 }

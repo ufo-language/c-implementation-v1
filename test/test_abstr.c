@@ -103,7 +103,7 @@ void test_abstrFreeVars2() {
   Object freeVarSet = setNew();
   objFreeVars(abstr, freeVarSet, thd);
   EXPECT_EQ(1, setCount(freeVarSet));
-  EXPECT_T(setHas(freeVarSet, x, thd));
+  EXPECT_T(setContains(freeVarSet, x, thd));
 }
 
 void test_abstrFreeVars3() {
@@ -116,7 +116,7 @@ void test_abstrFreeVars3() {
   Object freeVarSet = setNew();
   objFreeVars(abstr, freeVarSet, thd);
   EXPECT_EQ(1, setCount(freeVarSet));
-  EXPECT_T(setHas(freeVarSet, y, thd));
+  EXPECT_T(setContains(freeVarSet, y, thd));
 }
 
 void test_abstrFreeVars4() {
@@ -133,9 +133,9 @@ void test_abstrFreeVars4() {
   Object freeVarSet = setNew();
   objFreeVars(abstr1, freeVarSet, thd);
   EXPECT_EQ(3, setCount(freeVarSet));
-  EXPECT_T(setHas(freeVarSet, x, thd));
-  EXPECT_T(setHas(freeVarSet, y, thd));
-  EXPECT_T(setHas(freeVarSet, z, thd));
+  EXPECT_T(setContains(freeVarSet, x, thd));
+  EXPECT_T(setContains(freeVarSet, y, thd));
+  EXPECT_T(setContains(freeVarSet, z, thd));
 }
 
 void test_abstrMark() {

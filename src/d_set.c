@@ -46,7 +46,7 @@ bool setEquals(Object set, Object other, Thread* thd) {
     Object bucket = arrayGet_unsafe(buckets, n);
     while (!listIsEmpty(bucket)) {
       Object elem = listGetFirst(bucket);
-      if (!setHas(other, elem, thd)) {
+      if (!setContains(other, elem, thd)) {
         return false;
       }
       bucket = listGetRest(bucket);
@@ -87,7 +87,7 @@ void setFreeVars(Object set, Object freeVarSet, Thread* thd) {
 }
 
 /*------------------------------------------------------------------*/
-bool setHas(Object set, Object elem, Thread* thd) {
+bool setContains(Object set, Object elem, Thread* thd) {
   Word bucketNum;
   return setLocate(set, elem, &bucketNum, thd);
 }

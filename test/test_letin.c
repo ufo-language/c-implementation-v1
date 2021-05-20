@@ -107,7 +107,7 @@ void test_letInFreeVarsFreeBody() {
 
   objFreeVars(letIn, freeVarSet, thd);
   EXPECT_EQ(1, setCount(freeVarSet));
-  EXPECT_T(setHas(freeVarSet, a, thd));
+  EXPECT_T(setContains(freeVarSet, a, thd));
 }
 
 void test_letInFreeVarsBoundBody() {
@@ -128,5 +128,5 @@ void test_letInFreeVarsBoundBody() {
 
   objFreeVars(letIn, freeVarSet, thd);
   EXPECT_EQ(1, setCount(freeVarSet));
-  EXPECT_T(setHas(freeVarSet, a, thd));
+  EXPECT_T(setContains(freeVarSet, a, thd));
 }

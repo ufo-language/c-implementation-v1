@@ -147,8 +147,8 @@ void test_appFreeVars() {
   objFreeVars(app, freeVarSet, thd);
 
   EXPECT_EQ(2, setCount(freeVarSet));
-  EXPECT_T(setHas(freeVarSet, x, thd));
-  EXPECT_T(setHas(freeVarSet, y, thd));
+  EXPECT_T(setContains(freeVarSet, x, thd));
+  EXPECT_T(setContains(freeVarSet, y, thd));
 }
 
 void test_appMark() {

@@ -71,5 +71,5 @@ void test_throwFreeVars() {
   objFreeVars(thrw, freeVarSet, thd);
 
   EXPECT_EQ(1, setCount(freeVarSet));
-  EXPECT_T(setHas(freeVarSet, x, thd));
+  EXPECT_T(setContains(freeVarSet, x, thd));
 }
