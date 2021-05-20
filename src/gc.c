@@ -124,10 +124,10 @@ void _sweep(void) {
       prev = blk;
     }
     else {
+#if 0
       /* TODO DEBUGGING */
       /* check if the object is one of the globals */
       Object obj = objRawBlockToObj(blk);
-      //printf("_sweeping "); objShow(obj, stdout); printf("\n");
       if (obj.a == NOTHING.a
        || obj.a == EMPTY_LIST.a
        || obj.a == TRUE.a
@@ -137,7 +137,7 @@ void _sweep(void) {
          printf("attempt to delete "); objShow(obj, stdout); printf("\n");
          assert(false);
      }
-
+#endif
       /* remove the block from the spine */
       memFreeRaw(blk);
       if (prev.a == nullRawBlock.a) {
