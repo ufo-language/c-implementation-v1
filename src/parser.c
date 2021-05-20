@@ -761,7 +761,7 @@ Object p_binopExpr(Thread* thd, Object tokens) {
 
 Object p_colon(Thread* thd, Object tokens) {
   (void)thd;
-  return p_spotSpecial(tokens, ":");
+  return p_spotSpecific(tokens, T_OPER, ":");
 }
 
 Object p_colonExpr(Thread* thd, Object tokens) {
