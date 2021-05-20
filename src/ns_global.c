@@ -66,7 +66,7 @@ Object oper_assign(Thread* thd, Object args) {
       identAssign(lhs, rhsVal, thd);
       break;
     default: {
-        Object exn = arrayN(1, lhs);
+        Object exn = arrayN(2, lhs, ObjTypeNameSyms[objGetType(lhs)]);
         threadThrowException(thd, "Error", "unable to assign to LHS {}", exn);
       }
   }
