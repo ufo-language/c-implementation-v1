@@ -17,7 +17,6 @@ void colonCommandHelp() {
   puts("  :gc        Performs a garbage collection");
   puts("  :i         Shows last input");
   puts("  :mem       Shows memory values");
-  puts("  :mr <addr> Shows the value of memory at addr");
   puts("  :q         Quits UFO");
   puts("  :size      Shows system word sizes");
 }
@@ -71,11 +70,6 @@ bool colonCommand(Thread* thd, ReplObj* replObj) {
   else if (!strcmp(":mem", input)) {
     printf("Free blocks: %d\n", memGetNBlocks());
     printf("Free words : %d\n", memGetNFreeWords());
-  }
-  else if (startsWith(":mr", input)) {
-    Word addr = atoi(input + 4);
-    Word val = vmemGet(addr);
-    printf("value @%d = %d\n", addr, val);
   }
   else if (!strcmp(":q", input)) {
     replObj->contin = false;
