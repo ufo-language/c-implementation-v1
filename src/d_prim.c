@@ -46,14 +46,14 @@ void primArgError(Word n, Object paramTypes, Object args, Thread* thd) {
 
 /*------------------------------------------------------------------*/
 void primCheckArgs(Object paramTypes, Object args, Object** argVars, Thread* thd) {
-  int n = primCheckArgs_unsafe(paramTypes, args, argVars);
+  int n = primCheckArgs_aux(paramTypes, args, argVars);
   if (n > -1) {
     primArgError((Word)n, paramTypes, args, thd);
   }
 }
 
 /*------------------------------------------------------------------*/
-int primCheckArgs_unsafe(Object paramTypes, Object args, Object** argVars) {
+int primCheckArgs_aux(Object paramTypes, Object args, Object** argVars) {
   bool error = false;
   Word n = 0;
   while (!error) {

@@ -12,6 +12,7 @@
 #define ARY_OBJ_SIZE 1
 
 Object arrayNew(Word nElems);
+Object arrayNewWith(Word nElems, Object initialElem);
 Object arrayN(int nElems, ...);
 void arrayDel(Object array);
 

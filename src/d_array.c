@@ -12,10 +12,15 @@
 
 /*------------------------------------------------------------------*/
 Object arrayNew(Word nElems) {
+  return arrayNewWith(nElems, NOTHING);
+}
+
+/*------------------------------------------------------------------*/
+Object arrayNewWith(Word nElems, Object initialElem) {
   Object array = objAlloc(D_Array, ARY_OBJ_SIZE + nElems);
   objSetData(array, ARY_NELEMS_OFS, nElems);
   for (Word n=0; n<nElems; n++) {
-    arraySet_unsafe(array, n, NOTHING);
+    arraySet_unsafe(array, n, initialElem);
   }
   return array;
 }
