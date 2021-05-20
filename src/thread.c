@@ -45,6 +45,12 @@ void threadEnvBind(Thread* thd, Object var, Object val) {
 }
 
 /*------------------------------------------------------------------*/
+Object threadEnvLocate(Thread* thd, Object key) {
+  Object env = threadGetEnv(thd);
+  return listLocate(env, key, thd);
+}
+
+/*------------------------------------------------------------------*/
 void threadEnvRebind(Thread* thd, Object var, Object val) {
   Object env = threadGetEnv(thd);
   while (!listIsEmpty(env)) {
@@ -63,12 +69,6 @@ void threadEnvRebind(Thread* thd, Object var, Object val) {
 Object threadEval(Thread* thd, Object expr, Object bindings) {
   trampSet(thd->trampoline, expr, bindings);
   return thd->trampoline;
-}
-
-/*------------------------------------------------------------------*/
-Object threadEnvLocate(Thread* thd, Object key) {
-  Object env = threadGetEnv(thd);
-  return listLocate(env, key, thd);
 }
 
 /*------------------------------------------------------------------*/

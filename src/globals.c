@@ -4,6 +4,7 @@
 #include "d_nothing.h"
 #include "d_symbol.h"
 #include "delegate.h"
+#include "e_ident.h"
 #include "gc.h"
 #include "globals.h"
 #include "namespace.h"
@@ -16,8 +17,9 @@ Object FALSE;
 Object GLOBALS;  /* globally-scoped identifiers */
 Object SUPER_GLOBALS;  /* currently just 'it' */
 Object SYM_ANY;
-Object ObjTypeNameSyms[X_Count];
+Object IDENT_ANY;
 Object GLOBALS_LIST;
+Object ObjTypeNameSyms[X_Count];
 
 Object listCreateEmpty();
 
@@ -30,6 +32,7 @@ void globalsSetup() {
   FALSE = registerGlobal(boolNew(false));
   SUPER_GLOBALS = registerGlobal(hashNew());
   SYM_ANY = registerGlobal(symbolNew("Any"));
+  IDENT_ANY = registerGlobal(identNew("any"));
   for (int n=0; n<X_Count; n++) {
     ObjTypeNameSyms[n] = registerGlobal(symbolNew(ObjTypeNames[n]));
   }

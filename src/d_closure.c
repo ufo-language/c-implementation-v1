@@ -30,8 +30,8 @@ Object closureApply(Object closure, Object argList, Thread* thd) {
     }
     closure.a = objGetData(closure, CLO_NEXT_OFS);
   }
-  Object obj = listNew(origClosure, argList);
-  threadThrowException(thd, "ArgumentMismatch", "arguments do not match any rule in function", obj);
+  Object exn = arrayN(2, origClosure, argList);
+  threadThrowException(thd, "ArgumentMismatch", "arguments do not match any rule in function", exn);
   return nullObj;
 }
 

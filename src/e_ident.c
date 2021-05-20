@@ -32,15 +32,7 @@ bool identEquals(Object ident, Object obj) {
 
 /*------------------------------------------------------------------*/
 Object identEval(Object ident, Thread* thd) {
-  Object binding = threadEnvLocate(thd, ident);
-  if (binding.a != nullObj.a) {
-    return bindingGetRhs(binding);
-  }
-  Object val = hashGet_unsafe(GLOBALS, ident, thd);
-  if (val.a != nullObj.a) {
-    return val;
-  }
-  val = hashGet_unsafe(SUPER_GLOBALS, ident, thd);
+  Object val = identLookup(ident, thd);
   if (val.a == nullObj.a) {
     threadThrowException(thd, "EvaluatorError", "unbound identifier", ident);
   }
@@ -50,6 +42,20 @@ Object identEval(Object ident, Thread* thd) {
 /*------------------------------------------------------------------*/
 Word identHash(Object ident) {
   return stringHash_aux(ident) ^ hashPrimes(objGetType(ident));
+}
+
+/*------------------------------------------------------------------*/
+Object identLookup(Object ident, Thread* thd) {
+  Object binding = threadEnvLocate(thd, ident);
+  if (binding.a != nullObj.a) {
+    return bindingGetRhs(binding);
+  }
+  Object val = hashGet_unsafe(GLOBALS, ident, thd);
+  if (val.a != nullObj.a) {
+    return val;
+  }
+  val = hashGet_unsafe(SUPER_GLOBALS, ident, thd);
+  return val;
 }
 
 /*------------------------------------------------------------------*/

@@ -8,7 +8,9 @@
 #include "d_set.h"
 #include "d_symbol.h"
 #include "delegate.h"
+#include "e_app.h"
 #include "e_ident.h"
+#include "eval.h"
 #include "globals.h"
 #include "namespace.h"
 #include "object.h"
@@ -16,6 +18,7 @@
 Object any_freeVars(Thread* thd, Object args);
 Object any_hashCode(Thread* thd, Object args);
 Object any_match(Thread* thd, Object args);
+Object any_pry(Thread* thd, Object args);
 
 static Object param_Any;
 static Object param_AnyAny;
@@ -29,6 +32,7 @@ void any_defineAll(Object env, Thread* thd) {
   nsAddPrim(ns, "freeVars", any_freeVars, thd);
   nsAddPrim(ns, "hashCode", any_hashCode, thd);
   nsAddPrim(ns, "match", any_match, thd);
+  nsAddPrim(ns, "pry", any_pry, thd);
   hashPut(env, identNew(nsName), ns, thd);
 }
 
@@ -57,4 +61,14 @@ Object any_match(Thread* thd, Object args) {
   Object* argAry[] = {&arg1, &arg2};
   primCheckArgs(param_AnyAny, args, argAry, thd);
   return objMatch(arg1, arg1, EMPTY_LIST, thd);
+}
+
+/*------------------------------------------------------------------*/
+Object any_pry(Thread* thd, Object args) {
+  Object receiver, abstr;
+  Object* argAry[] = {&receiver, &abstr};
+  primCheckArgs(param_AnyAny, args, argAry, thd);
+  Object app = appNew(abstr, listNew(receiver, EMPTY_LIST));
+  eval(app, thd);
+  return receiver;
 }
