@@ -36,7 +36,7 @@ void any_defineAll(Object env, Thread* thd) {
 Object any_freeVars(Thread* thd, Object args) {
   Object arg;
   Object* argAry[] = {&arg};
-  primCheckArgs2(param_Any, args, argAry, thd);
+  primCheckArgs(param_Any, args, argAry, thd);
   Object freeVarSet = setNew();
   objFreeVars(arg, freeVarSet, thd);
   return freeVarSet;
@@ -46,7 +46,7 @@ Object any_freeVars(Thread* thd, Object args) {
 Object any_hashCode(Thread* thd, Object args) {
   Object arg;
   Object* argAry[] = {&arg};
-  primCheckArgs2(param_Any, args, argAry, thd);
+  primCheckArgs(param_Any, args, argAry, thd);
   Word hashCode = objHashCode(arg);
   return intNew(hashCode);
 }
@@ -55,6 +55,6 @@ Object any_hashCode(Thread* thd, Object args) {
 Object any_match(Thread* thd, Object args) {
   Object arg1, arg2;
   Object* argAry[] = {&arg1, &arg2};
-  primCheckArgs2(param_AnyAny, args, argAry, thd);
+  primCheckArgs(param_AnyAny, args, argAry, thd);
   return objMatch(arg1, arg1, EMPTY_LIST, thd);
 }

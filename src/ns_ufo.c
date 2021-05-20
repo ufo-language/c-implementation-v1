@@ -25,7 +25,7 @@ void ufo_defineAll(Object env, Thread* thd) {
 
 /*------------------------------------------------------------------*/
 Object ufo_args(Thread* thd, Object args) {
-  primCheckArgs2(EMPTY_LIST, args, NULL, thd);
+  primCheckArgs(EMPTY_LIST, args, NULL, thd);
   Object cmdLineArgs = arrayNew(main_argc);
   for (int n=0; n<main_argc; n++) {
     Object argString = stringNew(main_argv[n]);

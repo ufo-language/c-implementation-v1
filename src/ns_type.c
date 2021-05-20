@@ -36,7 +36,7 @@ void type_defineAll(Object env, Thread* thd) {
 Object type_check(Thread* thd, Object args) {
   Object arg, typeNameSym;
   Object* argAry[] = {&arg, &typeNameSym};
-  primCheckArgs2(param_AnySymbol, args, argAry, thd);
+  primCheckArgs(param_AnySymbol, args, argAry, thd);
   ObjType objType = objGetType(arg);
   char* typeName = ObjTypeNames[objType];
   Object typeSym = symbolNew(typeName);
@@ -51,7 +51,7 @@ Object type_check(Thread* thd, Object args) {
 Object type_hasType(Thread* thd, Object args) {
   Object arg, typeNameSym;
   Object* argAry[] = {&arg, &typeNameSym};
-  primCheckArgs2(param_AnySymbol, args, argAry, thd);
+  primCheckArgs(param_AnySymbol, args, argAry, thd);
   ObjType objType = objGetType(arg);
   char* typeName = ObjTypeNames[objType];
   Object typeSym = symbolNew(typeName);
@@ -62,7 +62,7 @@ Object type_hasType(Thread* thd, Object args) {
 Object type_name(Thread* thd, Object args) {
   Object arg;
   Object* argAry[] = {&arg};
-  primCheckArgs2(param_Any, args, argAry, thd);
+  primCheckArgs(param_Any, args, argAry, thd);
   ObjType objType = objGetType(arg);
   char* typeName = ObjTypeNames[objType];
   Object typeSym = symbolNew(typeName);

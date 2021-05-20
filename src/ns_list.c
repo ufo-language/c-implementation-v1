@@ -59,7 +59,7 @@ void list_defineAll(Object env, Thread* thd) {
 Object list_accept(Thread* thd, Object args) {
   Object list, fun;
   Object* argAry[] = {&list, &fun};
-  primCheckArgs2(param_ListAny, args, argAry, thd);
+  primCheckArgs(param_ListAny, args, argAry, thd);
   Object funVal = eval(fun, thd);
   Object q = queueNew();
   while (!listIsEmpty(list)) {
@@ -81,7 +81,7 @@ Object list_accept(Thread* thd, Object args) {
 Object list_count(Thread* thd, Object args) {
   Object list;
   Object* objAry[] = {&list};
-  primCheckArgs2(param_List, args, objAry, thd);
+  primCheckArgs(param_List, args, objAry, thd);
   Word nElems = listCount(list);
   return intNew(nElems);
 }
@@ -90,7 +90,7 @@ Object list_count(Thread* thd, Object args) {
 Object list_drop(Thread* thd, Object args) {
   Object list, nElemsInt;
   Object* argAry[] = {&list, &nElemsInt};
-  primCheckArgs2(param_ListInt, args, argAry, thd);
+  primCheckArgs(param_ListInt, args, argAry, thd);
   Word nElems = intGet(nElemsInt);
   for (int n=0; n<nElems; n++) {
     list = listGetRest(list);
@@ -102,7 +102,7 @@ Object list_drop(Thread* thd, Object args) {
 Object list_first(Thread* thd, Object args) {
   Object list;
   Object* argAry[] = {&list};
-  primCheckArgs2(param_List, args, argAry, thd);
+  primCheckArgs(param_List, args, argAry, thd);
   return listGetFirst(list);
 }
 
@@ -117,7 +117,7 @@ static void list_keys_callback(Object keySet, Object elem, Thread* thd) {
 Object list_keys(Thread* thd, Object args) {
   Object list;
   Object* argAry[] = {&list};
-  primCheckArgs2(param_List, args, argAry, thd);
+  primCheckArgs(param_List, args, argAry, thd);
   Object keySet = setNew();
   listEach(list, list_keys_callback, keySet, thd);
   return keySet;
@@ -127,7 +127,7 @@ Object list_keys(Thread* thd, Object args) {
 Object list_map(Thread* thd, Object args) {
   Object list, fun;
   Object* argAry[] = {&list, &fun};
-  primCheckArgs2(param_ListAny, args, argAry, thd);
+  primCheckArgs(param_ListAny, args, argAry, thd);
   Object funVal = eval(fun, thd);
   Object q = queueNew();
   while (!listIsEmpty(list)) {
@@ -147,7 +147,7 @@ Object list_map(Thread* thd, Object args) {
 Object list_reject(Thread* thd, Object args) {
   Object list, fun;
   Object* argAry[] = {&list, &fun};
-  primCheckArgs2(param_ListAny, args, argAry, thd);
+  primCheckArgs(param_ListAny, args, argAry, thd);
   Object funVal = eval(fun, thd);
   Object q = queueNew();
   while (!listIsEmpty(list)) {
@@ -169,7 +169,7 @@ Object list_reject(Thread* thd, Object args) {
 Object list_rest(Thread* thd, Object args) {
   Object list;
   Object* argAry[] = {&list};
-  primCheckArgs2(param_List, args, argAry, thd);
+  primCheckArgs(param_List, args, argAry, thd);
   return listGetRest(list);
 }
 
@@ -177,7 +177,7 @@ Object list_rest(Thread* thd, Object args) {
 Object list_reverse(Thread* thd, Object args) {
   Object list;
   Object* argAry[] = {&list};
-  primCheckArgs2(param_List, args, argAry, thd);
+  primCheckArgs(param_List, args, argAry, thd);
   return listReverse(list);
 }
 
@@ -185,7 +185,7 @@ Object list_reverse(Thread* thd, Object args) {
 Object list_setFirst(Thread* thd, Object args) {
   Object list, first;
   Object* argAry[] = {&list, &first};
-  primCheckArgs2(param_ListAny, args, argAry, thd);
+  primCheckArgs(param_ListAny, args, argAry, thd);
   listSetFirst(list, first);
   return list;
 }
@@ -194,7 +194,7 @@ Object list_setFirst(Thread* thd, Object args) {
 Object list_setRest(Thread* thd, Object args) {
   Object list, rest;
   Object* argAry[] = {&list, &rest};
-  primCheckArgs2(param_ListAny, args, argAry, thd);
+  primCheckArgs(param_ListAny, args, argAry, thd);
   listSetRest(list, rest);
   return list;
 }
@@ -203,7 +203,7 @@ Object list_setRest(Thread* thd, Object args) {
 Object list_take(Thread* thd, Object args) {
   Object list, nElemsInt;
   Object* argAry[] = {&list, &nElemsInt};
-  primCheckArgs2(param_ListInt, args, argAry, thd);
+  primCheckArgs(param_ListInt, args, argAry, thd);
   Object q = queueNew();
   Word nElems = intGet(nElemsInt);
   for (int n=0; n<nElems; n++) {

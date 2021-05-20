@@ -36,7 +36,7 @@ void hash_defineAll(Object env, Thread* thd) {
 Object hash_get(Thread* thd, Object args) {
   Object hash, key;
   Object* argAry[] = {&hash, &key};
-  primCheckArgs2(param_HashAny, args, argAry, thd);
+  primCheckArgs(param_HashAny, args, argAry, thd);
   return hashGet(hash, key, thd);
 }
 
@@ -44,7 +44,7 @@ Object hash_get(Thread* thd, Object args) {
 Object hash_keys(Thread* thd, Object args) {
   Object hash;
   Object* argAry[] = {&hash};
-  primCheckArgs2(param_Hash, args, argAry, thd);
+  primCheckArgs(param_Hash, args, argAry, thd);
   return hashKeys(hash, thd);
 }
 
@@ -52,7 +52,7 @@ Object hash_keys(Thread* thd, Object args) {
 Object hash_put(Thread* thd, Object args) {
   Object hash, key, val;
   Object* argAry[] = {&hash, &key, &val};
-  primCheckArgs2(param_HashAnyAny, args, argAry, thd);
+  primCheckArgs(param_HashAnyAny, args, argAry, thd);
   hashPut(hash, key, val, thd);
   return hash;
 }

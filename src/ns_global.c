@@ -16,6 +16,7 @@
 Object oper_colon(Thread* thd, Object args);
 Object oper_dot(Thread* thd, Object args);
 Object oper_doubleDot(Thread* thd, Object args);
+Object oper_assign(Thread* thd, Object args);
 Object oper_equal(Thread* thd, Object args);
 Object oper_minus(Thread* thd, Object args);
 Object oper_percent(Thread* thd, Object args);
@@ -37,6 +38,8 @@ void global_defineAll(Object env, Thread* thd) {
   param_AnyAny = primBuildTypeList(2, D_Null, D_Null);
   hashPut(env, identNew(":"), primMacroNew(oper_colon), thd);
   hashPut(env, identNew("."), primMacroNew(oper_dot), thd);
+  hashPut(env, identNew(":="), primMacroNew(oper_assign), thd);
+
   hashPut(env, identNew(".."), primNew(oper_doubleDot), thd);
   hashPut(env, identNew("="), primNew(oper_equal), thd);
   hashPut(env, identNew("+"), primNew(oper_plus), thd);
@@ -44,7 +47,6 @@ void global_defineAll(Object env, Thread* thd) {
   hashPut(env, identNew("*"), primNew(oper_times), thd);
   hashPut(env, identNew("/"), primNew(oper_slash), thd);
   hashPut(env, identNew("%"), primNew(oper_percent), thd);
-
   hashPut(env, identNew("<"), primNew(oper_lessThan), thd);
   hashPut(env, identNew("<="), primNew(oper_lessThanOrEqual), thd);
   hashPut(env, identNew("=="), primNew(oper_equalTo), thd);
@@ -54,10 +56,21 @@ void global_defineAll(Object env, Thread* thd) {
 }
 
 /*------------------------------------------------------------------*/
+Object oper_assign(Thread* thd, Object args) {
+  Object lhs, rhs;
+  Object* argAry[] = {&lhs, &rhs};
+  primCheckArgs(param_AnyAny, args, argAry, thd);
+  Object rhsVal = eval(rhs, thd);
+  printf("oper_assign lhs = "); objShow(lhs, stdout); printf(", rhs = "); objShow(rhsVal, stdout); printf("\n");
+
+  return NOTHING;
+}
+
+/*------------------------------------------------------------------*/
 Object oper_colon(Thread* thd, Object args) {
   Object lhs, rhs;
   Object* argAry[] = {&lhs, &rhs};
-  primCheckArgs2(param_AnyAny, args, argAry, thd);
+  primCheckArgs(param_AnyAny, args, argAry, thd);
   Object lhsVal = eval(lhs, thd);
   Object res = nullObj;
   switch (objGetType(lhsVal)) {
@@ -76,7 +89,7 @@ Object oper_colon(Thread* thd, Object args) {
 Object oper_dot(Thread* thd, Object args) {
   Object receiver, func;
   Object* argAry[] = {&receiver, &func};
-  primCheckArgs2(param_AnyAny, args, argAry, thd);
+  primCheckArgs(param_AnyAny, args, argAry, thd);
   Object method = methodNew(receiver, func);
   return method;
 }
@@ -85,7 +98,7 @@ Object oper_dot(Thread* thd, Object args) {
 Object oper_doubleDot(Thread* thd, Object args) {
   Object from, to;
   Object* argAry[] = {&from, &to};
-  primCheckArgs2(param_AnyAny, args, argAry, thd);
+  primCheckArgs(param_AnyAny, args, argAry, thd);
   Object seq = seqNew(from, to, intNew(1), thd);
   return seq;
 }
@@ -94,7 +107,7 @@ Object oper_doubleDot(Thread* thd, Object args) {
 Object oper_equal(Thread* thd, Object args) {
   Object lhs, rhs;
   Object* argAry[] = {&lhs, &rhs};
-  primCheckArgs2(param_AnyAny, args, argAry, thd);
+  primCheckArgs(param_AnyAny, args, argAry, thd);
   Object binding = bindingNew(lhs, rhs);
   return binding;
 }
@@ -103,7 +116,7 @@ Object oper_equal(Thread* thd, Object args) {
 Object oper_equalTo(Thread* thd, Object args) {
   Object lhs, rhs;
   Object* argAry[] = {&lhs, &rhs};
-  primCheckArgs2(param_AnyAny, args, argAry, thd);
+  primCheckArgs(param_AnyAny, args, argAry, thd);
   bool eq = objEquals(lhs, rhs, thd);
   return eq ? TRUE : FALSE;
 }
@@ -112,7 +125,7 @@ Object oper_equalTo(Thread* thd, Object args) {
 Object oper_greaterThan(Thread* thd, Object args) {
   Object lhs, rhs;
   Object* argAry[] = {&lhs, &rhs};
-  primCheckArgs2(param_AnyAny, args, argAry, thd);
+  primCheckArgs(param_AnyAny, args, argAry, thd);
   switch (objGetType(lhs)) {
     case D_Int:
       return intGreaterThan(lhs, rhs, thd) ? TRUE : FALSE;
@@ -129,7 +142,7 @@ Object oper_greaterThan(Thread* thd, Object args) {
 Object oper_greaterThanOrEqual(Thread* thd, Object args) {
   Object lhs, rhs;
   Object* argAry[] = {&lhs, &rhs};
-  primCheckArgs2(param_AnyAny, args, argAry, thd);
+  primCheckArgs(param_AnyAny, args, argAry, thd);
   switch (objGetType(lhs)) {
     case D_Int:
       return intGreaterThanOrEqual(lhs, rhs, thd) ? TRUE : FALSE;
@@ -146,7 +159,7 @@ Object oper_greaterThanOrEqual(Thread* thd, Object args) {
 Object oper_lessThan(Thread* thd, Object args) {
   Object lhs, rhs;
   Object* argAry[] = {&lhs, &rhs};
-  primCheckArgs2(param_AnyAny, args, argAry, thd);
+  primCheckArgs(param_AnyAny, args, argAry, thd);
   switch (objGetType(lhs)) {
     case D_Int:
       return intLessThan(lhs, rhs, thd) ? TRUE : FALSE;
@@ -163,7 +176,7 @@ Object oper_lessThan(Thread* thd, Object args) {
 Object oper_lessThanOrEqual(Thread* thd, Object args) {
   Object lhs, rhs;
   Object* argAry[] = {&lhs, &rhs};
-  primCheckArgs2(param_AnyAny, args, argAry, thd);
+  primCheckArgs(param_AnyAny, args, argAry, thd);
   switch (objGetType(lhs)) {
     case D_Int:
       return intLessThanOrEqual(lhs, rhs, thd) ? TRUE : FALSE;
@@ -180,7 +193,7 @@ Object oper_lessThanOrEqual(Thread* thd, Object args) {
 Object oper_minus(Thread* thd, Object args) {
   Object lhs, rhs;
   Object* argAry[] = {&lhs, &rhs};
-  primCheckArgs2(param_AnyAny, args, argAry, thd);
+  primCheckArgs(param_AnyAny, args, argAry, thd);
   Object res = NOTHING;
   switch (objGetType(lhs)) {
     case D_Int:
@@ -199,7 +212,7 @@ Object oper_minus(Thread* thd, Object args) {
 Object oper_notEqual(Thread* thd, Object args) {
   Object lhs, rhs;
   Object* argAry[] = {&lhs, &rhs};
-  primCheckArgs2(param_AnyAny, args, argAry, thd);
+  primCheckArgs(param_AnyAny, args, argAry, thd);
   bool eq = objEquals(lhs, rhs, thd);
   return eq ? FALSE : TRUE;
 }
@@ -208,7 +221,7 @@ Object oper_notEqual(Thread* thd, Object args) {
 Object oper_percent(Thread* thd, Object args) {
   Object lhs, rhs;
   Object* argAry[] = {&lhs, &rhs};
-  primCheckArgs2(param_AnyAny, args, argAry, thd);
+  primCheckArgs(param_AnyAny, args, argAry, thd);
   Object res = NOTHING;
   switch (objGetType(lhs)) {
     case D_Int:
@@ -230,7 +243,7 @@ Object oper_percent(Thread* thd, Object args) {
 Object oper_plus(Thread* thd, Object args) {
   Object lhs, rhs;
   Object* argAry[] = {&lhs, &rhs};
-  primCheckArgs2(param_AnyAny, args, argAry, thd);
+  primCheckArgs(param_AnyAny, args, argAry, thd);
   Object res = NOTHING;
   switch (objGetType(lhs)) {
     case D_Int:
@@ -249,7 +262,7 @@ Object oper_plus(Thread* thd, Object args) {
 Object oper_slash(Thread* thd, Object args) {
   Object lhs, rhs;
   Object* argAry[] = {&lhs, &rhs};
-  primCheckArgs2(param_AnyAny, args, argAry, thd);
+  primCheckArgs(param_AnyAny, args, argAry, thd);
   Object res = NOTHING;
   switch (objGetType(lhs)) {
     case D_Int:
@@ -268,7 +281,7 @@ Object oper_slash(Thread* thd, Object args) {
 Object oper_times(Thread* thd, Object args) {
   Object lhs, rhs;
   Object* argAry[] = {&lhs, &rhs};
-  primCheckArgs2(param_AnyAny, args, argAry, thd);
+  primCheckArgs(param_AnyAny, args, argAry, thd);
   Object res = NOTHING;
   switch (objGetType(lhs)) {
     case D_Int:

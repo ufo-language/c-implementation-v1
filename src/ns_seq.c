@@ -29,7 +29,7 @@ void seq_defineAll(Object env, Thread* thd) {
 Object seq_new(Thread* thd, Object args) {
   Object from, to;
   Object* argAry[] = {&from, &to};
-  primCheckArgs2(param_AnyAny, args, argAry, thd);
+  primCheckArgs(param_AnyAny, args, argAry, thd);
   Object seq = seqNew(from, to, intNew(1), thd);
   return seq;
 }

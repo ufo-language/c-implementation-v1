@@ -57,7 +57,7 @@ Object io_displn(Thread* thd, Object args) {
 
 /*------------------------------------------------------------------*/
 Object io_nl(Thread* thd, Object args) {
-  primCheckArgs2(EMPTY_LIST, args, NULL, thd);
+  primCheckArgs(EMPTY_LIST, args, NULL, thd);
   printf("\n");
   return NOTHING;
 }
