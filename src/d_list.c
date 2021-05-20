@@ -163,11 +163,6 @@ void listMark(Object list) {
       break;
     }
   }
-  
-//  Object first = {objGetData(list, LST_FIRST_OFS)};
-//  Object rest = {objGetData(list, LST_REST_OFS)};
-//  objMark(first);
-//  objMark(rest);
 }
 
 /*------------------------------------------------------------------*/
