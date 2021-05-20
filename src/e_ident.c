@@ -32,8 +32,7 @@ bool identEquals(Object ident, Object obj) {
 
 /*------------------------------------------------------------------*/
 Object identEval(Object ident, Thread* thd) {
-  Object env = threadGetEnv(thd);
-  Object binding = listLocate(env, ident, thd);
+  Object binding = threadEnvLocate(thd, ident);
   if (binding.a != nullObj.a) {
     return bindingGetRhs(binding);
   }
