@@ -61,9 +61,16 @@ Object oper_assign(Thread* thd, Object args) {
   Object* argAry[] = {&lhs, &rhs};
   primCheckArgs(param_AnyAny, args, argAry, thd);
   Object rhsVal = eval(rhs, thd);
-  printf("oper_assign lhs = "); objShow(lhs, stdout); printf(", rhs = "); objShow(rhsVal, stdout); printf("\n");
-
-  return NOTHING;
+  switch (objGetType(lhs)) {
+    case E_Ident:
+      identAssign(lhs, rhsVal, thd);
+      break;
+    default: {
+        Object exn = arrayN(1, lhs);
+        threadThrowException(thd, "Error", "unable to assign to LHS {}", exn);
+      }
+  }
+  return rhsVal;;
 }
 
 /*------------------------------------------------------------------*/

@@ -4,6 +4,7 @@
 #include "object.h"
 #include "thread.h"
 
+void identAssign(Object ident, Object val, Thread* thd);
 bool identEquals(Object ident, Object obj);
 Object identEval(Object ident, Thread* thd);
 Word identHash(Object ident);

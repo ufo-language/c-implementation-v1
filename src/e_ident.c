@@ -6,11 +6,22 @@
 #include "d_list.h"
 #include "d_string.h"
 #include "d_symbol.h"
+#include "delegate.h"
 #include "e_ident.h"
 #include "globals.h"
 #include "hash.h"
 #include "object.h"
 #include "thread.h"
+
+/*------------------------------------------------------------------*/
+/* Destructive modification of a binding. */
+void identAssign(Object ident, Object val, Thread* thd) {
+  Object binding = threadEnvLocate(thd, ident);
+  if (binding.a == nullObj.a) {
+    threadThrowException(thd, "EvaluatorError", "unbound identifier", ident);
+  }
+  bindingSetRhs(binding, val);
+}
 
 /*------------------------------------------------------------------*/
 bool identEquals(Object ident, Object obj) {
