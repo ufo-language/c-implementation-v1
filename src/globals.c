@@ -17,7 +17,7 @@ Object FALSE;
 Object GLOBALS;  /* globally-scoped identifiers */
 Object SUPER_GLOBALS;  /* currently just 'it' */
 Object SYM_ANY;
-Object IDENT_ANY;
+Object NS_ANY;
 Object GLOBALS_LIST;
 Object ObjTypeNameSyms[X_Count];
 
@@ -32,7 +32,6 @@ void globalsSetup() {
   FALSE = registerGlobal(boolNew(false));
   SUPER_GLOBALS = registerGlobal(hashNew());
   SYM_ANY = registerGlobal(symbolNew("Any"));
-  IDENT_ANY = registerGlobal(identNew("any"));
   for (int n=0; n<X_Count; n++) {
     ObjTypeNameSyms[n] = registerGlobal(symbolNew(ObjTypeNames[n]));
   }

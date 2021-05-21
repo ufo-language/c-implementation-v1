@@ -33,5 +33,6 @@ Object evaluate(Object obj, Thread* thd) {
 
 /*------------------------------------------------------------------*/
 Object eval(Object obj, Thread* thd) {
-  return objEval(obj, thd);
+  Object res = objEval(obj, thd);
+  return res;
 }

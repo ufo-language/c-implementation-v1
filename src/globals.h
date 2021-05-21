@@ -12,7 +12,7 @@ extern Object TRUE;
 extern Object FALSE;
 extern Object GLOBALS;
 extern Object SUPER_GLOBALS;
-extern Object IDENT_ANY;
+extern Object NS_ANY;
 
 void globalsMark(void);
 void globalsSetup(void);

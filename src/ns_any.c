@@ -20,6 +20,8 @@ Object any_hashCode(Thread* thd, Object args);
 Object any_match(Thread* thd, Object args);
 Object any_pry(Thread* thd, Object args);
 
+extern Object NS_ANY;
+
 static Object param_Any;
 static Object param_AnyAny;
 
@@ -34,6 +36,7 @@ void any_defineAll(Object env, Thread* thd) {
   nsAddPrim(ns, "match", any_match, thd);
   nsAddPrim(ns, "pry", any_pry, thd);
   hashPut(env, identNew(nsName), ns, thd);
+  NS_ANY = ns;
 }
 
 /*------------------------------------------------------------------*/

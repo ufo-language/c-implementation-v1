@@ -29,17 +29,14 @@ Object methodApply(Object method, Object argList, Thread* thd) {
   receiverTypeNameCopy[0] = tolower(receiverTypeNameCopy[0]);
   Object receiverNamespaceIdent = identNew(receiverTypeNameCopy);
   Object applyable;
-  for (int n=0; n<2; n++) {
-    Object receiverNamespace = identLookup(receiverNamespaceIdent, thd);
-     applyable = hashGet_unsafe(receiverNamespace, funcName, thd);
-    if (applyable.a == nullObj.a) {
-      if (n > 0) {
-        Object exn = arrayN(2, funcName, receiverNamespaceIdent);
-        threadThrowException(thd, "Error", "function {} not found in namespace {}", exn);
-      }
-      /* re-try using 'any' as the namespace */
-      receiverNamespaceIdent = IDENT_ANY;
-    }
+  Object receiverNamespace = identLookup(receiverNamespaceIdent, thd);
+  if (receiverNamespace.a == nullObj.a) {
+    receiverNamespace = NS_ANY;
+  }
+  applyable = hashGet_unsafe(receiverNamespace, funcName, thd);
+  if (applyable.a == nullObj.a) {
+    Object exn = arrayN(2, funcName, receiverNamespaceIdent);
+    threadThrowException(thd, "Error", "function {} not found in namespace {}", exn);
   }
   Object argList1 = listNew(receiverVal, argList);
   Object app = appNew(applyable, argList1);
