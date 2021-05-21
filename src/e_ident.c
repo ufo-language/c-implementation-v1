@@ -60,13 +60,6 @@ Object identLookup(Object ident, Thread* thd) {
 
 /*------------------------------------------------------------------*/
 Object identMatch(Object ident, Object other, Object bindingList) {
-  if (ident.a == other.a) {
-    return bindingList;
-  }
-  ObjType objTypeOther = objGetType(other);
-  if (objTypeOther == E_Ident) {
-    return nullObj;
-  }
   Object binding = bindingNew(ident, other);
   return listNew(binding, bindingList);
 }
