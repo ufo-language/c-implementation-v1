@@ -34,5 +34,8 @@ Object evaluate(Object obj, Thread* thd) {
 /*------------------------------------------------------------------*/
 Object eval(Object obj, Thread* thd) {
   Object res = objEval(obj, thd);
+#if 0
+  printf("eval obj = "); objShow(obj, stdout); printf(" :: %s, res = ", ObjTypeNames[objGetType(obj)]); objShow(res, stdout); printf(" :: %s\n", ObjTypeNames[objGetType(obj)]);
+#endif
   return res;
 }
